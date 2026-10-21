@@ -58,14 +58,16 @@ test('production shows a review activity as preparing and a ready one with its s
   assert.ok((await read(production, 'a/brunch/index.html')).includes('開始活動 ▶'));
 });
 
-test('preview shows a review activity with the not-live banner', async () => {
-  const html = await read(preview, 'a/city-walk/index.html');
-  assert.ok(html.includes('預覽：這個活動還沒上線'));
-  assert.ok(html.includes('開始活動 ▶'));
+test('preview shows a review activity as a ready page', async () => {
+  assert.ok((await read(preview, 'a/city-walk/index.html')).includes('開始活動 ▶'));
 });
 
-test('preview does not put the banner on an activity that is already ready', async () => {
-  assert.ok(!(await read(preview, 'a/brunch/index.html')).includes('預覽：這個活動還沒上線'));
+test('no page carries a preview banner', async () => {
+  for (const outDir of [production, preview]) {
+    for (const file of await htmlFiles(outDir)) {
+      assert.ok(!(await read(outDir, file)).includes('預覽：這個活動還沒上線'), file);
+    }
+  }
 });
 
 test('ready activity pages load the activity script and preparing ones load no script', async () => {

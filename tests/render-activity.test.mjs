@@ -6,8 +6,8 @@ import { readyActivity, preparingActivity, fixtureSite } from './fixtures/activi
 const REL = '../../';
 const OFFLINE_HINT = '要去沒訊號的地方，出發前在有訊號處先按『開始活動』。';
 
-const render = ({ activity = readyActivity(), site = fixtureSite(), preview = false } = {}) =>
-  renderActivityMain({ activity, site, rel: REL, preview });
+const render = ({ activity = readyActivity(), site = fixtureSite() } = {}) =>
+  renderActivityMain({ activity, site, rel: REL });
 
 function templateContent(html, id) {
   const match = html.match(new RegExp(`<template id="${id}"[^>]*>([\\s\\S]*?)</template>`));
@@ -147,11 +147,6 @@ test('an activity that may not go ahead in the rain says what to do', () => {
   activity.rainNote = '延期一週';
   assert.ok(render({ activity }).includes('下雨怎麼辦：延期一週'));
   assert.ok(!render().includes('下雨怎麼辦'));
-});
-
-test('the preview banner appears only in preview', () => {
-  assert.ok(render({ preview: true }).includes('預覽：這個活動還沒上線'));
-  assert.ok(!render().includes('預覽：這個活動還沒上線'));
 });
 
 test('the collapsed sections count first-time tips and link the plan file', () => {

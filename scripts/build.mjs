@@ -120,8 +120,8 @@ const storyCardsOf = (activity) =>
 const routesScript = (routes) =>
   `<script type="application/json" id="routes-data">${jsonForScript(routes ?? [])}</script>`;
 
-function readyActivityPage({ activity, site, routes, preview, ogUrl }) {
-  const main = renderActivityMain({ activity, site, rel: ACTIVITY_REL, preview });
+function readyActivityPage({ activity, site, routes, ogUrl }) {
+  const main = renderActivityMain({ activity, site, rel: ACTIVITY_REL });
   return page({
     title: activity.name,
     description: activity.tagline,
@@ -157,8 +157,8 @@ function cardPage({ activity, card, site }) {
 
 function renderPages({ site, routes, activityFiles }, preview) {
   const activities = activityFiles.map(({ activity }) => ({
-    raw: activity,
-    shown: { ...activity, status: shownStatus(activity.status, preview) },
+    ...activity,
+    status: shownStatus(activity.status, preview),
   }));
   const pages = [
     [
@@ -167,21 +167,20 @@ function renderPages({ site, routes, activityFiles }, preview) {
         title: site.title,
         description: ENTRY_DESCRIPTION,
         rel: ENTRY_REL,
-        main: renderEntryMain({ activities: activities.map(({ shown }) => shown), rel: ENTRY_REL }),
+        main: renderEntryMain({ activities, rel: ENTRY_REL }),
         scripts: ['js/entry.js'],
         ogUrl: site.baseUrl,
       }),
     ],
   ];
-  for (const { raw, shown: activity } of activities) {
+  for (const activity of activities) {
     const dir = `a/${activity.id}`;
     const ogUrl = `${site.baseUrl}${dir}/`;
     if (activity.status !== 'ready') {
       pages.push([`${dir}/index.html`, preparingActivityPage({ activity, ogUrl })]);
       continue;
     }
-    const isPreviewOnly = preview && raw.status === 'review';
-    pages.push([`${dir}/index.html`, readyActivityPage({ activity, site, routes, preview: isPreviewOnly, ogUrl })]);
+    pages.push([`${dir}/index.html`, readyActivityPage({ activity, site, routes, ogUrl })]);
     for (const card of storyCardsOf(activity)) {
       pages.push([`${dir}/cards/${card.id}/index.html`, cardPage({ activity, card, site })]);
     }

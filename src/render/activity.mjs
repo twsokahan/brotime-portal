@@ -134,9 +134,8 @@ function renderStoryCardQrTemplates(activity, site) {
   );
 }
 
-export function renderActivityMain({ activity, site, rel, preview }) {
+export function renderActivityMain({ activity, site, rel }) {
   return [
-    preview ? '<p class="preview-banner">預覽：這個活動還沒上線</p>' : '',
     renderHead(activity),
     renderPrepare(activity, site),
     renderFlow(activity, rel),
