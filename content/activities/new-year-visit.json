@@ -1,0 +1,22 @@
+{
+  "id": "new-year-visit",
+  "name": "新春拜年團",
+  "tagline": "春節組隊到彼此家中拜年，帶春聯與小禮物，順道關心久未參加的會員。",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "D"
+  ],
+  "order": 8,
+  "tags": {
+    "kids": "great",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "talk"
+    ]
+  }
+}

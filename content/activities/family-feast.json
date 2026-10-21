@@ -1,0 +1,23 @@
+{
+  "id": "family-feast",
+  "name": "家族辦桌拜年",
+  "tagline": "春節結合家族聚會，到會員家拜年、一起吃飯，順道問候久未參加的會員。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "D"
+  ],
+  "order": 10,
+  "tags": {
+    "kids": "great",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "eat",
+      "talk"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "city-walk",
+  "name": "城市散步",
+  "tagline": "走一段老街或文化路線，企劃室提供路線與故事卡，邊走邊分享近況。",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "C"
+  ],
+  "order": 5,
+  "tags": {
+    "kids": "ok",
+    "place": "outdoor",
+    "rain": "move",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "move",
+      "talk"
+    ]
+  },
+  "rainNote": "小雨撐傘照走；雨變大就找有屋簷的地方或附近的咖啡店，坐下來念故事卡。"
+}

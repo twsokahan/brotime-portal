@@ -1,0 +1,24 @@
+{
+  "id": "camping",
+  "name": "露營星空夜",
+  "tagline": "帶家人到附近營地露營一晚，圍著營火分享讀《新・人間革命》的感動。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "D"
+  ],
+  "order": 15,
+  "tags": {
+    "kids": "great",
+    "place": "outdoor",
+    "rain": "move",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "play",
+      "talk"
+    ]
+  },
+  "rainNote": "下雨移到雨棚或炊事亭進行；豪雨、颱風時延期。"
+}

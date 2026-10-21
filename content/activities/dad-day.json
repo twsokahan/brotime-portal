@@ -1,0 +1,23 @@
+{
+  "id": "dad-day",
+  "name": "爸爸帶娃日",
+  "tagline": "週末在親子館或公園，父親帶孩子一起闖關，孩子玩、爸爸們在旁聊生活。",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "D"
+  ],
+  "order": 4,
+  "tags": {
+    "kids": "great",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "play",
+      "talk"
+    ]
+  }
+}

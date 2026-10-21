@@ -1,0 +1,26 @@
+{
+  "id": "fishing",
+  "name": "釣魚聊天會",
+  "tagline": "在溪邊或魚塭一起釣魚，步調慢、話自然多，企劃室提供邊釣邊聊的話題卡。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "A",
+    "C"
+  ],
+  "order": 13,
+  "tags": {
+    "kids": "no",
+    "place": "outdoor",
+    "rain": "postpone",
+    "slots": [
+      "early-morning",
+      "weekend-day"
+    ],
+    "interests": [
+      "play",
+      "talk"
+    ]
+  },
+  "rainNote": "下雨或溪水太大就延期，在約好的時間前到群組通知。"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "morning-hike",
+  "name": "清晨登山",
+  "tagline": "配合早起作息，一早爬附近郊山，下山吃早餐聊天，上午就能回去工作。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "C"
+  ],
+  "order": 12,
+  "tags": {
+    "kids": "no",
+    "place": "outdoor",
+    "rain": "postpone",
+    "slots": [
+      "early-morning"
+    ],
+    "interests": [
+      "move"
+    ]
+  },
+  "rainNote": "前一晚看天氣預報；下雨、濃霧、雷雨或高溫特報時延期。"
+}

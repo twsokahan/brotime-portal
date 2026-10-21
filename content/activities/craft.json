@@ -1,0 +1,24 @@
+{
+  "id": "craft",
+  "name": "師傅手藝教室",
+  "tagline": "由從事木工、水電、修車的成員教大家一手，並分享這份工作帶給他的人生體會。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "A",
+    "C"
+  ],
+  "order": 14,
+  "tags": {
+    "kids": "ok",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weekend-day",
+      "flexible"
+    ],
+    "interests": [
+      "craft"
+    ]
+  }
+}

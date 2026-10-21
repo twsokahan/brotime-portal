@@ -1,0 +1,24 @@
+{
+  "id": "farm",
+  "name": "農事體驗日",
+  "tagline": "到成員的田地或果園幫忙採收，親子一起體驗，結束後在樹下分享心得。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "C",
+    "D"
+  ],
+  "order": 11,
+  "tags": {
+    "kids": "great",
+    "place": "outdoor",
+    "rain": "postpone",
+    "slots": [
+      "weekend-day"
+    ],
+    "interests": [
+      "move"
+    ]
+  },
+  "rainNote": "前一天看天氣預報，下雨或天氣過熱時延期。"
+}

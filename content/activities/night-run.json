@@ -1,0 +1,23 @@
+{
+  "id": "night-run",
+  "name": "河濱夜跑・單車",
+  "tagline": "平日下班後河濱夜跑或騎單車，結束後聊十分鐘心得，全程約一小時。",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "C"
+  ],
+  "order": 2,
+  "tags": {
+    "kids": "ok",
+    "place": "outdoor",
+    "rain": "postpone",
+    "slots": [
+      "weeknight"
+    ],
+    "interests": [
+      "move"
+    ]
+  },
+  "rainNote": "小雨就縮短路線提早回來；雨大就到附近有屋頂的地方念故事卡，或改期。"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "board-games",
+  "name": "桌遊之夜",
+  "tagline": "企劃室準備桌遊與《新・人間革命》情節題卡，下班後邊玩邊聊。",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "B",
+    "E"
+  ],
+  "order": 3,
+  "tags": {
+    "kids": "ok",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weeknight"
+    ],
+    "interests": [
+      "play",
+      "talk"
+    ]
+  }
+}

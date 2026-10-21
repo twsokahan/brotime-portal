@@ -1,0 +1,25 @@
+{
+  "id": "tea",
+  "name": "巷口泡茶會",
+  "tagline": "在據點或成員家門口泡茶聊天，隨到隨聊，企劃室提供茶席話題卡。",
+  "status": "preparing",
+  "edition": "rural",
+  "templates": [
+    "A"
+  ],
+  "order": 16,
+  "tags": {
+    "kids": "ok",
+    "place": "both",
+    "rain": "move",
+    "slots": [
+      "flexible",
+      "weeknight",
+      "weekend-day"
+    ],
+    "interests": [
+      "talk"
+    ]
+  },
+  "rainNote": "下雨就移進據點或屋裡泡茶。"
+}
