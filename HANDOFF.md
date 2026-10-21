@@ -24,6 +24,7 @@
 - **GitHub 推送：** 本機 SSH 金鑰是公司帳號，推 GitHub 上的 repo 要用 `gh` 的 HTTPS 認證，做法同 `~/code/city-walk-review`。repo 開在組織 `twsokahan` 底下（不是個人帳號 cades）；本機 gh 登入的 cades 是組織 admin，token 有 repo、read:org。組織是免費方案，只有公開 repo 能用 Pages，這會是組織第一個公開 repo（目前 8 個都是私人的），問使用者時順便提。
 - **不能動的內容規則：** 引文只能用故事卡上已有的文字，台詞和故事全文不要改寫。內容來源在 `~/code/sokahan-propalsal-2026/`。
 - **城市散步路線：** 還在路線檢閱網站收意見，入口網站一律從 `~/code/city-walk-review/data/routes.json` 匯入，不要手抄。
+- **整個 repo 會公開**（原始碼、docs/、本檔、docs/content-notes/ 都是）：不要寫個人信箱、電話、金鑰、token 或其他私人資料。部署方式已定案：公開的 `twsokahan/brotime-portal` 用 GitHub Actions 部署 Pages，不另開網站 repo。
 - **完成通知：** 全部做完、test 和 build 都過之後，用 terminal-notifier 和 Pushover 以繁體中文通知使用者（參數見 `~/CLAUDE.md`）。
 
 ## 網域決定（2026-10-21，Task 20 上線時處理）
