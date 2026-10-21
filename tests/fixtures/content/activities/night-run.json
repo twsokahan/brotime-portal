@@ -1,0 +1,11 @@
+{
+  "id": "night-run",
+  "name": "河濱夜跑・單車",
+  "tagline": "下班後沿著河濱跑一段，邊跑邊聊",
+  "status": "preparing",
+  "edition": "metro",
+  "templates": [
+    "C"
+  ],
+  "order": 2
+}

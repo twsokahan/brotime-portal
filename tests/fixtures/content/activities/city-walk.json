@@ -1,0 +1,70 @@
+{
+  "id": "city-walk",
+  "name": "城市散步",
+  "tagline": "沿著自己住的城市走一圈，邊走邊聊",
+  "status": "review",
+  "edition": "metro",
+  "templates": ["B"],
+  "order": 3,
+  "tags": {
+    "kids": "great",
+    "place": "outdoor",
+    "rain": "move",
+    "slots": ["weekend-day", "weeknight"],
+    "interests": ["move", "talk"]
+  },
+  "rainNote": "改到路線上有屋簷的地方，故事照樣念。",
+  "facts": { "people": "4–10 人", "duration": "60 分鐘", "place": "你住的區" },
+  "provided": [
+    { "item": "路線（在網站上看）", "qty": "每區 1 條" },
+    { "item": "故事卡（在網站上看）", "qty": "1 張" }
+  ],
+  "todo": [{ "when": "2 週前", "task": "先自己走一次路線" }],
+  "steps": [
+    {
+      "time": "0–15 分",
+      "minutes": 15,
+      "title": "從集合點出發",
+      "do": "人到齊就出發，邊走邊聊。",
+      "say": "我們走到第一個停留點，大概 15 分鐘。",
+      "routeStop": "start",
+      "routeLeg": 0
+    },
+    {
+      "time": "15–30 分",
+      "minutes": 15,
+      "title": "停留點念故事",
+      "do": "請大家打開自己的手機看故事卡，一人念一段。",
+      "say": "請打開手機上的故事卡，我們一人念一段。",
+      "cards": ["story"],
+      "routeStop": "stop1"
+    },
+    {
+      "time": "30–60 分",
+      "minutes": 30,
+      "title": "走回終點",
+      "do": "走到終點，請大家掃 QR code 填問卷。",
+      "say": "今天走過的地方，哪裡最想再來一次？",
+      "routeStop": "end",
+      "routeLeg": 1
+    }
+  ],
+  "cardSets": {
+    "story": {
+      "kind": "story",
+      "label": "故事卡",
+      "cards": [
+        {
+          "id": "A",
+          "title": "測試用散步故事卡",
+          "text": "這是測試用的散步故事卡，不是書裡的原文。\n\n第二段的第一行\n第二段的第二行",
+          "source": "《新・人間革命》第 1 卷〈旭日〉"
+        }
+      ]
+    }
+  },
+  "firstTime": ["出發前確認每個人都知道終點在哪裡"],
+  "extra30": ["走完一起找附近的店坐下來喝杯飲料。"],
+  "planFile": "files/city-walk-plan.pdf",
+  "preflight": ["手機有電，先連上網路"]
+}
