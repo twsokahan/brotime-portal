@@ -56,12 +56,12 @@ function stepCardSets(step) {
   });
 }
 
-function cardImage(card, className) {
+function cardImage(card, className, file = card.id) {
   const img = el('img', { alt: card.title, className });
   img.addEventListener('error', () => img.replaceWith(el('div', { className: `${className} card-missing`, textContent: card.title })), {
     once: true,
   });
-  img.src = `${REL}cards/${activity.id}/${card.id}.webp`;
+  img.src = `${REL}cards/${activity.id}/${file}.webp`;
   return img;
 }
 
@@ -289,8 +289,9 @@ function shareControls(title, url) {
 }
 
 const storyText = (card) =>
-  el('details', { className: 'story-text' }, [
-    el('summary', { textContent: '故事全文' }),
+  el('section', { className: 'story-text' }, [
+    el('h3', { textContent: '故事全文' }),
+    el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
     ...card.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
     el('p', { className: 'source', textContent: `出處：${card.source}` }),
   ]);
@@ -303,7 +304,6 @@ function storyCardView(card) {
       shareControls(card.title, cardPageUrl(site, activity.id, card.id)),
       qr && el('figure', { className: 'live-qr' }, [el('figcaption', { textContent: '新朋友掃這裡' }), qr.content.cloneNode(true)]),
     ]),
-    el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
     storyText(card),
   ]);
 }
@@ -383,20 +383,28 @@ function otherCards(set) {
   );
 }
 
+function storyTile(card, onclick) {
+  const thumb = cardImage(card, 'story-tile-image', `${card.id}-thumb`);
+  thumb.alt = '';
+  const tile = button('', onclick, 'story-tile');
+  tile.append(thumb, el('span', { textContent: card.title }));
+  return tile;
+}
+
 function storyPicker(cards, pickKey) {
   const cardSlot = el('div', { className: 'live-cards' });
-  const cardButtons = cards.map((card) => button(card.title, () => choose(card)));
+  const tiles = cards.map((card) => storyTile(card, () => choose(card)));
   function choose(card) {
     storyPicks.set(pickKey, card.id);
-    cardButtons.forEach((cardButton, i) => cardButton.setAttribute('aria-pressed', String(cards[i] === card)));
+    tiles.forEach((tile, i) => tile.setAttribute('aria-pressed', String(cards[i] === card)));
     cardSlot.replaceChildren(storyCardView(card));
   }
 
   choose(cards.find((card) => card.id === storyPicks.get(pickKey)) ?? cards[0]);
-  const switcher = el('div', { className: 'story-switch' }, cardButtons);
+  const switcher = el('div', { className: 'story-switch' }, tiles);
   switcher.setAttribute('role', 'group');
   switcher.setAttribute('aria-label', '選一張故事卡');
-  return el('div', {}, [switcher, cardSlot]);
+  return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: '選一張故事卡' }), switcher, cardSlot]);
 }
 
 function cardSetView(set, stepIndex) {
