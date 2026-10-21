@@ -76,6 +76,17 @@ test('ready activity pages load the activity script and preparing ones load no s
   assert.ok(!(await read(production, 'a/city-walk/index.html')).includes('<script type="module"'));
 });
 
+test('entry, ready and preparing pages send LINE visitors to the phone browser, story card pages do not', async () => {
+  const leavesLine = (html) => html.includes('openExternalBrowser') && html.includes('<div class="line-notice">');
+  assert.ok(leavesLine(await read(production, 'index.html')));
+  assert.ok(leavesLine(await read(production, 'a/brunch/index.html')));
+  assert.ok(leavesLine(await read(production, 'a/night-run/index.html')));
+  assert.ok(leavesLine(await read(preview, 'a/city-walk/index.html')));
+  const cardPage = await read(production, 'a/brunch/cards/s1/index.html');
+  assert.ok(!cardPage.includes('openExternalBrowser'));
+  assert.ok(!cardPage.includes('line-notice'));
+});
+
 test('the entry page loads the entry script and points og:url at the site', async () => {
   const html = await read(production, 'index.html');
   assert.ok(html.includes('src="js/entry.js"'));

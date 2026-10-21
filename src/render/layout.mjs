@@ -1,4 +1,5 @@
 import { escapeHtml } from './html.mjs';
+import { LEAVE_LINE_SCRIPT, LINE_NOTICE } from './leave-line.mjs';
 
 const GOOGLE_FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6,10 +7,11 @@ const GOOGLE_FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com"
 
 const ogMeta = (property, content) => `<meta property="og:${property}" content="${escapeHtml(content)}">`;
 
-export function page({ title, description, rel, main, scripts, ogUrl, ogImage }) {
+export function page({ title, description, rel, main, scripts, ogUrl, ogImage, leaveLine = false }) {
   const head = [
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    leaveLine ? `<script>${LEAVE_LINE_SCRIPT}</script>` : '',
     `<title>${escapeHtml(title)}</title>`,
     `<meta name="description" content="${escapeHtml(description)}">`,
     ogMeta('title', title),
@@ -26,7 +28,7 @@ export function page({ title, description, rel, main, scripts, ogUrl, ogImage })
 ${head.join('\n')}
 </head>
 <body>
-<main>
+${leaveLine ? `${LINE_NOTICE}\n` : ''}<main>
 ${main}
 </main>
 ${scriptTags.join('\n')}

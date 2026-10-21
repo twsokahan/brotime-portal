@@ -129,6 +129,7 @@ function readyActivityPage({ activity, site, routes, ogUrl }) {
     main: activity.id === CITY_WALK_ID ? `${main}\n${routesScript(routes)}` : main,
     scripts: ['js/activity.js'],
     ogUrl,
+    leaveLine: true,
   });
 }
 
@@ -140,6 +141,7 @@ function preparingActivityPage({ activity, ogUrl }) {
     main: renderPreparingMain({ activity, rel: ACTIVITY_REL }),
     scripts: [],
     ogUrl,
+    leaveLine: true,
   });
 }
 
@@ -170,6 +172,7 @@ export function renderPages({ site, routes, activityFiles }, preview) {
         main: renderEntryMain({ activities, rel: ENTRY_REL }),
         scripts: activities.some((activity) => activity.status === 'ready') ? ['js/entry.js'] : [],
         ogUrl: site.baseUrl,
+        leaveLine: true,
       }),
     ],
   ];

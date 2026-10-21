@@ -25,6 +25,32 @@ main {
   padding: 0 16px 48px;
 }
 
+.line-notice {
+  display: none;
+}
+
+.from-line .line-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--box);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.line-notice p {
+  flex: 1;
+  margin: 0;
+}
+
+.line-notice button {
+  flex: none;
+}
+
 h1,
 h2,
 h3,

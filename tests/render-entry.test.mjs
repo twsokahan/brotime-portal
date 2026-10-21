@@ -125,6 +125,22 @@ test('the layout uses the page language, relative stylesheet and module scripts'
   assert.ok(html.includes('<script type="module" src="../../js/activity.js"></script>'));
 });
 
+const LINE_NOTICE_TEXT = '用手機瀏覽器開比較順：點右上角「⋯」，選「用預設瀏覽器開啟」。';
+
+test('with leaveLine, the head starts with the LINE script and the body starts with the hidden notice', () => {
+  const html = layout({ leaveLine: true });
+  const head = html.match(/<head>([\s\S]*?)<\/head>/)[1];
+  assert.ok(head.indexOf('openExternalBrowser') < head.indexOf('<link'), 'script runs before any stylesheet or font');
+  assert.ok(head.includes('<script>(function leaveLine'));
+  assert.ok(html.includes(`<body>\n<div class="line-notice">\n<p>${LINE_NOTICE_TEXT}</p>\n<button type="button">知道了</button>\n</div>\n<main>`));
+});
+
+test('without leaveLine, the page has no LINE script or notice', () => {
+  const html = layout();
+  assert.ok(!html.includes('openExternalBrowser'));
+  assert.ok(!html.includes('line-notice'));
+});
+
 test('og:image is present only when an image is given', () => {
   assert.ok(layout({ ogImage: 'https://x/y.jpg' }).includes('property="og:image" content="https://x/y.jpg"'));
   assert.ok(!layout().includes('og:image'));
