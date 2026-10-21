@@ -1,0 +1,107 @@
+<style>
+  .bt { --paper:#f7f0e3; --ink:#3a2e24; --muted:#7a6a58; --line:#e2d5bf;
+        --c1:#c98a2b; --c2:#5f8a3a; --c3:#b4503a; --c4:#3f6f9a; --c5:#7a4f7d;
+        font-family:"PingFang TC","Noto Sans TC",sans-serif; }
+  .phone, .screen { color:var(--ink); background:var(--paper); border:6px solid #2b2420; box-shadow:0 6px 18px rgba(0,0,0,.12); }
+  .phone { width:300px; margin:0 auto; border-radius:22px; padding:16px 14px 18px; }
+  .phone h4, .screen h4 { font-size:19px; font-weight:900; margin:0 0 2px; }
+  .sub { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .frow { margin-bottom:7px; }
+  .frow .lab { font-size:11px; font-weight:900; color:var(--muted); margin-bottom:3px; }
+  .chip { display:inline-block; font-size:11.5px; border:1px solid var(--line); background:#fff8ec; border-radius:14px; padding:3px 9px; margin:0 3px 4px 0; }
+  .chip.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .count { font-size:12px; font-weight:900; margin:10px 0 6px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .act { background:#fff8ec; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .act .pic { height:52px; background:var(--tone); opacity:.85; }
+  .act .b { padding:6px 7px 7px; }
+  .act .n { font-size:12.5px; font-weight:900; }
+  .act .d { font-size:10.5px; color:var(--muted); line-height:1.35; margin:2px 0 4px; }
+  .t { display:inline-block; font-size:9.5px; border-radius:8px; padding:0 5px; margin:0 2px 2px 0; background:#efe5d3; }
+  .t.rain { background:#dfe9f2; color:#2f5577; }
+  .t.wet { background:#f4e0d8; color:#8a3b25; }
+  .act.dim { opacity:.35; }
+
+  .screens { display:flex; flex-direction:column; gap:12px; align-items:center; }
+  .screen { width:260px; border-radius:18px; border-width:5px; padding:14px; }
+  .qn { font-size:11px; color:var(--muted); }
+  .q { font-size:17px; font-weight:900; margin:4px 0 10px; }
+  .ans { display:block; font-size:13px; border:1.5px solid var(--line); background:#fff8ec; border-radius:10px; padding:8px 10px; margin-bottom:6px; }
+  .ans.on { border-color:var(--c2); background:#eef3e6; font-weight:700; }
+  .ans small { display:block; font-size:10.5px; color:var(--muted); font-weight:400; }
+  .rec { background:#fff8ec; border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin-bottom:6px; }
+  .rec .n { font-size:14px; font-weight:900; }
+  .rec .why { font-size:11px; color:var(--muted); }
+  .more { text-align:center; font-size:12px; color:var(--muted); margin-top:4px; }
+  .why-list { font-size:13px; line-height:1.55; }
+</style>
+
+<h2>入口：從 16 個活動裡挑一個</h2>
+<p class="subtitle">用你說的五個條件：帶不帶小孩、室內戶外、工作時段、共同興趣、天氣。活動的標籤是我照簡報的描述先貼的示意。</p>
+
+<div class="cards bt" data-multiselect>
+
+  <div class="card" data-choice="filter" onclick="toggleSelect(this)">
+    <div class="card-image" style="aspect-ratio:auto;display:block;padding:18px 0;">
+      <div class="phone">
+        <h4>下個月辦什麼？</h4>
+        <div class="sub">兄弟時光 16 個活動，點條件篩選</div>
+        <div class="frow"><div class="lab">帶小孩</div><span class="chip on">會帶</span><span class="chip">不帶</span></div>
+        <div class="frow"><div class="lab">地點</div><span class="chip">室內</span><span class="chip">戶外</span><span class="chip on">☂ 下雨也能辦</span></div>
+        <div class="frow"><div class="lab">大家什麼時候有空</div><span class="chip on">週末白天</span><span class="chip">平日晚上</span><span class="chip">一大早</span><span class="chip">時間不固定</span></div>
+        <div class="frow"><div class="lab">共同興趣</div><span class="chip">吃</span><span class="chip">動</span><span class="chip">聊</span><span class="chip">玩</span><span class="chip">手作</span></div>
+
+        <div class="count">符合的有 3 個</div>
+        <div class="grid">
+          <div class="act" style="--tone:#e9c7a0"><div class="pic"></div><div class="b"><div class="n">爸爸帶娃日</div><div class="d">孩子闖關，爸爸們在旁聊生活</div><span class="t">親子</span><span class="t rain">雨天改親子館</span></div></div>
+          <div class="act" style="--tone:#d9b98f"><div class="pic"></div><div class="b"><div class="n">兄弟早午餐會</div><div class="d">週末上午吃早午餐，下午留給家人</div><span class="t">吃・聊</span><span class="t rain">室內</span></div></div>
+          <div class="act" style="--tone:#c9a27a"><div class="pic"></div><div class="b"><div class="n">男人的廚房</div><div class="d">一起做菜，家人一起來吃</div><span class="t">吃・手作</span><span class="t rain">室內</span></div></div>
+          <div class="act dim" style="--tone:#a9c08f"><div class="pic"></div><div class="b"><div class="n">露營星空夜</div><div class="d">帶家人露營一晚，圍著營火分享</div><span class="t">戶外</span><span class="t wet">雨天延期</span></div></div>
+        </div>
+        <div class="more">＋ 其他 12 個（不符合的變淡）</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A　活動牆＋篩選</h3>
+      <ul class="why-list">
+        <li>16 個一次攤開，點條件就變少</li>
+        <li>喜歡自己逛的人很直覺</li>
+        <li>每張卡直接看到「下雨也能辦／雨天延期」</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" data-choice="quiz" onclick="toggleSelect(this)">
+    <div class="card-image" style="aspect-ratio:auto;display:block;padding:18px 0;">
+      <div class="screens">
+        <div class="screen">
+          <div class="qn">第 2 題，共 4 題</div>
+          <div class="q">區裡的夥伴，什麼時候比較有空？</div>
+          <span class="ans on">週末白天<small>週休二日</small></span>
+          <span class="ans">平日下班後</span>
+          <span class="ans">一大早<small>上班前或下田前</small></span>
+          <span class="ans">時間不固定<small>排休、輪班</small></span>
+        </div>
+        <div class="screen">
+          <div class="qn">幫你挑好了</div>
+          <div class="q">最適合你們區的 3 個</div>
+          <div class="rec"><div class="n">爸爸帶娃日</div><div class="why">會帶小孩・週末白天・下雨可改親子館</div></div>
+          <div class="rec"><div class="n">兄弟早午餐會</div><div class="why">週末白天・室內・喜歡吃</div></div>
+          <div class="rec"><div class="n">男人的廚房</div><div class="why">家人一起來吃・室內</div></div>
+          <div class="more">看全部 16 個 →</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B　回答 4 題，幫你挑</h3>
+      <ul class="why-list">
+        <li>小孩、地點與天氣、時段、興趣，一次一題</li>
+        <li>不用自己比較，直接推薦 3 個並說明原因</li>
+        <li>第一次接觸兄弟時光的人比較不會迷路</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.2rem;">兩個也可以放在一起：最上面一個「幫我挑」按鈕，下面就是活動牆。</p>

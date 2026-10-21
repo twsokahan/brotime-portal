@@ -1,0 +1,11 @@
+{
+  "name": "brotime-portal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.mjs\"",
+    "build": "node scripts/build.mjs --out dist",
+    "preview": "node scripts/build.mjs --preview --out dist-preview",
+    "serve": "python3 -m http.server 8766 -d dist-preview"
+  }
+}

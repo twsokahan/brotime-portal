@@ -1,0 +1,191 @@
+<style>
+  .bt { --paper:#f7f0e3; --ink:#3a2e24; --muted:#7a6a58; --line:#e2d5bf;
+        --c1:#c98a2b; --c2:#5f8a3a; --c3:#b4503a; --c4:#3f6f9a; --c5:#7a4f7d;
+        font-family:"PingFang TC","Noto Sans TC",sans-serif; }
+  .phone, .live .screen { color:var(--ink); }
+  .phone { width:300px; margin:0 auto; background:var(--paper); border-radius:22px;
+           border:6px solid #2b2420; padding:16px 14px 18px; box-shadow:0 6px 18px rgba(0,0,0,.12); }
+  .phone h4 { font-size:20px; font-weight:900; margin:0 0 2px; letter-spacing:.5px; }
+  .phone .sub { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .facts { display:flex; gap:6px; margin-bottom:12px; }
+  .facts span { flex:1; text-align:center; font-size:11px; background:#fff8ec; border:1px solid var(--line);
+                border-radius:8px; padding:5px 2px; }
+  .facts b { display:block; font-size:15px; font-weight:900; }
+  .sec { font-size:13px; font-weight:900; margin:12px 0 6px; }
+  .prep { list-style:none; padding:0; margin:0; font-size:12px; }
+  .prep li { display:flex; justify-content:space-between; padding:5px 8px; border-bottom:1px dashed var(--line); }
+  .prep li::before { content:"☐"; margin-right:6px; }
+  .prep li span:first-child { flex:1; }
+  .prep li em { font-style:normal; color:var(--muted); }
+  .dl { display:block; text-align:center; font-size:12px; font-weight:700; margin-top:8px; padding:7px;
+        border-radius:8px; background:var(--ink); color:var(--paper); }
+  .tl { border-left:4px solid var(--line); margin-left:6px; padding-left:12px; }
+  .step { position:relative; margin-bottom:12px; }
+  .step::before { content:""; position:absolute; left:-20px; top:3px; width:12px; height:12px; border-radius:50%;
+                  background:var(--dot); }
+  .step .t { font-size:11px; font-weight:900; color:var(--dot); }
+  .step .what { font-size:14px; font-weight:900; }
+  .step .say { font-size:11.5px; background:#fff8ec; border-left:3px solid var(--dot); padding:4px 7px; margin-top:4px; border-radius:0 6px 6px 0; }
+  .step .say b { color:var(--dot); }
+  .thumbs { display:flex; gap:5px; margin-top:6px; }
+  .thumbs img { width:62px; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  .thumbs img.story { width:66px; }
+  .tag { display:inline-block; font-size:10px; font-weight:700; color:#fff; background:var(--dot); border-radius:10px; padding:1px 7px; margin-left:4px; vertical-align:2px; }
+
+  .recipe .phone { background:#fffdf8; }
+  .recipe .meta { display:grid; grid-template-columns:1fr 1fr 1fr; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink);
+                  font-size:11px; text-align:center; margin:6px 0 10px; }
+  .recipe .meta div { padding:5px 0; }
+  .recipe .meta div+div { border-left:1px solid var(--line); }
+  .recipe .meta b { display:block; font-size:14px; }
+  .recipe .ing { font-size:12px; columns:1; }
+  .recipe .ing div { display:flex; padding:3px 0; border-bottom:1px dotted var(--line); }
+  .recipe .ing div span:first-child { flex:1; }
+  .recipe ol { padding-left:0; list-style:none; margin:0; counter-reset:s; }
+  .recipe ol li { counter-increment:s; display:flex; gap:8px; margin-bottom:10px; font-size:12px; }
+  .recipe ol li::before { content:counter(s); flex:0 0 22px; height:22px; border-radius:50%; background:var(--dot);
+                          color:#fff; font-weight:900; font-size:13px; text-align:center; line-height:22px; }
+  .recipe ol li b { font-size:13.5px; }
+  .recipe .min { color:var(--dot); font-weight:900; font-size:11px; }
+  .recipe .tip { font-size:11.5px; background:#f3ece0; border-radius:8px; padding:7px 9px; margin-top:6px; }
+
+  .live .screen { width:240px; margin:0 auto 10px; background:var(--paper); border-radius:18px; border:5px solid #2b2420;
+                  padding:12px; box-shadow:0 4px 12px rgba(0,0,0,.12); }
+  .live .bar { display:flex; justify-content:space-between; font-size:10.5px; color:var(--muted); margin-bottom:6px; }
+  .live .prog { display:flex; gap:3px; margin-bottom:10px; }
+  .live .prog i { flex:1; height:4px; border-radius:2px; background:var(--line); }
+  .live .prog i.on { background:var(--dot); }
+  .live .big { font-size:30px; font-weight:900; color:var(--dot); line-height:1; }
+  .live .what { font-size:17px; font-weight:900; margin:4px 0 6px; }
+  .live .say { font-size:12px; background:#fff8ec; border-left:3px solid var(--dot); padding:6px 8px; border-radius:0 6px 6px 0; }
+  .live .next { margin-top:10px; text-align:center; font-size:13px; font-weight:900; background:var(--dot); color:#fff; border-radius:10px; padding:8px; }
+  .live .card-big { display:block; width:120px; margin:8px auto 0; border-radius:5px; box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .live .checks div { font-size:12px; padding:4px 0; border-bottom:1px dashed var(--line); }
+  .live .checks div.ok::before { content:"☑ "; color:var(--c2); }
+  .live .checks div.no::before { content:"☐ "; }
+
+  .why { font-size:13px; line-height:1.55; }
+  .why li { margin-bottom:3px; }
+</style>
+
+<h2>兄弟早午餐會：用一頁說完，三種樣子</h2>
+<p class="subtitle">內容都一樣，只留你說的三件事：60 分鐘流程、要準備什麼、卡片什麼時候用。卡片直接放在用到它的那一步。點一下你覺得對的（可以複選），再到終端機跟我說哪裡喜歡、哪裡怪。</p>
+
+<div class="cards bt" data-multiselect>
+
+  <div class="card" data-choice="timeline" onclick="toggleSelect(this)">
+    <div class="card-image" style="aspect-ratio:auto;display:block;padding:18px 0;">
+      <div class="phone">
+        <h4>兄弟早午餐會</h4>
+        <div class="sub">週末上午一起吃早午餐，下午留給家人</div>
+        <div class="facts"><span><b>6–10</b>人</span><span><b>60</b>分鐘</span><span><b>咖啡廳</b>或會館</span></div>
+
+        <div class="sec">要準備</div>
+        <ul class="prep">
+          <li><span>故事卡</span><em>每人 1 份</em></li>
+          <li><span>話題卡</span><em>每桌 1 套</em></li>
+          <li><span>問卷</span><em>每人 1 份</em></li>
+        </ul>
+        <span class="dl">↓ 卡片一次下載（A4 印出來就能用）</span>
+
+        <div class="sec">60 分鐘這樣過</div>
+        <div class="tl">
+          <div class="step" style="--dot:var(--c1)"><div class="t">0–10 分</div><div class="what">進場、點餐</div>
+            <div class="say"><b>說：</b>「先點餐，今天輕鬆吃、輕鬆聊。」</div></div>
+          <div class="step" style="--dot:var(--c2)"><div class="t">10–30 分</div><div class="what">邊吃邊聊 <span class="tag">話題卡</span></div>
+            <div class="thumbs"><img src="/files/topic-a.png"><img src="/files/topic-b.png"><img src="/files/topic-c.png"></div>
+            <div class="say"><b>說：</b>「想聊哪張就翻哪張，不用照順序。」</div></div>
+          <div class="step" style="--dot:var(--c3)"><div class="t">30–40 分</div><div class="what">一起讀故事 <span class="tag">故事卡</span></div>
+            <div class="thumbs"><img class="story" src="/files/story-front.png"></div>
+            <div class="say"><b>說：</b>「想念的人念一段就好。」</div></div>
+          <div class="step" style="--dot:var(--c4)"><div class="t">40–55 分</div><div class="what">聊故事、分享感動</div>
+            <div class="say"><b>說：</b>「有沒有一個人，曾經花很多時間教你一樣東西？」</div></div>
+          <div class="step" style="--dot:var(--c5)"><div class="t">55–60 分</div><div class="what">收尾、準時結束</div>
+            <div class="say"><b>說：</b>「今天聊到的，有沒有一句話想帶回家？」</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A　一張流程圖</h3>
+      <ul class="why">
+        <li>從上滑到下就是活動當天的順序</li>
+        <li>卡片縮圖就在用到它的那一步旁邊</li>
+        <li>可以存成一張長圖丟 LINE，也能印 A4</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card recipe" data-choice="recipe" onclick="toggleSelect(this)">
+    <div class="card-image" style="aspect-ratio:auto;display:block;padding:18px 0;">
+      <div class="phone">
+        <h4>兄弟早午餐會</h4>
+        <div class="sub">兄弟時光食譜 No.01</div>
+        <div class="meta"><div><b>6–10 人</b>份量</div><div><b>60 分</b>時間</div><div><b>★☆☆</b>第一次也能辦</div></div>
+
+        <div class="sec">材料</div>
+        <div class="ing">
+          <div><span>咖啡廳一間</span><span>先訂位</span></div>
+          <div><span>故事卡〈戶田大學與市谷食堂〉</span><span>每人 1 份</span></div>
+          <div><span>話題卡（前菜、主餐、飯後咖啡）</span><span>每桌 1 套</span></div>
+          <div><span>問卷</span><span>每人 1 份</span></div>
+        </div>
+
+        <div class="sec">步驟</div>
+        <ol>
+          <li style="--dot:var(--c1)"><div><b>進場、點餐</b> <span class="min">10 分</span><br>大家先點餐，主持人不用開場白。</div></li>
+          <li style="--dot:var(--c2)"><div><b>翻話題卡聊天</b> <span class="min">20 分</span><br>從「前菜」翻起，聊開了再翻「主餐」。
+            <div class="thumbs"><img src="/files/topic-a.png"><img src="/files/topic-b.png"></div></div></li>
+          <li style="--dot:var(--c3)"><div><b>念一段故事</b> <span class="min">10 分</span><br>想念的人輪流念。
+            <div class="thumbs"><img class="story" src="/files/story-front.png"></div></div></li>
+          <li style="--dot:var(--c4)"><div><b>聊故事、分享感動</b> <span class="min">15 分</span><br>用故事卡背面的兩個問題。</div></li>
+          <li style="--dot:var(--c5)"><div><b>收尾</b> <span class="min">5 分</span><br>翻「飯後咖啡」，準時結束。</div></li>
+        </ol>
+        <div class="tip"><b>小撇步</b>　冷場沒關係，大家在吃東西、在想事情。</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B　食譜卡</h3>
+      <ul class="why">
+        <li>辦活動像照食譜做菜：材料備齊，照步驟做</li>
+        <li>「材料」就是準備清單，「步驟」就是流程</li>
+        <li>16 個活動就是 16 道食譜，入口像一本食譜書</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card live" data-choice="live" onclick="toggleSelect(this)">
+    <div class="card-image" style="aspect-ratio:auto;display:block;padding:18px 0;">
+      <div class="screen" style="--dot:var(--c2)">
+        <div class="bar"><span>辦之前</span><span>兄弟早午餐會</span></div>
+        <div class="what">準備好了嗎？</div>
+        <div class="checks">
+          <div class="ok">咖啡廳已訂位</div>
+          <div class="ok">故事卡印好（每人 1 份）</div>
+          <div class="no">話題卡剪好（每桌 1 套）</div>
+          <div class="no">問卷（每人 1 份）</div>
+        </div>
+        <div class="next">開始活動 ▶</div>
+      </div>
+      <div class="screen" style="--dot:var(--c2)">
+        <div class="bar"><span>第 2 步，共 5 步</span><span>還剩 14:32</span></div>
+        <div class="prog"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="big">10–30 分</div>
+        <div class="what">邊吃邊聊</div>
+        <div class="say">把<b>話題卡</b>放桌上，說：「想聊哪張就翻哪張。」</div>
+        <img class="card-big" src="/files/topic-a.png">
+        <div class="next">下一步：一起讀故事 →</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C　現場跟著做</h3>
+      <ul class="why">
+        <li>辦之前：打勾的準備清單</li>
+        <li>活動中：手機一次只顯示一步，有倒數計時</li>
+        <li>要用卡片的那一步，卡片直接出現在畫面上</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.2rem;">說「這裡說什麼就好」的台詞是我先寫的示意，還沒對過企劃案原文。</p>

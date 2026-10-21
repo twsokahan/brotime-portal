@@ -1,0 +1,126 @@
+<style>
+  .bt { --paper:#f7f0e3; --ink:#3a2e24; --muted:#7a6a58; --line:#e2d5bf;
+        --c1:#c98a2b; --c2:#5f8a3a; --c3:#b4503a; --c4:#3f6f9a; --c5:#7a4f7d;
+        font-family:"PingFang TC","Noto Sans TC",sans-serif; }
+  .flow { display:flex; gap:28px; justify-content:center; align-items:flex-start; flex-wrap:wrap; }
+  .col h3 { text-align:center; margin-bottom:4px; }
+  .col .subtitle { text-align:center; margin-bottom:12px; }
+  .phone, .screen { color:var(--ink); background:var(--paper); border:6px solid #2b2420; box-shadow:0 6px 18px rgba(0,0,0,.12); }
+  .phone { width:300px; border-radius:22px; padding:16px 14px 18px; }
+  .phone h4 { font-size:20px; font-weight:900; margin:0 0 2px; }
+  .sub { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .facts { display:flex; gap:6px; margin-bottom:12px; }
+  .facts span { flex:1; text-align:center; font-size:11px; background:#fff8ec; border:1px solid var(--line); border-radius:8px; padding:5px 2px; }
+  .facts b { display:block; font-size:15px; font-weight:900; }
+  .sec { font-size:13px; font-weight:900; margin:12px 0 6px; }
+  .box { background:#fff8ec; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:12px; margin-bottom:8px; }
+  .box .h { font-size:11px; font-weight:900; color:var(--muted); margin-bottom:4px; }
+  .box div.i { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed var(--line); }
+  .box div.i:last-child { border-bottom:0; }
+  .box em { font-style:normal; color:var(--muted); }
+  .new { display:inline-block; font-size:10px; font-weight:700; color:#fff; background:var(--c3); border-radius:9px; padding:0 6px; margin-left:4px; }
+  .tl { border-left:4px solid var(--line); margin-left:6px; padding-left:12px; }
+  .step { position:relative; margin-bottom:11px; }
+  .step::before { content:""; position:absolute; left:-20px; top:3px; width:12px; height:12px; border-radius:50%; background:var(--dot); }
+  .step .t { font-size:11px; font-weight:900; color:var(--dot); }
+  .step .what { font-size:14px; font-weight:900; }
+  .step .say { font-size:11.5px; background:#fff8ec; border-left:3px solid var(--dot); padding:4px 7px; margin-top:4px; border-radius:0 6px 6px 0; }
+  .thumbs { display:flex; gap:5px; margin-top:6px; }
+  .thumbs img { width:58px; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  .tag { display:inline-block; font-size:10px; font-weight:700; color:#fff; background:var(--dot); border-radius:10px; padding:1px 7px; margin-left:4px; vertical-align:2px; }
+  .go { display:block; text-align:center; font-size:14px; font-weight:900; margin-top:12px; padding:10px; border-radius:10px; background:var(--c2); color:#fff; }
+
+  .screens { display:flex; flex-direction:column; gap:12px; }
+  .screen { width:240px; border-radius:18px; border-width:5px; padding:12px; }
+  .bar { display:flex; justify-content:space-between; font-size:10.5px; color:var(--muted); margin-bottom:6px; }
+  .prog { display:flex; gap:3px; margin-bottom:10px; }
+  .prog i { flex:1; height:4px; border-radius:2px; background:var(--line); }
+  .prog i.on { background:var(--dot); }
+  .big { font-size:30px; font-weight:900; color:var(--dot); line-height:1; }
+  .screen .what { font-size:17px; font-weight:900; margin:4px 0 6px; }
+  .screen .say { font-size:12px; background:#fff8ec; border-left:3px solid var(--dot); padding:6px 8px; border-radius:0 6px 6px 0; }
+  .next { margin-top:10px; text-align:center; font-size:13px; font-weight:900; background:var(--dot); color:#fff; border-radius:10px; padding:8px; }
+  .checks div { font-size:12px; padding:4px 0; border-bottom:1px dashed var(--line); }
+  .checks div.ok::before { content:"☑ "; color:var(--c2); }
+  .checks div.no::before { content:"☐ "; }
+  .qr { width:110px; height:110px; margin:8px auto 2px; background:
+        repeating-conic-gradient(#2b2420 0 25%, #fff 0 50%) 0 0/22px 22px; border:8px solid #fff; outline:1px solid var(--line); }
+  .qrcap { text-align:center; font-size:11px; color:var(--muted); }
+  .arrow { align-self:center; font-size:13px; text-align:center; max-width:120px; line-height:1.5; }
+  .arrow b { display:block; font-size:30px; }
+</style>
+
+<h2>同一個網址，兩種用法</h2>
+<p class="subtitle">區會後先看左邊備好東西；活動當天按「開始活動」，手機變成右邊那樣一步一步帶。卡片由企劃室提供，問卷線上填。</p>
+
+<div class="flow bt">
+
+  <div class="col">
+    <h3>事前看（A）</h3>
+    <p class="subtitle">區會後花 15 分鐘看完</p>
+    <div class="phone">
+      <h4>兄弟早午餐會</h4>
+      <div class="sub">週末上午一起吃早午餐，下午留給家人</div>
+      <div class="facts"><span><b>6–10</b>人</span><span><b>60</b>分鐘</span><span><b>咖啡廳</b>或會館</span></div>
+
+      <div class="sec">要準備</div>
+      <div class="box">
+        <div class="h">企劃室提供</div>
+        <div class="i"><span>故事卡</span><em>每人 1 份</em></div>
+        <div class="i"><span>話題卡</span><em>每桌 1 套</em></div>
+      </div>
+      <div class="box">
+        <div class="h">你要做的</div>
+        <div class="i"><span>訂咖啡廳（6–10 人、坐 90 分鐘）</span><em>3–4 週前</em></div>
+        <div class="i"><span>在群組邀約，私訊久未參加的夥伴</span><em>3–4 週前</em></div>
+        <div class="i"><span>前一天提醒時間地點</span><em>前一天</em></div>
+      </div>
+      <div class="box">
+        <div class="h">問卷 <span class="new">線上</span></div>
+        <div class="i"><span>活動最後掃 QR code 填，不用印</span><em></em></div>
+      </div>
+
+      <div class="sec">60 分鐘這樣過</div>
+      <div class="tl">
+        <div class="step" style="--dot:var(--c1)"><div class="t">0–10 分</div><div class="what">進場、點餐</div></div>
+        <div class="step" style="--dot:var(--c2)"><div class="t">10–30 分</div><div class="what">邊吃邊聊 <span class="tag">話題卡</span></div>
+          <div class="thumbs"><img src="/files/topic-a.png"><img src="/files/topic-b.png"><img src="/files/topic-c.png"></div></div>
+        <div class="step" style="--dot:var(--c3)"><div class="t">30–40 分</div><div class="what">一起讀故事 <span class="tag">故事卡</span></div>
+          <div class="thumbs"><img src="/files/story-front.png" style="width:62px"></div></div>
+        <div class="step" style="--dot:var(--c4)"><div class="t">40–55 分</div><div class="what">聊故事、分享感動</div></div>
+        <div class="step" style="--dot:var(--c5)"><div class="t">55–60 分</div><div class="what">收尾、填問卷、準時結束</div></div>
+      </div>
+      <span class="go">活動當天：開始活動 ▶</span>
+    </div>
+  </div>
+
+  <div class="arrow"><b>→</b>活動當天<br>按下「開始活動」</div>
+
+  <div class="col">
+    <h3>當場用（C）</h3>
+    <p class="subtitle">手機一次只顯示一步</p>
+    <div class="screens">
+      <div class="screen" style="--dot:var(--c2)">
+        <div class="bar"><span>出發前</span><span>兄弟早午餐會</span></div>
+        <div class="what">帶齊了嗎？</div>
+        <div class="checks">
+          <div class="ok">故事卡（每人 1 份）</div>
+          <div class="ok">話題卡（每桌 1 套）</div>
+          <div class="no">確認咖啡廳訂位</div>
+        </div>
+        <div class="next">開始活動 ▶</div>
+      </div>
+      <div class="screen" style="--dot:var(--c5)">
+        <div class="bar"><span>第 5 步，共 5 步</span><span>還剩 03:40</span></div>
+        <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+        <div class="big">55–60 分</div>
+        <div class="what">收尾</div>
+        <div class="say">說：「今天聊到的，有沒有一句話想帶回家？」再請大家掃這個填問卷。</div>
+        <div class="qr"></div>
+        <div class="qrcap">參加者問卷（示意）</div>
+        <div class="next">活動結束，換工作人員問卷 →</div>
+      </div>
+    </div>
+  </div>
+
+</div>
