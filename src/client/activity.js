@@ -287,6 +287,13 @@ function shareControls(title, url) {
   return holder;
 }
 
+const storyText = (card) =>
+  el('details', { className: 'story-text' }, [
+    el('summary', { textContent: '故事全文' }),
+    ...card.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
+    el('p', { className: 'source', textContent: `出處：${card.source}` }),
+  ]);
+
 function storyCardView(card) {
   const qr = document.getElementById(`qr-card-${card.id}`);
   return el('div', { className: 'story-live' }, [
@@ -296,6 +303,7 @@ function storyCardView(card) {
       qr && el('figure', { className: 'live-qr' }, [el('figcaption', { textContent: '新朋友掃這裡' }), qr.content.cloneNode(true)]),
     ]),
     el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
+    storyText(card),
   ]);
 }
 

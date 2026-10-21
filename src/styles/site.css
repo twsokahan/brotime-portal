@@ -169,15 +169,21 @@ main > p > a {
 }
 
 .box li {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
   gap: 0 12px;
+}
+
+.box li + li {
+  margin-top: 6px;
 }
 
 .box li em {
   color: var(--muted);
   font-style: normal;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .preview-banner {
@@ -594,6 +600,11 @@ p.rain,
 
 .read-aloud p {
   margin: 0;
+  white-space: pre-line;
+}
+
+.story-text p {
+  white-space: pre-line;
 }
 
 .live-card-image {
