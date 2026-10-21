@@ -32,6 +32,11 @@ export function normalizeRoute(raw, circleName) {
   };
 }
 
+export function districtLabel(id) {
+  const [circle, place] = id.split('_');
+  return place ? `${place}（${circle}）` : id;
+}
+
 export function walkingLink({ lat, lon }) {
   return `https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${lat},${lon}`;
 }

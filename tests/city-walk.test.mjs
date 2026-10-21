@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeRoute, walkingLink, routeSteps } from '../src/lib/city-walk.mjs';
+import { districtLabel, normalizeRoute, walkingLink, routeSteps } from '../src/lib/city-walk.mjs';
 
 const rawRoute = () => JSON.parse(readFileSync(new URL('./fixtures/raw-route.json', import.meta.url), 'utf8'));
 
@@ -89,4 +89,14 @@ test('filling route steps leaves the original steps untouched', () => {
   const steps = cityWalkSteps();
   routeSteps(steps, normalizeRoute(rawRoute(), '北一圈'));
   assert.deepEqual(steps, cityWalkSteps());
+});
+
+test('an island district reads as its place with its circle in brackets', () => {
+  assert.equal(districtLabel('南二圈_澎湖'), '澎湖（南二圈）');
+  assert.equal(districtLabel('基宜圈_馬祖'), '馬祖（基宜圈）');
+  assert.equal(districtLabel('總合本部_金門'), '金門（總合本部）');
+});
+
+test('an ordinary district reads as its own name', () => {
+  assert.equal(districtLabel('台北西區'), '台北西區');
 });

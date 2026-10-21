@@ -1,4 +1,4 @@
-import { routeSteps } from './lib/city-walk.mjs';
+import { districtLabel, routeSteps } from './lib/city-walk.mjs';
 import {
   clearSession,
   drawCard,
@@ -87,7 +87,7 @@ function districtOptions() {
     el(
       'optgroup',
       { label: circle },
-      districts.map((name) => el('option', { value: name, textContent: name })),
+      districts.map((name) => el('option', { value: name, textContent: districtLabel(name) })),
     ),
   );
 }
