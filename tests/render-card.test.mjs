@@ -44,3 +44,20 @@ test('story text is escaped', () => {
   const html = render(activity);
   assert.ok(html.includes('<p>&lt;b&gt;粗體&lt;/b&gt; &amp; 其他</p>'));
 });
+
+test('the sharing questions follow the source as a numbered list', () => {
+  const html = render();
+  assert.ok(
+    html.includes(
+      '<section class="story-questions">\n<h2>分享提問</h2>\n<ol>\n<li>這是測試用的第一個分享提問？</li>\n<li>這是測試用的第二個分享提問？</li>\n</ol>\n</section>',
+    ),
+    html,
+  );
+  assert.ok(html.indexOf('出處：') < html.indexOf('分享提問'));
+});
+
+test('sharing questions are escaped', () => {
+  const activity = readyActivity();
+  storyCard(activity).questions = ['<i>你</i> & 我？'];
+  assert.ok(render(activity).includes('<li>&lt;i&gt;你&lt;/i&gt; &amp; 我？</li>'));
+});

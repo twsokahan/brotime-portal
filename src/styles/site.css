@@ -621,6 +621,28 @@ p.rain,
   font-size: 15px;
 }
 
+.story-questions {
+  margin: 24px 0 0;
+}
+
+.story-questions ol {
+  margin: 0;
+  padding-left: 1.6em;
+  line-height: 1.8;
+}
+
+.story-questions li + li {
+  margin-top: 8px;
+}
+
+.story-questions li::marker {
+  font-weight: 900;
+}
+
+.story-text .story-questions li::marker {
+  color: var(--dot-text);
+}
+
 #live,
 #quiz {
   position: fixed;

@@ -134,7 +134,7 @@ function checkRainNote(check, activity) {
   else if (rain !== undefined && rain !== 'ok') check.fail('rainNote', `必填（tags.rain 是 ${rain}）`);
 }
 
-function checkCard(check, card, path, isStory, firstPathOfCardId) {
+function checkCard(check, card, path, { isStory, needsQuestions }, firstPathOfCardId) {
   if (!check.object(card, path)) return;
   if (check.text(card.id, `${path}.id`)) {
     if (!isCardId(card.id)) check.fail(`${path}.id`, '只能用英文、數字和 -');
@@ -145,6 +145,7 @@ function checkCard(check, card, path, isStory, firstPathOfCardId) {
   if (card.group !== undefined) check.text(card.group, `${path}.group`);
   if (isStory || card.text !== undefined) check.text(card.text, `${path}.text`);
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
+  if (needsQuestions || card.questions !== undefined) checkTextList(check, card.questions, `${path}.questions`, 1);
 }
 
 function checkThumbs(check, set, path) {
@@ -156,7 +157,7 @@ function checkThumbs(check, set, path) {
   });
 }
 
-function checkCardSets(check, cardSets) {
+function checkCardSets(check, cardSets, published) {
   if (!check.object(cardSets, 'cardSets')) return;
   const firstPathOfCardId = new Map();
   for (const [key, set] of Object.entries(cardSets)) {
@@ -165,9 +166,9 @@ function checkCardSets(check, cardSets) {
     check.oneOf(set.kind, CARD_SET_KINDS, `${path}.kind`);
     check.text(set.label, `${path}.label`);
     if (check.list(set.cards, `${path}.cards`, 1)) {
-      set.cards.forEach((card, i) =>
-        checkCard(check, card, `${path}.cards[${i}]`, set.kind === 'story', firstPathOfCardId),
-      );
+      const isStory = set.kind === 'story';
+      const rules = { isStory, needsQuestions: isStory && published };
+      set.cards.forEach((card, i) => checkCard(check, card, `${path}.cards[${i}]`, rules, firstPathOfCardId));
     }
     if (set.thumbs !== undefined) checkThumbs(check, set, path);
   }
@@ -260,7 +261,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('facts')) checkTextFields(check, activity.facts, 'facts', ['people', 'duration', 'place']);
   if (shouldCheck('provided')) checkRows(check, activity.provided, 'provided', ['item', 'qty'], 1);
   if (shouldCheck('todo')) checkTodo(check, activity.todo);
-  if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets);
+  if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets, published);
   if (shouldCheck('steps')) checkSteps(check, activity.steps, activity.cardSets);
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
   if (shouldCheck('extra30')) checkTextList(check, activity.extra30, 'extra30');

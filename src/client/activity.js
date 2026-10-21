@@ -295,6 +295,10 @@ const storyText = (card) =>
     el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
     ...card.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
     el('p', { className: 'source', textContent: `出處：${card.source}` }),
+    el('div', { className: 'story-questions' }, [
+      el('h3', { textContent: '分享提問' }),
+      el('ol', {}, card.questions.map((question) => el('li', { textContent: question }))),
+    ]),
   ]);
 
 function storyCardView(card) {

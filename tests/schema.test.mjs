@@ -174,6 +174,41 @@ test('story cards need their text', () => {
   assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].text');
 });
 
+test('story cards of a ready or review activity need their sharing questions', () => {
+  const activity = readyActivity();
+  delete activity.cardSets.story.cards[0].questions;
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: cardSets.story.cards[0].questions 必填']);
+  activity.status = 'review';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: cardSets.story.cards[0].questions 必填']);
+});
+
+test('story cards of a preparing activity may leave out the sharing questions', () => {
+  const preparing = preparingActivity();
+  preparing.cardSets = readyActivity().cardSets;
+  delete preparing.cardSets.story.cards[0].questions;
+  assert.deepEqual(validateActivity(preparing, allFilesExist), []);
+});
+
+test('sharing questions must be a non-empty list of text', () => {
+  const activity = readyActivity();
+  const card = activity.cardSets.story.cards[0];
+  card.questions = [];
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].questions 至少要有 1 項');
+  card.questions = ['第一題？', ' '];
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].questions[1]');
+  card.questions = '第一題？';
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].questions 要是陣列');
+});
+
+test('sharing questions are optional on topic cards but checked when given', () => {
+  const activity = readyActivity();
+  const topicCard = activity.cardSets.topic.cards[0];
+  topicCard.questions = ['測試用的提問？'];
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  topicCard.questions = [''];
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].questions[0]');
+});
+
 test('ready status requires preflight', () => {
   const activity = readyActivity();
   delete activity.preflight;
