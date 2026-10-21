@@ -404,7 +404,7 @@ p.rain,
   inset: 0;
   z-index: 10;
   overflow-y: auto;
-  padding: 16px;
+  padding: 16px 0;
   background: var(--paper);
 }
 
@@ -417,6 +417,7 @@ p.rain,
 .live-body {
   max-width: 560px;
   margin: 0 auto;
+  padding: 0 16px;
 }
 
 .quiz-close {
@@ -632,7 +633,7 @@ p.rain,
 .story-share {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   margin: 16px 0 8px;
 }
@@ -736,6 +737,7 @@ p.rain,
   z-index: 20;
   display: flex;
   flex-direction: column;
+  padding: 0 max(0px, calc(50% - 280px));
   background: var(--paper);
 }
 
