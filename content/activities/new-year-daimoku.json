@@ -1,7 +1,7 @@
 {
-  "id": "family-feast",
-  "name": "家族辦桌拜年",
-  "tagline": "春節結合家族聚會，到會員家拜年、一起吃飯，順道問候久未參加的會員。",
+  "id": "new-year-daimoku",
+  "name": "新春唱題會",
+  "tagline": "新年第一次見面，帶太太孩子一起來唱題、寫下今年的決意，邊吃點心邊刮新春一番賞。",
   "status": "preparing",
   "edition": "rural",
   "templates": [
@@ -17,7 +17,7 @@
     ],
     "interests": [
       "eat",
-      "talk"
+      "play"
     ]
   }
 }
