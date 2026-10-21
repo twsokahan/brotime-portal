@@ -46,6 +46,10 @@ test('the activity page shows the prep lists, the flow and the start button', ()
   }
 });
 
+test('the activity page opens with a link back to the entry page', () => {
+  assert.ok(render().startsWith(`<p class="home-link"><a href="${REL}">← 看其他兄弟時光</a></p>`));
+});
+
 test('the provided list comes before the flow', () => {
   const html = render();
   assert.ok(html.indexOf('企劃室提供') < html.indexOf('60 分鐘這樣過'));
@@ -236,6 +240,6 @@ test('a preparing activity only says it is on the way and links back home', () =
   assert.ok(html.includes('<h1>河濱夜跑・單車</h1>'));
   assert.ok(html.includes('下班後沿著河濱跑一段，邊跑邊聊'));
   assert.ok(html.includes('這個活動還在準備中，做好後會放在這裡。'));
-  assert.ok(html.includes('<a href="../../">← 回到所有活動</a>'));
+  assert.ok(html.includes('<a href="../../">← 看其他兄弟時光</a>'));
   assert.ok(!html.includes('開始活動'));
 });

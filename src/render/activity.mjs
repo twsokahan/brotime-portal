@@ -4,6 +4,7 @@ import { qrSvg } from './qr.mjs';
 
 const DEFAULT_FLOW_TITLE = '60 分鐘這樣過';
 const DEFAULT_THUMB_COUNT = 3;
+const HOME_LINK_TEXT = '← 看其他兄弟時光';
 
 const list = (items, renderItem) => items.map(renderItem).join('');
 
@@ -150,6 +151,7 @@ function renderStoryCardQrTemplates(activity, site) {
 
 export function renderActivityMain({ activity, site, rel }) {
   return [
+    `<p class="home-link"><a href="${rel}">${HOME_LINK_TEXT}</a></p>`,
     renderHead(activity),
     renderPrepare(activity, site),
     renderFlow(activity, rel),
@@ -168,5 +170,5 @@ export function renderPreparingMain({ activity, rel }) {
   return `<h1>${escapeHtml(activity.name)}</h1>
 <p class="tagline">${escapeHtml(activity.tagline)}</p>
 <p>這個活動還在準備中，做好後會放在這裡。</p>
-<p><a href="${rel}">← 回到所有活動</a></p>`;
+<p><a href="${rel}">${HOME_LINK_TEXT}</a></p>`;
 }
