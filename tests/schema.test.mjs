@@ -145,6 +145,29 @@ test('card images are not checked without fileExists or before review', () => {
   assert.deepEqual(validateActivity(preparing, { fileExists: () => false }), []);
 });
 
+const withPrintFile = (activity) => ({
+  ...activity,
+  printFiles: [{ label: '故事卡（A4）', file: 'files/brunch-cards-story.pdf' }],
+});
+
+test('missing plan and print PDFs are reported with their path', () => {
+  const noPdfs = { fileExists: (relPath) => !relPath.endsWith('.pdf') };
+  assert.deepEqual(validateActivity(withPrintFile(readyActivity()), noPdfs), [
+    'brunch: planFile 找不到檔案 files/brunch-plan.pdf',
+    'brunch: printFiles[0].file 找不到檔案 files/brunch-cards-story.pdf',
+  ]);
+});
+
+test('PDFs that exist pass', () => {
+  assert.deepEqual(validateActivity(withPrintFile(readyActivity()), allFilesExist), []);
+});
+
+test('PDFs are not checked without fileExists or before review', () => {
+  assert.deepEqual(validateActivity(withPrintFile(readyActivity())), []);
+  const preparing = withPrintFile({ ...preparingActivity(), planFile: 'files/night-run-plan.pdf' });
+  assert.deepEqual(validateActivity(preparing, { fileExists: () => false }), []);
+});
+
 test('story cards need their text', () => {
   const activity = readyActivity();
   delete activity.cardSets.story.cards[0].text;

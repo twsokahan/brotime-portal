@@ -238,6 +238,15 @@ function checkCardImages(check, activity, fileExists) {
   }
 }
 
+function checkPdfFiles(check, activity, fileExists) {
+  const checkExists = (file, path) => {
+    if (isText(file) && !fileExists(file)) check.fail(path, `找不到檔案 ${file}`);
+  };
+  checkExists(activity.planFile, 'planFile');
+  if (!Array.isArray(activity.printFiles)) return;
+  activity.printFiles.forEach((row, i) => checkExists(row?.file, `printFiles[${i}].file`));
+}
+
 export function validateActivity(activity, { fileExists } = {}) {
   const check = createChecker(ownerOf(activity));
   if (!check.object(activity, 'activity')) return check.errors;
@@ -260,7 +269,10 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (activity.printFiles !== undefined) checkRows(check, activity.printFiles, 'printFiles', ['label', 'file']);
   if (activity.flowTitle !== undefined) check.text(activity.flowTitle, 'flowTitle');
   if (activity.surveys !== undefined) checkSurveys(check, activity.surveys);
-  if (published && fileExists) checkCardImages(check, activity, fileExists);
+  if (published && fileExists) {
+    checkCardImages(check, activity, fileExists);
+    checkPdfFiles(check, activity, fileExists);
+  }
 
   return check.errors;
 }
