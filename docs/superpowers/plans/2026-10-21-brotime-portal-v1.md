@@ -100,7 +100,7 @@ brotime-portal/
 | `preflight` | string[] | 出發前要確認的事，例如 `"確認咖啡廳訂位"` `"手機有電，先連上網路"`；ready／review 必填 |
 | `printFiles` | `{label, file}[]`? | 想印實體卡的區可以下載的 PDF，例如 `{"label":"故事卡（A4）","file":"files/brunch-cards-story.pdf"}` |
 | `flowTitle` | string? | 省略時用「60 分鐘這樣過」 |
-| `surveys` | `{participant?, staff?}`? | 個別活動另設問卷，必須是 `https://` |
+| `surveys` | `{participant?, staff?, report?}`? | 個別活動另設表單。每一項是 `{url, activityEntry}`：`url` 必須是 `https://`，`activityEntry` 是表單「活動」那一題的參數（例如 `entry.313211030`）。網站用 `surveyUrl()` 自動帶入活動名稱（2026-10-21 追加，見 Task S1） |
 
 Step：`{ time: "0–10 分", minutes: 10 | null, title, do, say, cards?: string[], cardIds?: string[], readAloud?: string, routeStop?: "start"|"stop1"|"end", routeLeg?: 0|1 }`
 
@@ -109,7 +109,7 @@ Step：`{ time: "0–10 分", minutes: 10 | null, title, do, say, cards?: string
 - `minutes: null` 表示不計時，例如登山上山那一段。
 - 卡片圖路徑固定是 `public/cards/<id>/<cardId>.webp` 和 `<cardId>-thumb.webp`，故事卡另有 `<cardId>-og.jpg`。ready／review 狀態的活動，這些檔都要存在。
 
-`content/site.json`：`{ "title": "兄弟時光", "baseUrl": "https://twsokahan.github.io/brotime-portal/", "surveys": { "participant": null, "staff": null } }`。`baseUrl` 必須是 `https://` 開頭、`/` 結尾；問卷連結拿到前維持 `null`。
+`content/site.json`：`{ "title": "兄弟時光", "baseUrl": "https://twsokahan.github.io/brotime-portal/", "surveys": { "participant": {url, activityEntry}, "staff": {url, activityEntry}, "report": {url, activityEntry} } }`。`baseUrl` 必須是 `https://` 開頭、`/` 結尾。三份 Google 表單（參加者問卷、工作人員問卷、活動回報表）的公開填寫網址已在 2026-10-21 填入；某一份還沒有時用 `null`。帶入格式是 `${url}?usp=pp_url&${activityEntry}=${encodeURIComponent(activity.name)}`，所以 16 個活動的 `name` 必須跟表單選項一字不差（`tests/content.test.mjs` 鎖住）。只放公開填寫網址，表單的編輯網址、回覆試算表網址都不進 repo。
 
 故事卡頁的網址是 `a/<id>/cards/<cardId>/`，完整網址由 `cardPageUrl(site, activityId, cardId)` 產生，等於 `${baseUrl}a/${activityId}/cards/${cardId}/`。
 
