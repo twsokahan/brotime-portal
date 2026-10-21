@@ -76,7 +76,7 @@
 node tools/import-city-walk.mjs
 ```
 
-預設讀 `~/code/city-walk-review/data/routes.json`，放在別的地方就加 `--src <檔案路徑>`。路線有改就重跑一次，`npm test` 過了再 commit。匯入時會把只給企劃室看的待辦、警示、備註丟掉，不會上到網站。
+預設讀 `~/code/city-walk-review/data/routes.json`，放在別的地方就加 `--src <檔案路徑>`。路線有改就重跑一次，`npm test` 過了再 commit。匯入時會把只給企劃室看的待辦、警示、備註丟掉，不會上到網站。停車說明最後那句給企劃室的「（汽車、）機車停車位需實地確認」，會改成給主持人的「（汽車、）機車停哪裡，建議事先到現場看一下」，停車說明的其他文字不動。
 
 ## 問卷和回報表
 

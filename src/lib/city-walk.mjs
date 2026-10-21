@@ -1,8 +1,11 @@
 const STORY_CARD_PATTERN = /故事卡\s*([A-Z])/;
+const PARKING_CHECK_TAIL = /(汽車、)?機車停車位需實地確認$/;
 
 const point = ({ name, lat, lon }) => ({ name, lat, lon });
 
 const storyCardLetter = (suggestion) => STORY_CARD_PATTERN.exec(suggestion ?? '')?.[1] ?? null;
+
+const parkingForHost = (parking) => parking.replace(PARKING_CHECK_TAIL, '$1機車停哪裡，建議事先到現場看一下');
 
 export function normalizeRoute(raw, circleName) {
   const { text, points } = raw;
@@ -12,7 +15,7 @@ export function normalizeRoute(raw, circleName) {
     circle: circleName,
     title: raw.title,
     meetingPoint: text.集合點,
-    parking: text.停車,
+    parking: parkingForHost(text.停車),
     routeText: text.路線,
     start: point(points.start),
     stop1: {

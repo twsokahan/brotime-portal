@@ -43,6 +43,30 @@ test('normalizing a route picks the story card, leg minutes and points', () => {
   assert.equal(route.start.lat, 25.035327);
 });
 
+const withParking = (parking) => {
+  const raw = rawRoute();
+  raw.text.停車 = parking;
+  return normalizeRoute(raw, '北一圈').parking;
+};
+
+test('the parking text tells the host to check scooter parking in person', () => {
+  assert.equal(
+    normalizeRoute(rawRoute(), '北一圈').parking,
+    '和雲台北愛國西路停車場（走到集合點約230公尺）；新長越小南門停車場（約370公尺）；機車停哪裡，建議事先到現場看一下',
+  );
+});
+
+test('the parking text tells the host to check car and scooter parking in person', () => {
+  assert.equal(
+    withParking('合同廳舍一帶的路邊與公有停車位；汽車、機車停車位需實地確認'),
+    '合同廳舍一帶的路邊與公有停車位；汽車、機車停哪裡，建議事先到現場看一下',
+  );
+});
+
+test('parking text without the planning-office reminder stays as it is', () => {
+  assert.equal(withParking('會館地下停車場（約50公尺）'), '會館地下停車場（約50公尺）');
+});
+
 test('a walking link navigates to the point on foot', () => {
   assert.equal(
     walkingLink({ lat: 25.1, lon: 121.5 }),
