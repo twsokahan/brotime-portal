@@ -1,0 +1,122 @@
+export function readyActivity() {
+  return {
+    id: 'brunch',
+    name: '兄弟早午餐會',
+    tagline: '週末上午一起吃早午餐，下午留給家人',
+    status: 'ready',
+    edition: 'metro',
+    templates: ['A'],
+    order: 1,
+    tags: {
+      kids: 'ok',
+      place: 'indoor',
+      rain: 'ok',
+      slots: ['weekend-day'],
+      interests: ['eat', 'talk'],
+    },
+    facts: { people: '6–10 人', duration: '60 分鐘', place: '咖啡廳或會館' },
+    provided: [
+      { item: '故事卡（在網站上看）', qty: '1 張' },
+      { item: '話題卡（主持人手機抽）', qty: '3 張' },
+      { item: '線上問卷', qty: '參加者、工作人員各 1 份' },
+    ],
+    todo: [
+      { when: '3–4 週前', task: '訂咖啡廳（6–10 人、坐 90 分鐘）' },
+      { when: '3–4 週前', task: '在群組邀約，私訊久未參加的夥伴' },
+      { when: '前一天', task: '提醒大家時間地點' },
+    ],
+    steps: [
+      {
+        time: '0–10 分',
+        minutes: 10,
+        title: '進場、點餐',
+        do: '先到的人幫忙占位子，大家各自點餐。',
+        say: '今天不用急，先點想吃的，我們邊吃邊聊。',
+      },
+      {
+        time: '10–30 分',
+        minutes: 20,
+        title: '邊吃邊聊',
+        do: '主持人用手機抽話題卡，一次一題，大家輪流回答。',
+        say: '我抽一張卡，大家輪流說，想跳過也可以。',
+        cards: ['topic'],
+      },
+      {
+        time: '30–40 分',
+        minutes: 10,
+        title: '一起讀故事',
+        do: '請大家打開自己的手機看故事卡，一人念一段。',
+        say: '請打開手機上的故事卡，我們一人念一段。',
+        cards: ['story'],
+      },
+      {
+        time: '40–55 分',
+        minutes: 15,
+        title: '聊故事、分享感動',
+        do: '請每個人說說故事裡最有感覺的地方。',
+        say: '故事裡哪一段最打動你？想到什麼都可以說。',
+      },
+      {
+        time: '55–60 分',
+        minutes: 5,
+        title: '收尾、填問卷',
+        do: '請大家掃 QR code 填問卷，準時結束。',
+        say: '今天聊到的，有沒有一句話想帶回家？',
+      },
+    ],
+    cardSets: {
+      story: {
+        kind: 'story',
+        label: '故事卡',
+        cards: [
+          {
+            id: 's1',
+            title: '測試用故事卡',
+            text: '這是測試用的故事卡第一段，不是書裡的原文。\n\n這是第二段，用來確認段落會分開顯示。',
+            source: '《新・人間革命》第 16 卷〈羽翼〉',
+          },
+        ],
+      },
+      topic: {
+        kind: 'topic',
+        label: '話題卡',
+        cards: [
+          { id: 't02', title: '最近吃到最好吃的一餐是什麼？', group: '前菜' },
+          { id: 't05', title: '這一年工作上最有成就感的一件事？', group: '主餐' },
+          { id: 't11', title: '下次想跟這群人一起做什麼？', group: '飯後咖啡' },
+        ],
+      },
+    },
+    firstTime: [
+      '提早 15 分鐘到，先跟店家確認座位',
+      '話題卡由你抽，抽到不想答的可以跳過',
+      '最後 5 分鐘留給問卷，準時結束',
+    ],
+    extra30: [
+      '多抽幾張話題卡，讓還沒開口的人多說一點。',
+      '吃完一起散步到附近公園再解散。',
+    ],
+    planFile: 'files/brunch-plan.pdf',
+    preflight: ['確認咖啡廳訂位', '手機有電，先連上網路'],
+  };
+}
+
+export function preparingActivity() {
+  return {
+    id: 'night-run',
+    name: '河濱夜跑・單車',
+    tagline: '下班後沿著河濱跑一段，邊跑邊聊',
+    status: 'preparing',
+    edition: 'metro',
+    templates: ['C'],
+    order: 2,
+  };
+}
+
+export function fixtureSite() {
+  return {
+    title: '兄弟時光',
+    baseUrl: 'https://cades.github.io/brotime-portal/',
+    surveys: { participant: null, staff: null },
+  };
+}

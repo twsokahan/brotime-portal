@@ -1,0 +1,175 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { validateActivity, validateSite, validateAll } from '../src/lib/schema.mjs';
+import { readyActivity, preparingActivity, fixtureSite } from './fixtures/activities.mjs';
+
+const allFilesExist = { fileExists: () => true };
+
+function assertReports(errors, fragment) {
+  assert.ok(
+    errors.some((error) => error.includes(fragment)),
+    `expected an error mentioning ${fragment}, got ${JSON.stringify(errors)}`,
+  );
+}
+
+function cityWalkActivity() {
+  const activity = readyActivity();
+  activity.id = 'city-walk';
+  activity.planFile = 'files/city-walk-plan.pdf';
+  activity.cardSets.story.cards[0].id = 'P';
+  return activity;
+}
+
+test('the ready and preparing fixtures are valid', () => {
+  assert.deepEqual(validateActivity(readyActivity(), allFilesExist), []);
+  assert.deepEqual(validateActivity(preparingActivity(), allFilesExist), []);
+});
+
+test('fixture factories return a fresh object on every call', () => {
+  const first = readyActivity();
+  first.steps[0].title = 'changed';
+  first.cardSets.topic.cards.pop();
+  assert.notEqual(readyActivity().steps[0].title, 'changed');
+  assert.equal(readyActivity().cardSets.topic.cards.length, 3);
+});
+
+test('say longer than 45 characters is reported as "<id>: <path> <problem>"', () => {
+  const activity = readyActivity();
+  activity.steps[1].say = '一'.repeat(46);
+  const errors = validateActivity(activity, allFilesExist);
+  assert.ok(
+    errors.some((error) => error.startsWith('brunch: steps[1].say 超過 45 字')),
+    JSON.stringify(errors),
+  );
+});
+
+test('say length counts code points, not UTF-16 units', () => {
+  const activity = readyActivity();
+  activity.steps[1].say = '𠮷'.repeat(45);
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a step using an unknown card set is reported', () => {
+  const activity = readyActivity();
+  activity.steps[1].cards = ['nope'];
+  assertReports(validateActivity(activity, allFilesExist), 'steps[1].cards');
+});
+
+test('cardIds must belong to the card sets of that step', () => {
+  const activity = readyActivity();
+  const topicStep = activity.steps.find((step) => step.cards?.includes('topic'));
+  topicStep.cardIds = ['s1'];
+  assertReports(validateActivity(activity, allFilesExist), '.cardIds[0]');
+});
+
+test('rain other than ok needs a rainNote', () => {
+  const activity = readyActivity();
+  activity.tags.rain = 'postpone';
+  delete activity.rainNote;
+  assertReports(validateActivity(activity, allFilesExist), 'rainNote');
+});
+
+test('tags.slots needs at least one slot', () => {
+  const activity = readyActivity();
+  activity.tags.slots = [];
+  assertReports(validateActivity(activity, allFilesExist), 'tags.slots');
+});
+
+test('review status requires tags', () => {
+  const activity = readyActivity();
+  activity.status = 'review';
+  delete activity.tags;
+  assertReports(validateActivity(activity, allFilesExist), 'tags');
+});
+
+test('tags on a preparing activity are still validated', () => {
+  const activity = preparingActivity();
+  activity.tags = { kids: 'maybe', place: 'indoor', rain: 'ok', slots: ['weeknight'], interests: ['move'] };
+  assertReports(validateActivity(activity, allFilesExist), 'tags.kids');
+});
+
+test('activity survey links must be https', () => {
+  const activity = readyActivity();
+  activity.surveys = { participant: 'http://x' };
+  assertReports(validateActivity(activity, allFilesExist), 'surveys.participant');
+});
+
+test('missing card images are reported with their path', () => {
+  const errors = validateActivity(readyActivity(), { fileExists: () => false });
+  assertReports(errors, 'cards/brunch/');
+});
+
+test('only story cards need an og image', () => {
+  const missingOg = { fileExists: (relPath) => !relPath.endsWith('-og.jpg') };
+  assert.deepEqual(validateActivity(readyActivity(), missingOg), [
+    'brunch: cardSets.story.cards[0] 找不到圖檔 cards/brunch/s1-og.jpg',
+  ]);
+});
+
+test('card images are not checked without fileExists or before review', () => {
+  assert.deepEqual(validateActivity(readyActivity()), []);
+  const preparing = preparingActivity();
+  preparing.cardSets = readyActivity().cardSets;
+  assert.deepEqual(validateActivity(preparing, { fileExists: () => false }), []);
+});
+
+test('story cards need their text', () => {
+  const activity = readyActivity();
+  delete activity.cardSets.story.cards[0].text;
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].text');
+});
+
+test('ready status requires preflight', () => {
+  const activity = readyActivity();
+  delete activity.preflight;
+  assertReports(validateActivity(activity, allFilesExist), 'preflight');
+});
+
+test('validateSite accepts the site settings and rejects a baseUrl without trailing slash', () => {
+  const site = {
+    title: '兄弟時光',
+    baseUrl: 'https://cades.github.io/brotime-portal/',
+    surveys: { participant: null, staff: null },
+  };
+  assert.deepEqual(validateSite(site), []);
+  assert.deepEqual(validateSite(fixtureSite()), []);
+  assertReports(validateSite({ ...site, baseUrl: 'https://cades.github.io/brotime-portal' }), 'baseUrl');
+});
+
+test('validateAll accepts the fixtures together', () => {
+  const content = { activities: [readyActivity(), preparingActivity()], site: fixtureSite() };
+  assert.deepEqual(validateAll(content, allFilesExist), []);
+});
+
+test('validateAll reports a repeated order', () => {
+  const duplicate = preparingActivity();
+  duplicate.order = readyActivity().order;
+  const content = { activities: [readyActivity(), duplicate], site: fixtureSite() };
+  assertReports(validateAll(content, allFilesExist), 'order');
+});
+
+test('validateAll reports a repeated id', () => {
+  const content = { activities: [readyActivity(), { ...readyActivity(), order: 2 }], site: fixtureSite() };
+  assertReports(validateAll(content, allFilesExist), 'id');
+});
+
+test('validateAll checks city-walk route story cards against the story set', () => {
+  const site = fixtureSite();
+  const routes = [
+    { district: '台北西區', stop1: { storyCard: 'P' } },
+    { district: '台北東區', stop1: { storyCard: null } },
+    { district: '新竹區', stop1: { storyCard: 'Q' } },
+  ];
+  const errors = validateAll({ activities: [cityWalkActivity()], site, routes }, allFilesExist);
+  assert.equal(errors.length, 2, JSON.stringify(errors));
+  assertReports(errors, '台北東區');
+  assertReports(errors, '新竹區');
+  assert.ok(errors.every((error) => error.includes('stop1.storyCard')), JSON.stringify(errors));
+});
+
+test('validateAll skips route checks while city-walk is preparing', () => {
+  const preparing = { ...preparingActivity(), id: 'city-walk' };
+  const routes = [{ district: '台北東區', stop1: { storyCard: null } }];
+  const errors = validateAll({ activities: [preparing], site: fixtureSite(), routes }, allFilesExist);
+  assert.deepEqual(errors, []);
+});
