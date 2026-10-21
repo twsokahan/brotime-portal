@@ -1,5 +1,14 @@
 {
   "title": "兄弟時光",
   "baseUrl": "https://twsokahan.github.io/brotime-portal/",
-  "surveys": { "participant": null, "staff": null }
+  "surveys": {
+    "participant": {
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSfpt2M0_iJ0hl_TPYvzE6d0czc7IQZXd9219RI3UMFLHqW1ug/viewform",
+      "activityEntry": "entry.313211030"
+    },
+    "staff": {
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSe3AQVxtWsDPRUvAQhBTbLTOqLLk9zxWRIIQl-ih0RlKGmrtQ/viewform",
+      "activityEntry": "entry.92474426"
+    }
+  }
 }

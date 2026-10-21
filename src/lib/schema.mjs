@@ -10,6 +10,7 @@ const ROUTE_LEGS = [0, 1];
 const ACTIVITY_ID = /^[a-z0-9-]+$/;
 const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
+const FORM_ENTRY = /^entry\.\d+$/;
 const MAX_ORDER = 16;
 const MAX_SAY_CHARS = 45;
 const MAX_THUMBS = 3;
@@ -68,15 +69,20 @@ function checkRows(check, rows, path, keys, min = 0) {
   if (check.list(rows, path, min)) rows.forEach((row, i) => checkTextFields(check, row, `${path}[${i}]`, keys));
 }
 
-function checkSurveyLink(check, value, path) {
-  const ok = value === null || value === undefined || (typeof value === 'string' && HTTPS_URL.test(value));
-  if (!ok) check.fail(path, '要是 https:// 開頭的網址');
+function checkSurvey(check, survey, path) {
+  if (survey === null || survey === undefined || !check.object(survey, path)) return;
+  if (check.text(survey.url, `${path}.url`) && !HTTPS_URL.test(survey.url)) {
+    check.fail(`${path}.url`, '要是 https:// 開頭的網址');
+  }
+  if (check.text(survey.activityEntry, `${path}.activityEntry`) && !FORM_ENTRY.test(survey.activityEntry)) {
+    check.fail(`${path}.activityEntry`, '要像 entry.123 這樣');
+  }
 }
 
 function checkSurveys(check, surveys) {
   if (!check.object(surveys, 'surveys')) return;
-  checkSurveyLink(check, surveys.participant, 'surveys.participant');
-  checkSurveyLink(check, surveys.staff, 'surveys.staff');
+  checkSurvey(check, surveys.participant, 'surveys.participant');
+  checkSurvey(check, surveys.staff, 'surveys.staff');
 }
 
 function checkIdentity(check, activity) {

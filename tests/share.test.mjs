@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cardPageUrl, shareFallbacks } from '../src/lib/share.mjs';
+import { cardPageUrl, shareFallbacks, surveyUrl } from '../src/lib/share.mjs';
 import { fixtureSite } from './fixtures/activities.mjs';
 
 test('a card page url is built from the site base url', () => {
@@ -13,4 +13,11 @@ test('without a share sheet, the card can still go to LINE or be copied', () => 
     lineUrl: 'https://line.me/R/share?text=' + encodeURIComponent(copyText),
     copyText,
   });
+});
+
+test('a survey url prefills the activity name into the form', () => {
+  assert.equal(
+    surveyUrl({ url: 'https://x/viewform', activityEntry: 'entry.1' }, '河濱夜跑・單車'),
+    'https://x/viewform?usp=pp_url&entry.1=' + encodeURIComponent('河濱夜跑・單車'),
+  );
 });

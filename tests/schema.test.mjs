@@ -88,10 +88,14 @@ test('tags on a preparing activity are still validated', () => {
   assertReports(validateActivity(activity, allFilesExist), 'tags.kids');
 });
 
-test('activity survey links must be https', () => {
+test('activity surveys need an https url and a form entry id', () => {
   const activity = readyActivity();
-  activity.surveys = { participant: 'http://x' };
-  assertReports(validateActivity(activity, allFilesExist), 'surveys.participant');
+  activity.surveys = { participant: { url: 'http://x', activityEntry: 'entry.1' } };
+  assertReports(validateActivity(activity, allFilesExist), 'surveys.participant.url');
+  activity.surveys = { staff: { url: 'https://x', activityEntry: 'activity' } };
+  assertReports(validateActivity(activity, allFilesExist), 'surveys.staff.activityEntry');
+  activity.surveys = { participant: { url: 'https://x', activityEntry: 'entry.1' } };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
 test('missing card images are reported with their path', () => {
@@ -134,6 +138,25 @@ test('validateSite accepts the site settings and rejects a baseUrl without trail
   assert.deepEqual(validateSite(site), []);
   assert.deepEqual(validateSite(fixtureSite()), []);
   assertReports(validateSite({ ...site, baseUrl: 'https://cades.github.io/brotime-portal' }), 'baseUrl');
+});
+
+test('validateSite accepts a survey with an https url and a form entry id', () => {
+  const survey = { url: 'https://docs.google.com/forms/d/e/x/viewform', activityEntry: 'entry.313211030' };
+  assert.deepEqual(validateSite({ ...fixtureSite(), surveys: { participant: survey, staff: null } }), []);
+});
+
+test('validateSite rejects a survey without an https url or a form entry id', () => {
+  const withParticipant = (participant) => ({ ...fixtureSite(), surveys: { participant, staff: null } });
+  assertReports(
+    validateSite(withParticipant({ url: 'http://x/viewform', activityEntry: 'entry.1' })),
+    'surveys.participant.url',
+  );
+  assertReports(
+    validateSite(withParticipant({ url: 'https://x/viewform', activityEntry: 'entry.abc' })),
+    'surveys.participant.activityEntry',
+  );
+  assertReports(validateSite(withParticipant({ url: 'https://x/viewform' })), 'surveys.participant.activityEntry');
+  assertReports(validateSite(withParticipant('https://x/viewform')), 'surveys.participant');
 });
 
 test('validateAll accepts the fixtures together', () => {

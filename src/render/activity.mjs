@@ -1,4 +1,4 @@
-import { cardPageUrl } from '../lib/share.mjs';
+import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
 
@@ -101,7 +101,8 @@ function renderLiveData(activity, site) {
 }
 
 function surveyLink(activity, site, kind) {
-  return activity.surveys?.[kind] ?? site.surveys[kind];
+  const survey = activity.surveys?.[kind] ?? site.surveys[kind];
+  return survey ? surveyUrl(survey, activity.name) : null;
 }
 
 function renderSurveyTemplates(activity, site) {

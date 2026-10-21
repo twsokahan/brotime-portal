@@ -28,6 +28,9 @@ function activityData(html) {
 }
 
 const siteWithSurveys = (surveys) => ({ ...fixtureSite(), surveys });
+const PARTICIPANT_SURVEY = { url: 'https://example.com/f', activityEntry: 'entry.1' };
+const STAFF_SURVEY = { url: 'https://example.com/staff', activityEntry: 'entry.2' };
+const BRUNCH_NAME = encodeURIComponent('兄弟早午餐會');
 
 test('the activity page shows the prep lists, the flow and the start button', () => {
   const html = render();
@@ -76,17 +79,21 @@ test('without a participant survey link the QR slot says the link is coming', ()
   assert.ok(!slot.includes('<svg'));
 });
 
-test('with a participant survey link the QR slot holds its QR code', () => {
-  const html = render({ site: siteWithSurveys({ participant: 'https://example.com/f', staff: null }) });
+test('with a participant survey the QR slot holds a QR code of the url with the activity name filled in', () => {
+  const html = render({ site: siteWithSurveys({ participant: PARTICIPANT_SURVEY, staff: null }) });
   assert.ok(templateContent(html, 'qr-participant').includes('<svg'));
-  assert.ok(html.includes('<template id="qr-participant" data-url="https://example.com/f">'));
+  assert.ok(
+    html.includes(
+      `<template id="qr-participant" data-url="https://example.com/f?usp=pp_url&amp;entry.1=${BRUNCH_NAME}">`,
+    ),
+  );
 });
 
 test("an activity's own participant survey wins over the site-wide one", () => {
   const activity = readyActivity();
-  activity.surveys = { participant: 'https://example.com/own' };
-  const html = render({ activity, site: siteWithSurveys({ participant: 'https://example.com/f', staff: null }) });
-  assert.ok(html.includes('data-url="https://example.com/own"'));
+  activity.surveys = { participant: { url: 'https://example.com/own', activityEntry: 'entry.9' } };
+  const html = render({ activity, site: siteWithSurveys({ participant: PARTICIPANT_SURVEY, staff: null }) });
+  assert.ok(html.includes(`data-url="https://example.com/own?usp=pp_url&amp;entry.9=${BRUNCH_NAME}"`));
 });
 
 test('without a staff survey link the staff slot says the link is coming', () => {
@@ -95,10 +102,10 @@ test('without a staff survey link the staff slot says the link is coming', () =>
   assert.ok(!slot.includes('href='));
 });
 
-test('with a staff survey link the staff slot links to it', () => {
-  const html = render({ site: siteWithSurveys({ participant: null, staff: 'https://example.com/staff' }) });
+test('with a staff survey the staff slot links to it with the activity name filled in', () => {
+  const html = render({ site: siteWithSurveys({ participant: null, staff: STAFF_SURVEY }) });
   const slot = templateContent(html, 'staff-survey');
-  assert.ok(slot.includes('<a href="https://example.com/staff">填工作人員問卷</a>'));
+  assert.ok(slot.includes(`<a href="https://example.com/staff?usp=pp_url&amp;entry.2=${BRUNCH_NAME}">填工作人員問卷</a>`));
   assert.ok(!slot.includes('準備中'));
 });
 
