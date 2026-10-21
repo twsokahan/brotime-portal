@@ -121,6 +121,7 @@ summary {
 .share a,
 .back a,
 .more a,
+.box li a,
 main > p > a {
   display: inline-flex;
   align-items: center;

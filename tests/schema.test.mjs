@@ -94,6 +94,8 @@ test('activity surveys need an https url and a form entry id', () => {
   assertReports(validateActivity(activity, allFilesExist), 'surveys.participant.url');
   activity.surveys = { staff: { url: 'https://x', activityEntry: 'activity' } };
   assertReports(validateActivity(activity, allFilesExist), 'surveys.staff.activityEntry');
+  activity.surveys = { report: { url: 'https://x' } };
+  assertReports(validateActivity(activity, allFilesExist), 'surveys.report.activityEntry');
   activity.surveys = { participant: { url: 'https://x', activityEntry: 'entry.1' } };
   assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
@@ -142,7 +144,17 @@ test('validateSite accepts the site settings and rejects a baseUrl without trail
 
 test('validateSite accepts a survey with an https url and a form entry id', () => {
   const survey = { url: 'https://docs.google.com/forms/d/e/x/viewform', activityEntry: 'entry.313211030' };
-  assert.deepEqual(validateSite({ ...fixtureSite(), surveys: { participant: survey, staff: null } }), []);
+  assert.deepEqual(validateSite({ ...fixtureSite(), surveys: { participant: survey, staff: null, report: null } }), []);
+  assert.deepEqual(validateSite({ ...fixtureSite(), surveys: { participant: null, staff: null, report: survey } }), []);
+});
+
+test('validateSite checks the activity report form like the surveys', () => {
+  const withReport = (report) => ({ ...fixtureSite(), surveys: { participant: null, staff: null, report } });
+  assertReports(validateSite(withReport({ url: 'http://x/viewform', activityEntry: 'entry.1' })), 'surveys.report.url');
+  assertReports(
+    validateSite(withReport({ url: 'https://x/viewform', activityEntry: 'entry.' })),
+    'surveys.report.activityEntry',
+  );
 });
 
 test('validateSite rejects a survey without an https url or a form entry id', () => {

@@ -15,6 +15,12 @@ function templateContent(html, id) {
   return match[1];
 }
 
+function todoBox(html) {
+  const at = html.indexOf('<h3>你要做的</h3>');
+  assert.ok(at >= 0, 'expected the 你要做的 box');
+  return html.slice(at, html.indexOf('</div>', at));
+}
+
 function stepItem(html, title) {
   const at = html.indexOf(`>${title}<`);
   assert.ok(at >= 0, `expected a step titled ${title}`);
@@ -30,6 +36,7 @@ function activityData(html) {
 const siteWithSurveys = (surveys) => ({ ...fixtureSite(), surveys });
 const PARTICIPANT_SURVEY = { url: 'https://example.com/f', activityEntry: 'entry.1' };
 const STAFF_SURVEY = { url: 'https://example.com/staff', activityEntry: 'entry.2' };
+const REPORT_FORM = { url: 'https://example.com/report', activityEntry: 'entry.3' };
 const BRUNCH_NAME = encodeURIComponent('兄弟早午餐會');
 
 test('the activity page shows the prep lists, the flow and the start button', () => {
@@ -107,6 +114,31 @@ test('with a staff survey the staff slot links to it with the activity name fill
   const slot = templateContent(html, 'staff-survey');
   assert.ok(slot.includes(`<a href="https://example.com/staff?usp=pp_url&amp;entry.2=${BRUNCH_NAME}">填工作人員問卷</a>`));
   assert.ok(!slot.includes('準備中'));
+});
+
+test('with an activity report form the todo list ends with filling it in within a week', () => {
+  const html = render({ site: siteWithSurveys({ participant: null, staff: null, report: REPORT_FORM }) });
+  const box = todoBox(html);
+  const lastRow = box.slice(box.lastIndexOf('<li>'));
+  assert.ok(lastRow.includes('<em>活動後一週內</em>'));
+  assert.ok(lastRow.includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填寫線上回報表</a>`));
+});
+
+test('without an activity report form the todo list has no report row', () => {
+  assert.ok(!todoBox(render()).includes('活動後一週內'));
+});
+
+test('with an activity report form the end screen template links to it', () => {
+  const html = render({ site: siteWithSurveys({ participant: null, staff: null, report: REPORT_FORM }) });
+  assert.ok(
+    templateContent(html, 'activity-report').includes(
+      `<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">一週內填活動回報表</a>`,
+    ),
+  );
+});
+
+test('without an activity report form the end screen template is empty', () => {
+  assert.equal(templateContent(render(), 'activity-report'), '');
 });
 
 test('an activity that may not go ahead in the rain says what to do', () => {

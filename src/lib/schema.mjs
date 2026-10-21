@@ -83,6 +83,7 @@ function checkSurveys(check, surveys) {
   if (!check.object(surveys, 'surveys')) return;
   checkSurvey(check, surveys.participant, 'surveys.participant');
   checkSurvey(check, surveys.staff, 'surveys.staff');
+  checkSurvey(check, surveys.report, 'surveys.report');
 }
 
 function checkIdentity(check, activity) {

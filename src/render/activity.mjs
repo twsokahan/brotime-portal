@@ -16,15 +16,19 @@ function renderHead(activity) {
 </header>`;
 }
 
-function renderPrepare(activity) {
+function renderReportTodo(reportUrl) {
+  if (!reportUrl) return '';
+  return `<li><span><a href="${escapeHtml(reportUrl)}">區負責人填寫線上回報表</a></span><em>活動後一週內</em></li>`;
+}
+
+function renderPrepare(activity, site) {
   const provided = list(
     activity.provided,
     ({ item, qty }) => `<li><span>${escapeHtml(item)}</span><em>${escapeHtml(qty)}</em></li>`,
   );
-  const todo = list(
-    activity.todo,
-    ({ when, task }) => `<li><span>${escapeHtml(task)}</span><em>${escapeHtml(when)}</em></li>`,
-  );
+  const todo =
+    list(activity.todo, ({ when, task }) => `<li><span>${escapeHtml(task)}</span><em>${escapeHtml(when)}</em></li>`) +
+    renderReportTodo(surveyLink(activity, site, 'report'));
   return `<section class="prepare">
 <h2>要準備</h2>
 <div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
@@ -114,7 +118,9 @@ function renderSurveyTemplates(activity, site) {
   const staffTemplate = staff
     ? `<template id="staff-survey"><a href="${escapeHtml(staff)}">填工作人員問卷</a></template>`
     : '<template id="staff-survey"><p>工作人員問卷連結準備中</p></template>';
-  return participantTemplate + staffTemplate;
+  const report = surveyLink(activity, site, 'report');
+  const reportLink = report ? `<p><a href="${escapeHtml(report)}">一週內填活動回報表</a></p>` : '';
+  return `${participantTemplate}${staffTemplate}<template id="activity-report">${reportLink}</template>`;
 }
 
 function renderStoryCardQrTemplates(activity, site) {
@@ -132,7 +138,7 @@ export function renderActivityMain({ activity, site, rel, preview }) {
   return [
     preview ? '<p class="preview-banner">預覽：這個活動還沒上線</p>' : '',
     renderHead(activity),
-    renderPrepare(activity),
+    renderPrepare(activity, site),
     renderFlow(activity, rel),
     renderStart(),
     renderRain(activity),

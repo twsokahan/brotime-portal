@@ -487,7 +487,7 @@ function finishLive() {
   letScreenSleep();
   showScreen([
     screenTitle('活動結束，辛苦了！'),
-    el('div', { className: 'staff-survey' }, [cloneTemplate('staff-survey')]),
+    el('div', { className: 'staff-survey' }, [cloneTemplate('staff-survey'), cloneTemplate('activity-report')]),
     el('div', { className: 'live-nav' }, [button('回到活動頁', closeLive, 'live-next')]),
   ]);
 }

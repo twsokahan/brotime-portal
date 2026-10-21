@@ -117,6 +117,6 @@ export function fixtureSite() {
   return {
     title: '兄弟時光',
     baseUrl: 'https://cades.github.io/brotime-portal/',
-    surveys: { participant: null, staff: null },
+    surveys: { participant: null, staff: null, report: null },
   };
 }
