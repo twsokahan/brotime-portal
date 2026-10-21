@@ -887,16 +887,44 @@ p.rain,
   font-size: 16px;
 }
 
-.topic-groups {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 16px 0 0;
-}
-
-.story-switch-title {
+.story-switch-title,
+.topic-groups-title {
   margin: 20px 0 8px;
   color: var(--dot-text);
+}
+
+.topic-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.topic-group {
+  padding: 8px 6px;
+  border: 2px solid var(--dot-text);
+  border-radius: 12px;
+  background: var(--box);
+  color: var(--dot-text);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.topic-group-count {
+  font-weight: 400;
+}
+
+.topic-group[aria-pressed="true"] {
+  border-color: var(--dot-text);
+  background: var(--dot-text);
+  box-shadow: 0 0 0 2px var(--box), 0 0 0 4px var(--dot-text);
+  color: var(--box);
+}
+
+.topic-group[aria-pressed="true"]::before {
+  content: "✓";
+  margin-right: 4px;
+  font-weight: 900;
 }
 
 .story-switch {
@@ -977,8 +1005,14 @@ p.rain,
 
 .live-draw {
   display: block;
-  margin: 12px auto 0;
-  font-weight: 700;
+  width: 100%;
+  min-height: 52px;
+  margin: 16px 0 0;
+  border: 2px solid var(--dot-text);
+  background: var(--dot-text);
+  color: var(--box);
+  font-size: 19px;
+  font-weight: 900;
 }
 
 .live-maps {

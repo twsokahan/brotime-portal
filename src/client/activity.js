@@ -325,13 +325,20 @@ function topicDraw(cards, pickKey) {
     showCard();
   };
 
-  const groupButtons = choices.map((group) =>
-    button(group ?? '全部', () => {
-      pick.group = group;
-      markPressed();
-      draw();
-    }),
-  );
+  const groupButtons = choices.map((group) => {
+    const count = group === null ? cards.length : cards.filter((card) => card.group === group).length;
+    const option = button(
+      group ?? '全部',
+      () => {
+        pick.group = group;
+        markPressed();
+        draw();
+      },
+      'topic-group',
+    );
+    option.append(' ', el('span', { className: 'topic-group-count', textContent: String(count) }));
+    return option;
+  });
   function markPressed() {
     groupButtons.forEach((groupButton, i) => groupButton.setAttribute('aria-pressed', String(choices[i] === pick.group)));
   }
@@ -340,10 +347,18 @@ function topicDraw(cards, pickKey) {
   if (pick.card) showCard();
   else draw();
   return el('div', { className: 'topic-draw' }, [
-    groups.length > 0 && el('div', { className: 'topic-groups' }, groupButtons),
+    groups.length > 0 && topicGroupPicker(groupButtons),
     cardSlot,
     button('換一張', draw, 'live-draw'),
   ]);
+}
+
+function topicGroupPicker(groupButtons) {
+  const title = '從哪一類抽？';
+  const picker = el('div', { className: 'topic-groups' }, groupButtons);
+  picker.setAttribute('role', 'group');
+  picker.setAttribute('aria-label', title);
+  return el('div', {}, [el('h3', { className: 'topic-groups-title', textContent: title }), picker]);
 }
 
 function openCardViewer(set, startIndex, opener) {
