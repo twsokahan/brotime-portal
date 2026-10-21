@@ -22,7 +22,7 @@
 - 第一版不做登入、報名、問卷系統、活動回報表、統計後台、編輯介面。
 - 活動代號（`id`）和網址結構 `a/<id>/` 定了就不改；城市散步的區代號就是區名（例如 `台北西區`），放在 `?d=` 參數裡。
 - 只用 Google 地圖連結，不在網站裡嵌入地圖，不使用路線檢閱網站的 Maps API 金鑰。
-- 所有 `href`、`src` 都用相對路徑，因為之後會從 `cades.github.io/brotime-portal/` 換到自訂網域根目錄。唯一的例外是 `og:url`、`og:image` 和分享出去的卡片網址，這些用 `site.baseUrl` 組成完整網址。
+- 所有 `href`、`src` 都用相對路徑，因為之後會從 `twsokahan.github.io/brotime-portal/` 換到自訂網域根目錄。唯一的例外是 `og:url`、`og:image` 和分享出去的卡片網址，這些用 `site.baseUrl` 組成完整網址。
 - 零 npm 相依；不加 framework。瀏覽器端用原生 ES module。
 - 介面語言 `zh-Hant-TW`。
 - Commit message 用英文，結尾加上 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`。不准用 `--no-verify`。
@@ -109,7 +109,7 @@ Step：`{ time: "0–10 分", minutes: 10 | null, title, do, say, cards?: string
 - `minutes: null` 表示不計時，例如登山上山那一段。
 - 卡片圖路徑固定是 `public/cards/<id>/<cardId>.webp` 和 `<cardId>-thumb.webp`，故事卡另有 `<cardId>-og.jpg`。ready／review 狀態的活動，這些檔都要存在。
 
-`content/site.json`：`{ "title": "兄弟時光", "baseUrl": "https://cades.github.io/brotime-portal/", "surveys": { "participant": null, "staff": null } }`。`baseUrl` 必須是 `https://` 開頭、`/` 結尾；問卷連結拿到前維持 `null`。
+`content/site.json`：`{ "title": "兄弟時光", "baseUrl": "https://twsokahan.github.io/brotime-portal/", "surveys": { "participant": null, "staff": null } }`。`baseUrl` 必須是 `https://` 開頭、`/` 結尾；問卷連結拿到前維持 `null`。
 
 故事卡頁的網址是 `a/<id>/cards/<cardId>/`，完整網址由 `cardPageUrl(site, activityId, cardId)` 產生，等於 `${baseUrl}a/${activityId}/cards/${cardId}/`。
 
@@ -718,11 +718,11 @@ build 依序做這些事：
 - 之後換網域要改哪裡（加 `public/CNAME`）。
 
 - [ ] **Step 1:** 寫兩個檔案，commit：`ci: deploy to GitHub Pages and add maintainer readme`
-- [ ] **Step 2: 停下來問使用者**：要不要在個人帳號 `cades` 建公開 repo `brotime-portal`，以及首次推送 main。這是對外動作，一定要先得到同意。
+- [ ] **Step 2: 停下來問使用者**：要不要在 GitHub 組織 `twsokahan` 建公開 repo `brotime-portal`，以及首次推送 main。這是對外動作，一定要先得到同意。順便告訴使用者：組織是免費方案，只有公開 repo 能用 Pages，這會是組織裡第一個公開 repo（目前 8 個都是私人的）。
 - [ ] **Step 3:** 得到同意後，照 `~/code/city-walk-review` 的做法，用 `gh` 的 HTTPS 認證（本機 SSH 金鑰是公司帳號）：
-  - `gh repo create cades/brotime-portal --public --source . --push`
-  - `gh api -X POST repos/cades/brotime-portal/pages -f build_type=workflow`
-- [ ] **Step 4:** `gh run watch` 等部署完成，打開 `https://cades.github.io/brotime-portal/`，確認入口和一個準備中頁面正常。這時 review 狀態的活動在正式站上應該顯示「準備中」。
+  - `gh repo create twsokahan/brotime-portal --public --source . --push`（本機 gh 登入的 cades 是組織 admin，token 有 repo、read:org）
+  - `gh api -X POST repos/twsokahan/brotime-portal/pages -f build_type=workflow`
+- [ ] **Step 4:** `gh run watch` 等部署完成，打開 `https://twsokahan.github.io/brotime-portal/`，確認入口和一個準備中頁面正常。這時 review 狀態的活動在正式站上應該顯示「準備中」。
 
 ### Task 21: 整體檢查、使用者確認內容、正式上線
 
