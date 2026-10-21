@@ -8,7 +8,14 @@ const rawRoute = () => JSON.parse(readFileSync(new URL('./fixtures/raw-route.jso
 const cityWalkSteps = () => [
   { time: '0–10 分', minutes: 10, title: '集合', do: '', say: '人到齊就出發。', routeStop: 'start' },
   { time: '10–20 分', minutes: null, title: '走第一段', do: '慢慢走。', say: '邊走邊聊。', routeLeg: 0 },
-  { time: '20–30 分', minutes: 10, title: '停留點一', do: '', say: '我們在這裡念故事。', routeStop: 'stop1' },
+  {
+    time: '20–30 分',
+    minutes: 10,
+    title: '停留點一',
+    do: '先念介紹詞，再念故事卡。',
+    say: '我們在這裡念故事。',
+    routeStop: 'stop1',
+  },
   { time: '30–45 分', minutes: null, title: '走第二段', do: '慢慢走。', say: '邊走邊聊。', routeLeg: 1 },
   {
     time: '45–60 分',
@@ -60,6 +67,16 @@ test('the start and end steps lead to the next stop and back to the meeting poin
   assert.deepEqual(filled[4].cardIds, ['Z']);
   assert.equal(filled[4].mapsLabel, '回到集合點：捷運小南門站3號出口');
   assert.equal(filled[4].mapsUrl, walkingLink(route.start));
+});
+
+test('a route stop shows its place first, then the step\'s own instructions', () => {
+  const route = normalizeRoute(rawRoute(), '北一圈');
+  const steps = cityWalkSteps();
+  delete steps[4].do;
+  const filled = routeSteps(steps, route);
+  assert.equal(filled[2].do, `停在${route.stop1.place}。先念介紹詞，再念故事卡。`);
+  assert.equal(filled[0].do, '集合點：捷運小南門站3號出口');
+  assert.equal(filled[4].do, `終點：${route.end.place}`);
 });
 
 test('walking legs take their minutes from the route', () => {

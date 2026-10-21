@@ -40,26 +40,31 @@ const navigateTo = (target, mapsLabel) => ({ mapsUrl: walkingLink(target), mapsL
 
 const ROUTE_STOP_FIELDS = {
   start: (route) => ({
-    do: `集合點：${route.meetingPoint}`,
+    place: `集合點：${route.meetingPoint}`,
     ...navigateTo(route.stop1, `走到下一站：${route.stop1.name}`),
   }),
   stop1: (route) => ({
-    do: `停在${route.stop1.place}`,
+    place: `停在${route.stop1.place}`,
     readAloud: route.stop1.intro,
     cards: ['story'],
     cardIds: [route.stop1.storyCard],
     ...navigateTo(route.end, `走到下一站：${route.end.name}`),
   }),
   end: (route) => ({
-    do: `終點：${route.end.place}`,
+    place: `終點：${route.end.place}`,
     ...navigateTo(route.start, `回到集合點：${route.start.name}`),
   }),
 };
 
+function routeStopFields(step, route) {
+  const { place, ...fields } = ROUTE_STOP_FIELDS[step.routeStop](route);
+  return { ...fields, do: step.do ? `${place}。${step.do}` : place };
+}
+
 export function routeSteps(steps, route) {
   return steps.map((step) => ({
     ...step,
-    ...(step.routeStop === undefined ? {} : ROUTE_STOP_FIELDS[step.routeStop](route)),
+    ...(step.routeStop === undefined ? {} : routeStopFields(step, route)),
     ...(step.routeLeg === undefined ? {} : { minutes: route.legMinutes[step.routeLeg] }),
   }));
 }
