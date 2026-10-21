@@ -2,7 +2,7 @@
   "id": "fishing",
   "name": "釣魚聊天會",
   "tagline": "在溪邊或魚塭一起釣魚，步調慢、話自然多，企劃室提供邊釣邊聊的話題卡。",
-  "status": "review",
+  "status": "ready",
   "edition": "rural",
   "templates": [
     "A",

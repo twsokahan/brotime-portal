@@ -2,7 +2,7 @@
   "id": "morning-hike",
   "name": "清晨登山",
   "tagline": "配合早起作息，一早爬附近郊山，下山吃早餐聊天，上午就能回去工作。",
-  "status": "review",
+  "status": "ready",
   "edition": "rural",
   "templates": [
     "C"

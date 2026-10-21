@@ -2,7 +2,7 @@
   "id": "farm",
   "name": "農事體驗日",
   "tagline": "到成員的田地或果園幫忙採收，親子一起體驗，結束後在樹下分享心得。",
-  "status": "review",
+  "status": "ready",
   "edition": "rural",
   "templates": [
     "C",

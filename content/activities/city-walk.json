@@ -2,7 +2,7 @@
   "id": "city-walk",
   "name": "城市散步",
   "tagline": "走一段老街或文化路線，企劃室提供路線與故事卡，邊走邊分享近況。",
-  "status": "review",
+  "status": "ready",
   "edition": "metro",
   "templates": [
     "C"
