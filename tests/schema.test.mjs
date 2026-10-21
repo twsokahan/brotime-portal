@@ -49,6 +49,32 @@ test('say length counts code points, not UTF-16 units', () => {
   assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
+test('a todo task longer than 20 characters is reported', () => {
+  const activity = readyActivity();
+  activity.todo[1].task = '一'.repeat(21);
+  const errors = validateActivity(activity, allFilesExist);
+  assert.ok(
+    errors.some((error) => error.startsWith('brunch: todo[1].task 超過 20 字（21 字）')),
+    JSON.stringify(errors),
+  );
+});
+
+test('a todo task of 20 code points passes', () => {
+  const activity = readyActivity();
+  activity.todo[1].task = '𠮷'.repeat(20);
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a todo detail is optional but must be text when given', () => {
+  const activity = readyActivity();
+  activity.todo[0].detail = '坐得下 6–10 人、能待 90 分鐘';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.todo[0].detail = '';
+  assertReports(validateActivity(activity, allFilesExist), 'todo[0].detail');
+  activity.todo[0].detail = ['不是文字'];
+  assertReports(validateActivity(activity, allFilesExist), 'todo[0].detail');
+});
+
 test('a step using an unknown card set is reported', () => {
   const activity = readyActivity();
   activity.steps[1].cards = ['nope'];

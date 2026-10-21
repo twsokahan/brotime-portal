@@ -13,6 +13,7 @@ const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
 const FORM_ENTRY = /^entry\.\d+$/;
 const MAX_ORDER = 16;
 const MAX_SAY_CHARS = 45;
+const MAX_TODO_TASK_CHARS = 20;
 const MAX_THUMBS = 3;
 const CITY_WALK_ID = 'city-walk';
 const UNNAMED = '(沒有 id)';
@@ -67,6 +68,23 @@ function checkTextFields(check, value, path, keys) {
 
 function checkRows(check, rows, path, keys, min = 0) {
   if (check.list(rows, path, min)) rows.forEach((row, i) => checkTextFields(check, row, `${path}[${i}]`, keys));
+}
+
+function checkShortText(check, value, path, maxChars) {
+  if (check.text(value, path) && charCount(value) > maxChars) {
+    check.fail(path, `超過 ${maxChars} 字（${charCount(value)} 字）`);
+  }
+}
+
+function checkTodo(check, todo) {
+  if (!check.list(todo, 'todo', 1)) return;
+  todo.forEach((row, i) => {
+    const path = `todo[${i}]`;
+    if (!check.object(row, path)) return;
+    check.text(row.when, `${path}.when`);
+    checkShortText(check, row.task, `${path}.task`, MAX_TODO_TASK_CHARS);
+    if (row.detail !== undefined) check.text(row.detail, `${path}.detail`);
+  });
 }
 
 function checkSurvey(check, survey, path) {
@@ -181,9 +199,7 @@ function checkStep(check, step, path, cardSets) {
   }
   check.text(step.title, `${path}.title`);
   check.text(step.do, `${path}.do`);
-  if (check.text(step.say, `${path}.say`) && charCount(step.say) > MAX_SAY_CHARS) {
-    check.fail(`${path}.say`, `超過 ${MAX_SAY_CHARS} 字（${charCount(step.say)} 字）`);
-  }
+  checkShortText(check, step.say, `${path}.say`, MAX_SAY_CHARS);
   checkStepCards(check, step, path, cardSets);
   if (step.readAloud !== undefined) check.text(step.readAloud, `${path}.readAloud`);
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
@@ -234,7 +250,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   checkRainNote(check, activity);
   if (shouldCheck('facts')) checkTextFields(check, activity.facts, 'facts', ['people', 'duration', 'place']);
   if (shouldCheck('provided')) checkRows(check, activity.provided, 'provided', ['item', 'qty'], 1);
-  if (shouldCheck('todo')) checkRows(check, activity.todo, 'todo', ['when', 'task'], 1);
+  if (shouldCheck('todo')) checkTodo(check, activity.todo);
   if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets);
   if (shouldCheck('steps')) checkSteps(check, activity.steps, activity.cardSets);
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);

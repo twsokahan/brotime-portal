@@ -16,9 +16,26 @@ function renderHead(activity) {
 </header>`;
 }
 
+const renderTodoGroup = (when, rows) => `<h4>${escapeHtml(when)}</h4><ul>${rows}</ul>`;
+
+function renderTodoRow({ task, detail }) {
+  if (!detail) return `<li><span>${escapeHtml(task)}</span></li>`;
+  return `<li><details><summary>${escapeHtml(task)}</summary><p>${escapeHtml(detail)}</p></details></li>`;
+}
+
 function renderReportTodo(reportUrl) {
   if (!reportUrl) return '';
-  return `<li><span><a href="${escapeHtml(reportUrl)}">區負責人填寫線上回報表</a></span><em>活動後一週內</em></li>`;
+  return renderTodoGroup(
+    '活動後一週內',
+    `<li><span><a href="${escapeHtml(reportUrl)}">區負責人填寫線上回報表</a></span></li>`,
+  );
+}
+
+function renderTodo(activity, site) {
+  const groups = [...Map.groupBy(activity.todo, (row) => row.when)].map(([when, rows]) =>
+    renderTodoGroup(when, list(rows, renderTodoRow)),
+  );
+  return groups.join('') + renderReportTodo(surveyLink(activity, site, 'report'));
 }
 
 function renderPrepare(activity, site) {
@@ -26,13 +43,10 @@ function renderPrepare(activity, site) {
     activity.provided,
     ({ item, qty }) => `<li><span>${escapeHtml(item)}</span><em>${escapeHtml(qty)}</em></li>`,
   );
-  const todo =
-    list(activity.todo, ({ when, task }) => `<li><span>${escapeHtml(task)}</span><em>${escapeHtml(when)}</em></li>`) +
-    renderReportTodo(surveyLink(activity, site, 'report'));
   return `<section class="prepare">
 <h2>要準備</h2>
 <div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
-<div class="box"><h3>你要做的</h3><ul>${todo}</ul></div>
+<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
 <div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，活動最後掃 QR code，不用印。</p></div>
 </section>`;
 }

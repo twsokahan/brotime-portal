@@ -59,6 +59,45 @@ test('a custom flow title replaces the 60-minute default', () => {
   assert.ok(!html.includes('60 分鐘這樣過'));
 });
 
+function todoGroups(box) {
+  return box
+    .split('<h4>')
+    .slice(1)
+    .map((part) => ({ when: part.slice(0, part.indexOf('</h4>')), rows: part.split('<li>').slice(1) }));
+}
+
+test('the todo list shows each time once, with its tasks under it, in order of first appearance', () => {
+  const activity = readyActivity();
+  activity.todo = [
+    { when: '3–4 週前', task: '選好店' },
+    { when: '前一天', task: '發提醒訊息' },
+    { when: '3–4 週前', task: '邀一位成員分享' },
+  ];
+  const groups = todoGroups(todoBox(render({ activity })));
+  assert.deepEqual(
+    groups.map(({ when }) => when),
+    ['3–4 週前', '前一天'],
+  );
+  assert.equal(groups[0].rows.length, 2);
+  assert.ok(groups[0].rows[0].includes('選好店'));
+  assert.ok(groups[0].rows[1].includes('邀一位成員分享'));
+  assert.equal(groups[1].rows.length, 1);
+  assert.ok(groups[1].rows[0].includes('發提醒訊息'));
+});
+
+test('a todo task with details folds them under the task', () => {
+  const activity = readyActivity();
+  activity.todo = [{ when: '前一天', task: '備好<急救包>', detail: 'OK 繃 & 優碘' }];
+  const [row] = todoGroups(todoBox(render({ activity })))[0].rows;
+  assert.ok(row.includes('<details><summary>備好&lt;急救包&gt;</summary><p>OK 繃 &amp; 優碘</p></details>'), row);
+});
+
+test('a todo task without details is plain text', () => {
+  const [row] = todoGroups(todoBox(render()))[1].rows;
+  assert.ok(row.includes('提醒大家時間地點'));
+  assert.ok(!row.includes('<details'));
+});
+
 test('the step using topic cards shows their thumbnails with the card titles as alt text', () => {
   const step = stepItem(render(), '邊吃邊聊');
   assert.ok(step.includes('src="../../cards/brunch/t02-thumb.webp"'));
@@ -116,12 +155,14 @@ test('with a staff survey the staff slot links to it with the activity name fill
   assert.ok(!slot.includes('準備中'));
 });
 
-test('with an activity report form the todo list ends with filling it in within a week', () => {
+test('with an activity report form the todo list ends with its own group for filling it in within a week', () => {
   const html = render({ site: siteWithSurveys({ participant: null, staff: null, report: REPORT_FORM }) });
-  const box = todoBox(html);
-  const lastRow = box.slice(box.lastIndexOf('<li>'));
-  assert.ok(lastRow.includes('<em>活動後一週內</em>'));
-  assert.ok(lastRow.includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填寫線上回報表</a>`));
+  const groups = todoGroups(todoBox(html));
+  const last = groups.at(-1);
+  assert.equal(last.when, '活動後一週內');
+  assert.equal(last.rows.length, 1);
+  assert.ok(last.rows[0].includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填寫線上回報表</a>`));
+  assert.equal(groups.filter(({ when }) => when === '活動後一週內').length, 1);
 });
 
 test('without an activity report form the todo list has no report row', () => {

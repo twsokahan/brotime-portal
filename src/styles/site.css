@@ -185,6 +185,75 @@ main > p > a {
   white-space: nowrap;
 }
 
+.todo h4 {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.todo h3 + h4 {
+  margin-top: 8px;
+}
+
+.todo li {
+  display: block;
+}
+
+.todo li + li {
+  margin-top: 0;
+}
+
+.todo li > span,
+.todo summary {
+  display: flex;
+  align-items: baseline;
+  min-height: 44px;
+  padding: 8px 0;
+}
+
+.todo li > span::before,
+.todo summary::before {
+  content: "・";
+  flex: none;
+  width: 1em;
+  color: var(--muted);
+}
+
+.todo li > span > a {
+  margin: -8px 0;
+}
+
+.todo summary {
+  font-weight: 400;
+  list-style: none;
+}
+
+.todo summary::-webkit-details-marker {
+  display: none;
+}
+
+.todo summary::after {
+  content: "＋";
+  flex: none;
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.todo details[open] > summary::after {
+  content: "－";
+}
+
+.todo details p {
+  margin: 0 0 8px;
+  padding-left: 1em;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
 .entry-head h1 {
   margin: 40px 0 8px;
   font-size: 30px;
