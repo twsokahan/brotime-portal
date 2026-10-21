@@ -102,7 +102,9 @@ export function drawCard(cards, drawnIds, group, random = Math.random) {
   const deckIds = deck.map((card) => card.id);
   const startOver = undrawn.length === 0;
   const keptIds = startOver ? drawnIds.filter((id) => !deckIds.includes(id)) : drawnIds;
-  const choices = startOver ? deck : undrawn;
+  const lastDrawnId = drawnIds.filter((id) => deckIds.includes(id)).pop();
+  const restartDeck = deck.length > 1 ? deck.filter((card) => card.id !== lastDrawnId) : deck;
+  const choices = startOver ? restartDeck : undrawn;
   const card = choices[Math.floor(random() * choices.length)];
   return { card, drawnIds: [...keptIds, card.id] };
 }

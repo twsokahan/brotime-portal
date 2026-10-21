@@ -219,3 +219,38 @@ test('drawing without a group starts the whole deck over once it runs out', () =
   assert.deepEqual(result.drawnIds, ['t05']);
   assert.deepEqual(drawnIds, ['t02', 't05', 't11']);
 });
+
+const RANDOM_VALUES = [0, 0.5, 0.999];
+
+test('starting the whole deck over never repeats the card just drawn', () => {
+  for (const drawnIds of [
+    ['t02', 't05', 't11'],
+    ['t11', 't02', 't05'],
+  ]) {
+    for (const value of RANDOM_VALUES) {
+      const { card } = drawCard(topicCards(), drawnIds, null, () => value);
+      assert.notEqual(card.id, drawnIds.at(-1), `random ${value} after ${drawnIds}`);
+    }
+  }
+});
+
+test('starting a group over skips the card of that group drawn last', () => {
+  const cards = [
+    { id: 'a', title: 'A', group: '前菜' },
+    { id: 'b', title: 'B', group: '前菜' },
+    { id: 'c', title: 'C', group: '主餐' },
+  ];
+  for (const value of RANDOM_VALUES) {
+    const result = drawCard(cards, ['a', 'b', 'c'], '前菜', () => value);
+    assert.equal(result.card.id, 'a');
+    assert.deepEqual(result.drawnIds, ['c', 'a']);
+  }
+});
+
+test('a group with one card keeps drawing that card', () => {
+  for (const value of RANDOM_VALUES) {
+    const result = drawCard(topicCards(), ['t02', 't05'], '前菜', () => value);
+    assert.equal(result.card.id, 't02');
+    assert.deepEqual(result.drawnIds, ['t05', 't02']);
+  }
+});
