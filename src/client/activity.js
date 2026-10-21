@@ -180,6 +180,7 @@ const preloadedImages = [];
 let drawnIds = [];
 let timerId = 0;
 let resumePrompt = null;
+let stepImagesLoaded = Promise.resolve();
 
 const screenTitle = (text) => el('h2', { id: 'live-title', tabIndex: -1, textContent: text });
 
@@ -481,11 +482,15 @@ function showStep(index, startedAtMs = Date.now()) {
   startTimer();
 }
 
+function preloadStepImages() {
+  const urls = imageUrlsFor(activity, live.steps).map((url) => REL + url);
+  stepImagesLoaded = preload(urls, loadImage);
+}
+
 async function loadThenShowStep(index, startedAtMs) {
   stopTimer();
   showScreen([screenTitle('載入中…')]);
-  const urls = imageUrlsFor(activity, live.steps).map((url) => REL + url);
-  await preload(urls, loadImage);
+  await stepImagesLoaded;
   showStep(index, startedAtMs);
 }
 
@@ -519,6 +524,7 @@ function openLive() {
   resumePrompt?.remove();
   live.district = district;
   live.steps = liveStepsFor(district);
+  preloadStepImages();
   liveLayer.hidden = false;
   page.inert = true;
   keepScreenOn();
