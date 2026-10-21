@@ -684,6 +684,7 @@ p.rain,
 .story-live .live-card-image,
 .topic-card .live-card-image {
   width: auto;
+  max-width: min(100%, 360px);
   max-height: 40vh;
 }
 
