@@ -31,19 +31,18 @@
 
 正式網址是 **kyodai-tokimitsu.twsokahan.org**，**brotime.twsokahan.org** 只當轉址。部署前不用改任何東西，計畫其他部分照舊。
 
-背景：twsokahan.org 是創價班現有的網域（sokahan-web 在用），2025-01 在 Squarespace 註冊，DNS 放在 Google Cloud DNS，2027-01-13 到期。
+背景：twsokahan.org 是創價班現有的網域（sokahan-web 在用），透過 Google Cloud Domains 註冊（gcloud 專案 sokahan），DNS 放在 Google Cloud DNS，2027-01-13 到期。網域續約在 Google Cloud Domains（專案 sokahan）自動進行，可用 `gcloud domains registrations list --project sokahan` 查。
 
 上線前的預設網址是 `https://twsokahan.github.io/brotime-portal/`，`content/site.json` 的 `baseUrl` 先用這個（測試 fixture 裡的 cades.github.io 是假資料，不用改）。
 
 Task 20 先用 github.io 確認部署成功，再依序做：
 
-1. **DNS、網域驗證、續約**（前兩項由規劃 session 處理；這邊只要在上線時跟使用者確認都做好了）：
-   - Cloud DNS 加兩筆 CNAME：`kyodai-tokimitsu` 和 `brotime`，都指向 `twsokahan.github.io.`（**規劃 session 會用 gcloud 處理，這邊不用做**）
-   - 在 GitHub 組織設定驗證 twsokahan.org（https://github.com/organizations/twsokahan/settings/pages，TXT 名稱 `_github-pages-challenge-twsokahan.twsokahan.org`；**也是規劃 session 處理**）
-   - 確認 twsokahan.org 有開自動續約
+1. **DNS 與網域驗證已完成**（2026-10-21，規劃 session 處理，這步跳過）：
+   - twsokahan.org 已在 GitHub 組織 twsokahan 驗證成功。TXT `_github-pages-challenge-twsokahan.twsokahan.org` **不要刪**。
+   - `kyodai-tokimitsu.twsokahan.org` 和 `brotime.twsokahan.org` 都已 CNAME 到 `twsokahan.github.io.`（TTL 300），Google 權威 DNS 和 8.8.8.8 都查得到。
+   - 在 Pages 設自訂網域之前，這兩個網址顯示 GitHub 的 404 是正常的。網域已驗證，別人沒辦法接走子網域。
 
-   DNS 生效前不要設自訂網域，不然 Pages 拿不到 HTTPS 憑證。
-2. **DNS 生效後，正式網站這邊：**
+2. **先用 `https://twsokahan.github.io/brotime-portal/` 確認部署成功，再做正式網站這邊：**
    - Pages 自訂網域設成 `kyodai-tokimitsu.twsokahan.org`，開強制 HTTPS
    - `content/site.json` 的 `baseUrl` 改成 `https://kyodai-tokimitsu.twsokahan.org/`
    - 加 `public/CNAME`，內容只有 `kyodai-tokimitsu.twsokahan.org`
