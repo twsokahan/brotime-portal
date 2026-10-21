@@ -9,14 +9,15 @@ const chip = (filter, value, label) =>
 
 const filterGroup = (label, chips) => `<div class="filter-group"><p class="filter-label">${label}</p>${chips}</div>`;
 
-function renderHead() {
-  return `<header class="entry-head">
-<h1>下個月，<span>約兄弟做什麼？</span></h1>
-<p class="lead">16 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>
-<div class="entry-actions">
+const ENTRY_ACTIONS = `<div class="entry-actions">
 <button id="open-quiz" type="button"><span><span aria-hidden="true">✦ </span>幫我挑</span> <small>4 題，30 秒</small></button>
 <button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters"><span class="filter-summary">篩選</span> <span class="caret" aria-hidden="true">▾</span></button>
-</div>
+</div>`;
+
+function renderHead(canPick) {
+  return `<header class="entry-head">
+<h1>下個月，<span>約兄弟做什麼？</span></h1>
+<p class="lead">16 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}
 </header>`;
 }
 
@@ -78,12 +79,13 @@ export function renderEntryMain({ activities, rel }) {
   const ordered = wallOrder(activities, emptyFilters()).map((id) => byId.get(id));
   const ready = ordered.filter((activity) => activity.status === 'ready');
   const preparing = ordered.filter((activity) => activity.status !== 'ready');
+  const canPick = ready.length > 0;
   return [
-    renderHead(),
-    renderFilters(countMatches(activities, emptyFilters())),
+    renderHead(canPick),
+    canPick && renderFilters(countMatches(activities, emptyFilters())),
     renderWall(ready, rel),
     renderPreparing(preparing, rel),
-    renderData(ordered),
+    canPick && renderData(ordered),
   ]
     .filter(Boolean)
     .join('\n');

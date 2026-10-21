@@ -186,6 +186,14 @@ test('build works without a public folder, activities or routes', async () => {
   assert.deepEqual(pages, ['index.html']);
 });
 
+test('with nothing ready the entry page loads no script', async () => {
+  const contentDir = await tempDir();
+  await cp(path.join(CONTENT_DIR, 'site.json'), path.join(contentDir, 'site.json'));
+  const outDir = await tempDir();
+  await build({ contentDir, publicDir: path.join(contentDir, 'missing'), outDir, preview: false });
+  assert.ok(!(await read(outDir, 'index.html')).includes('<script type="module"'));
+});
+
 test('build returns the pages it wrote', async () => {
   const outDir = await tempDir();
   const { pages } = await build({ contentDir: CONTENT_DIR, publicDir: PUBLIC_DIR, outDir, preview: false });

@@ -77,6 +77,17 @@ test('with nothing ready the wall is a friendly line instead of an empty grid', 
   assert.equal(occurrences(preparingSection(html), '<a href='), 16);
 });
 
+test('with nothing ready there is nothing to pick from, so the quiz and filter buttons are left out', () => {
+  const activities = sixteenActivities().map((activity) => ({ ...activity, status: 'preparing' }));
+  const html = renderEntryMain({ activities, rel: '' });
+  assert.ok(html.includes('<h1>下個月，<span>約兄弟做什麼？</span></h1>'));
+  for (const part of ['class="entry-actions"', 'id="open-quiz"', 'id="toggle-filters"', 'id="filters"']) {
+    assert.ok(!html.includes(part), `expected no ${part}`);
+  }
+  assert.ok(html.includes('<p class="wall-empty">'));
+  assert.ok(html.includes('<section class="preparing">'));
+});
+
 test('filters sit in a folded panel behind one button', () => {
   const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
   assert.ok(html.includes('<button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters">'));

@@ -168,7 +168,7 @@ export function renderPages({ site, routes, activityFiles }, preview) {
         description: ENTRY_DESCRIPTION,
         rel: ENTRY_REL,
         main: renderEntryMain({ activities, rel: ENTRY_REL }),
-        scripts: ['js/entry.js'],
+        scripts: activities.some((activity) => activity.status === 'ready') ? ['js/entry.js'] : [],
         ogUrl: site.baseUrl,
       }),
     ],
