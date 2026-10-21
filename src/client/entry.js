@@ -1,4 +1,4 @@
-import { countMatches, emptyFilters, matchesFilters } from './lib/filter.mjs';
+import { countMatches, emptyFilters, matchesFilters, wallOrder } from './lib/filter.mjs';
 import { INTERESTS, PLACE, SLOTS } from './lib/labels.mjs';
 import { recommend } from './lib/recommend.mjs';
 
@@ -51,8 +51,12 @@ function el(tag, props = {}, children = []) {
 const button = (textContent, onclick, className = '') => el('button', { type: 'button', textContent, onclick, className });
 
 const chips = [...document.querySelectorAll('[data-filter]')];
-const readyCards = [...document.querySelectorAll('.wall .act:not(.is-preparing)')];
+const wall = document.querySelector('.wall');
+const cardById = new Map([...document.querySelectorAll('.wall .act')].map((card) => [card.dataset.id, card]));
 const matchCount = document.getElementById('match-count');
+const filterPanel = document.getElementById('filters');
+const toggleFiltersButton = document.getElementById('toggle-filters');
+const filterSummary = toggleFiltersButton.querySelector('.filter-summary');
 
 function pressedFilters() {
   const filters = emptyFilters();
@@ -65,13 +69,22 @@ function pressedFilters() {
   return filters;
 }
 
+function arrangeWall(filters) {
+  for (const id of wallOrder(activities, filters)) {
+    const card = cardById.get(id);
+    if (!card) continue;
+    card.classList.toggle('is-dim', !matchesFilters(activityById.get(id), filters));
+    wall.append(card);
+  }
+}
+
 function applyFilters() {
   const filters = pressedFilters();
-  for (const card of readyCards) {
-    card.classList.toggle('is-dim', !matchesFilters(activityById.get(card.dataset.id), filters));
-  }
+  arrangeWall(filters);
   const count = countMatches(activities, filters);
-  matchCount.textContent = count ? `符合的有 ${count} 個` : '沒有符合的活動，少選一個條件看看。';
+  matchCount.textContent = count ? `符合的有 ${count} 種` : '沒有符合的，少選一個條件看看。';
+  const pressedCount = chips.filter((chip) => chip.getAttribute('aria-pressed') === 'true').length;
+  filterSummary.textContent = pressedCount ? `篩選・${pressedCount}` : '篩選';
 }
 
 for (const chip of chips) {
@@ -80,6 +93,12 @@ for (const chip of chips) {
     applyFilters();
   });
 }
+
+toggleFiltersButton.addEventListener('click', () => {
+  const expanded = toggleFiltersButton.getAttribute('aria-expanded') !== 'true';
+  toggleFiltersButton.setAttribute('aria-expanded', String(expanded));
+  filterPanel.hidden = !expanded;
+});
 
 const openQuizButton = document.getElementById('open-quiz');
 const page = document.querySelector('main');
@@ -125,13 +144,13 @@ function pickItem({ id, name, reasons }) {
 
 function showResult() {
   const { picks, note } = recommend(activities, answers);
-  const title = picks.length < FULL_PICKS ? `符合的 ${picks.length} 個` : `最適合你們區的 ${FULL_PICKS} 個`;
+  const title = picks.length < FULL_PICKS ? `符合的 ${picks.length} 種` : `最適合你們區的 ${FULL_PICKS} 種`;
   showScreen([
     screenTitle(title),
     picks.length > 0 && el('ol', { className: 'picks' }, picks.map(pickItem)),
     note && el('p', { className: 'quiz-note', textContent: note }),
     note && button('重新回答', startQuiz),
-    button('看全部 16 個 →', closeQuiz, 'see-all'),
+    button('看全部 16 種 →', closeQuiz, 'see-all'),
   ]);
 }
 

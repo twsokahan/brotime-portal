@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { page } from '../src/render/layout.mjs';
 import { renderEntryMain } from '../src/render/entry.mjs';
 import { readyActivity, preparingActivity } from './fixtures/activities.mjs';
@@ -21,31 +22,73 @@ function activitiesData(html) {
 }
 
 function layout(overrides = {}) {
-  return page({ title: '兄弟時光', description: '下個月辦什麼？', rel: '', main: '<p>內容</p>', scripts: [], ...overrides });
+  return page({ title: '兄弟時光', description: '下個月，約兄弟做什麼？', rel: '', main: '<p>內容</p>', scripts: [], ...overrides });
 }
 
-test('the wall has one card per activity and a badge on each preparing card', () => {
+const wallIds = (html) => [...html.matchAll(/<a class="act[^"]*" data-id="([^"]+)"/g)].map(([, id]) => id);
+
+function preparingSection(html) {
+  return html.match(/<section class="preparing">.*?<\/section>/s)?.[0] ?? '';
+}
+
+test('ready activities are image cards and preparing ones are names in one list at the bottom', () => {
   const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
-  assert.equal(occurrences(html, 'class="act'), 16);
-  assert.equal(occurrences(html, '準備中'), 13);
-  assert.equal(occurrences(html, 'class="act is-preparing"'), 13);
+  assert.equal(occurrences(html, 'class="act"'), READY_COUNT);
+  assert.equal(occurrences(html, '準備中'), 1);
+  const preparing = preparingSection(html);
+  assert.equal(occurrences(preparing, '<a href="a/night-run-'), 16 - READY_COUNT);
+  assert.ok(preparing.includes('<a href="a/night-run-4/">河濱夜跑・單車</a>'));
+  assert.ok(html.indexOf('<section class="wall">') < html.indexOf('<section class="preparing">'));
 });
 
-test('the match count starts at the number of ready activities', () => {
+test('the match line starts at the number of ready activities', () => {
   const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
-  assert.ok(html.includes('<p id="match-count">符合的有 3 個</p>'));
+  assert.ok(html.includes('<p id="match-count">符合的有 3 種</p>'));
 });
 
 test('cards follow the activity order and link to the activity page', () => {
   const html = renderEntryMain({ activities: sixteenActivities().reverse(), rel: '' });
-  const ids = [...html.matchAll(/<a class="act[^"]*" data-id="([^"]+)"/g)].map(([, id]) => id);
-  assert.deepEqual(ids, sixteenActivities().map(({ id }) => id));
+  assert.deepEqual(wallIds(html), ['brunch-1', 'brunch-2', 'brunch-3']);
   assert.ok(html.includes('<a class="act" data-id="brunch-1" href="a/brunch-1/">'));
+  const preparingIds = [...preparingSection(html).matchAll(/href="a\/([^/]+)\/"/g)].map(([, id]) => id);
+  assert.deepEqual(preparingIds, sixteenActivities().slice(READY_COUNT).map(({ id }) => id));
 });
 
-test('only ready cards show the rain label', () => {
+test('a card shows the first story card as a decorative cover, its name and its interests', () => {
   const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
-  assert.equal(occurrences(html, '<span class="tag rain">下雨也能辦</span>'), READY_COUNT);
+  assert.ok(html.includes('<img src="cards/brunch-1/s1-thumb.webp" alt="" loading="lazy">'));
+  assert.ok(html.includes('<h2>兄弟早午餐會</h2>'));
+  assert.ok(html.includes('<p class="interests">吃・聊</p>'));
+});
+
+test('the cover is the story set\'s first thumbs card when thumbs is set', () => {
+  const activity = readyActivity();
+  activity.cardSets.story.cards.push({ ...activity.cardSets.story.cards[0], id: 's2' });
+  activity.cardSets.story.thumbs = ['s2'];
+  const html = renderEntryMain({ activities: [activity], rel: '' });
+  assert.ok(html.includes('src="cards/brunch/s2-thumb.webp"'));
+});
+
+test('with nothing ready the wall is a friendly line instead of an empty grid', () => {
+  const activities = sixteenActivities().map((activity) => ({ ...activity, status: 'preparing' }));
+  const html = renderEntryMain({ activities, rel: '' });
+  assert.ok(!html.includes('<section class="wall">'));
+  assert.ok(html.includes('<p class="wall-empty">每一種都還在準備，做好就會出現在這裡。</p>'));
+  assert.equal(occurrences(preparingSection(html), '<a href='), 16);
+});
+
+test('filters sit in a folded panel behind one button', () => {
+  const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
+  assert.ok(html.includes('<button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters">'));
+  assert.ok(html.includes('<section id="filters" class="filters" hidden>'));
+  assert.equal(occurrences(html, 'aria-pressed="false"'), 3 + 4 + 5 + 1);
+});
+
+test('the entry page and its quiz avoid the words 活動 and 辦', async () => {
+  const html = renderEntryMain({ activities: sixteenActivities(), rel: '' });
+  assert.doesNotMatch(html, /活動|辦/, 'entry page');
+  const script = await readFile(new URL('../src/client/entry.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(script, /活動|辦/, 'src/client/entry.js');
 });
 
 test('activities-data holds only id, name, status, order and tags', () => {

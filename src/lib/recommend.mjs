@@ -10,7 +10,7 @@ const PLACE_POINTS = {
   outdoor: { outdoor: 2, both: 1 },
 };
 const MATCH_POINTS = 2;
-const NO_MATCH_NOTE = '沒有剛好符合的活動，換個條件試試看。';
+const NO_MATCH_NOTE = '沒有剛好符合的，換個條件試試看。';
 
 function isExcluded(tags, answers) {
   if (answers.kids === 'yes' && tags.kids === 'no') return true;
@@ -36,7 +36,7 @@ function hitsFor(tags, answers) {
 
 function noteFor(count) {
   if (count === 0) return NO_MATCH_NOTE;
-  if (count < MAX_PICKS) return `符合的只有 ${count} 個，可以放寬條件再試一次。`;
+  if (count < MAX_PICKS) return `符合的只有 ${count} 種，可以放寬條件再試一次。`;
   return null;
 }
 

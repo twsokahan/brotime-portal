@@ -19,7 +19,7 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'src/client');
 const STYLESHEET = path.join(REPO_ROOT, 'src/styles/site.css');
 
 const CITY_WALK_ID = 'city-walk';
-const ENTRY_DESCRIPTION = '下個月辦什麼？兄弟時光 16 個活動，回答 4 題幫你挑。';
+const ENTRY_DESCRIPTION = '下個月，約兄弟做什麼？16 種過兄弟時光的方式，回答 4 題幫你挑。';
 const ENTRY_REL = '';
 const ACTIVITY_REL = '../../';
 const CARD_REL = '../../../../';

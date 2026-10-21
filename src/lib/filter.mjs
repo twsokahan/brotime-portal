@@ -27,3 +27,19 @@ export function matchesFilters(activity, filters) {
 export function countMatches(activities, filters) {
   return activities.filter((activity) => activity.status === 'ready' && matchesFilters(activity, filters)).length;
 }
+
+const MATCHING = 0;
+const NOT_MATCHING = 1;
+const PREPARING = 2;
+
+function wallRank(activity, filters) {
+  if (activity.status !== 'ready') return PREPARING;
+  return matchesFilters(activity, filters) ? MATCHING : NOT_MATCHING;
+}
+
+export function wallOrder(activities, filters) {
+  return activities
+    .map((activity) => ({ id: activity.id, order: activity.order, rank: wallRank(activity, filters) }))
+    .sort((a, b) => a.rank - b.rank || a.order - b.order)
+    .map(({ id }) => id);
+}

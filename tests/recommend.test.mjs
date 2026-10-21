@@ -114,11 +114,11 @@ test('neutral answers leave nothing out and give no reasons', () => {
 test('two matches come with a note to loosen the answers', () => {
   const result = recommend(wall(), { kids: 'unsure', slot: 'weeknight', place: 'either', interest: 'none' });
   assert.equal(result.picks.length, 2);
-  assert.equal(result.note, '符合的只有 2 個，可以放寬條件再試一次。');
+  assert.equal(result.note, '符合的只有 2 種，可以放寬條件再試一次。');
 });
 
 test('when everything is left out there are no picks and a note to try other answers', () => {
   const result = recommend(wall(), { kids: 'yes', slot: 'weeknight', place: 'indoor', interest: 'craft' });
   assert.equal(result.picks.length, 0);
-  assert.equal(result.note, '沒有剛好符合的活動，換個條件試試看。');
+  assert.equal(result.note, '沒有剛好符合的，換個條件試試看。');
 });

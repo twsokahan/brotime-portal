@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { emptyFilters, matchesFilters, countMatches } from '../src/lib/filter.mjs';
+import { emptyFilters, matchesFilters, countMatches, wallOrder } from '../src/lib/filter.mjs';
 import { validateActivity } from '../src/lib/schema.mjs';
 import { readyActivity, preparingActivity } from './fixtures/activities.mjs';
 
@@ -66,4 +66,21 @@ test('countMatches leaves out preparing activities even when they are tagged', (
   assert.equal(matchesFilters(preparing, emptyFilters()), true);
   assert.equal(countMatches(activities, emptyFilters()), 4);
   assert.equal(countMatches(activities, { ...emptyFilters(), outdoor: true }), 2);
+});
+
+test('wallOrder with empty filters lists ready activities by order, then preparing ones', () => {
+  const activities = wall().reverse();
+  assert.deepEqual(wallOrder(activities, emptyFilters()), ['brunch', 'hike', 'picnic', 'workshop', 'night-run']);
+});
+
+test('wallOrder puts matching ready activities first, then the rest of the ready ones, then preparing', () => {
+  assert.deepEqual(wallOrder(wall(), { ...emptyFilters(), outdoor: true }), ['hike', 'picnic', 'brunch', 'workshop', 'night-run']);
+  assert.deepEqual(wallOrder(wall(), { ...emptyFilters(), interests: ['craft'] }), ['workshop', 'brunch', 'hike', 'picnic', 'night-run']);
+});
+
+test('wallOrder keeps preparing activities last even when their tags match', () => {
+  const activities = wall();
+  const preparing = activities.find((activity) => activity.status === 'preparing');
+  Object.assign(preparing, { order: 0, tags: readyActivity().tags });
+  assert.deepEqual(wallOrder(activities, { ...emptyFilters(), kids: true }), ['brunch', 'hike', 'picnic', 'workshop', 'night-run']);
 });

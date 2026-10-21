@@ -83,9 +83,16 @@ test('the entry page loads the entry script and points og:url at the site', asyn
 });
 
 test('the entry page shows a review activity as preparing in production and as ready in preview', async () => {
-  const card = (html) => html.match(/<a class="[^"]*" data-id="city-walk"/)[0];
-  assert.ok(card(await read(production, 'index.html')).includes('is-preparing'));
-  assert.ok(!card(await read(preview, 'index.html')).includes('is-preparing'));
+  const isCard = (html) => html.includes('<a class="act" data-id="city-walk"');
+  const isPreparing = (html) => html.match(/<section class="preparing">.*?<\/section>/s)?.[0].includes('href="a/city-walk/"') ?? false;
+  const [productionEntry, previewEntry] = await Promise.all([read(production, 'index.html'), read(preview, 'index.html')]);
+  assert.ok(isPreparing(productionEntry) && !isCard(productionEntry));
+  assert.ok(isCard(previewEntry) && !isPreparing(previewEntry));
+});
+
+test('the entry page description avoids the words 活動 and 辦', async () => {
+  const html = await read(production, 'index.html');
+  assert.ok(html.includes('<meta name="description" content="下個月，約兄弟做什麼？16 種過兄弟時光的方式，回答 4 題幫你挑。">'));
 });
 
 test('activity pages carry their own og:url', async () => {
