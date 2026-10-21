@@ -175,6 +175,7 @@ document.body.append(liveLayer);
 
 const live = { steps: [], index: 0, startedAtMs: 0, district: null };
 const topicPicks = new Map();
+const storyPicks = new Map();
 const preloadedImages = [];
 let drawnIds = [];
 let timerId = 0;
@@ -382,7 +383,24 @@ function otherCards(set) {
   );
 }
 
+function storyPicker(cards, pickKey) {
+  const cardSlot = el('div', { className: 'live-cards' });
+  const cardButtons = cards.map((card) => button(card.title, () => choose(card)));
+  function choose(card) {
+    storyPicks.set(pickKey, card.id);
+    cardButtons.forEach((cardButton, i) => cardButton.setAttribute('aria-pressed', String(cards[i] === card)));
+    cardSlot.replaceChildren(storyCardView(card));
+  }
+
+  choose(cards.find((card) => card.id === storyPicks.get(pickKey)) ?? cards[0]);
+  const switcher = el('div', { className: 'story-switch' }, cardButtons);
+  switcher.setAttribute('role', 'group');
+  switcher.setAttribute('aria-label', '選一張故事卡');
+  return el('div', {}, [switcher, cardSlot]);
+}
+
 function cardSetView(set, stepIndex) {
+  if (set.kind === 'story' && set.cards.length > 1) return storyPicker(set.cards, `${stepIndex}:${set.key}`);
   if (set.kind === 'story') return el('div', { className: 'live-cards' }, set.cards.map(storyCardView));
   if (set.kind === 'topic') return topicDraw(set.cards, `${stepIndex}:${set.key}`);
   return otherCards(set);

@@ -672,7 +672,8 @@ p.rain,
   font-size: 16px;
 }
 
-.topic-groups {
+.topic-groups,
+.story-switch {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
