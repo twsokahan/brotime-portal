@@ -669,7 +669,7 @@ build 依序做這些事：
 | 15 | camping | `露營星空夜/…企劃案v5.docx` | 過夜，同樣用 `minutes:null` 和 `flowTitle`；`firstTime` 要放安全事項 |
 | 16 | workplace | `職場人生對話/…企劃案.docx` | 平日下班後、室內 |
 | 17 | kitchen | `男人的廚房火鍋版/…企劃案v4.docx`（不是「故事卡更新」那份） | 活動名稱用「男人的廚房」；火鍋版的器材放進 `todo` |
-| 18 | dad-day | `爸爸帶娃日/2027年創價班「爸爸帶娃日」活動企劃案v6.docx` | 下雨改親子館，`tags.rain:"move"`；孩子的安全事項放 `firstTime` |
+| 18 | dad-day | `爸爸帶娃日/2027年創價班「爸爸帶娃日」活動企劃案v6.docx` | 在需要脫鞋的乾淨室內空間辦，不用親子館或公園（使用者 2026-10-21 確認），`tags.place:"indoor"`、`tags.rain:"ok"`；孩子的安全事項放 `firstTime` |
 
 每個任務的 Steps 都一樣：
 - [ ] 照程序 1–6 做完
