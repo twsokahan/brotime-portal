@@ -1,0 +1,15 @@
+{
+  "activity": "night-run",
+  "sets": {
+    "story": {
+      "pdf": "~/code/sokahan-propalsal-2026/河濱夜跑單車/2027年創價班_兄弟時光_河濱夜跑單車_故事卡_v1_手機版.pdf",
+      "dpi": 300,
+      "og": true,
+      "cards": [
+        { "id": "A", "page": 1, "box": [0, 0, 0.997, 0.999] },
+        { "id": "B", "page": 5, "box": [0, 0, 0.997, 0.999] },
+        { "id": "C", "page": 8, "box": [0, 0, 0.997, 0.999] }
+      ]
+    }
+  }
+}
