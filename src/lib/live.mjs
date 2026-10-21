@@ -1,4 +1,4 @@
-const SESSION_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_PRELOAD_TIMEOUT_MS = 8000;
 
 const twoDigits = (value) => String(value).padStart(2, '0');

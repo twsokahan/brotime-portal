@@ -72,7 +72,7 @@ test('preflight items are a copy of the activity preflight list', () => {
 test('a saved session comes back after a reload', () => {
   const storage = memoryStorage();
   saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: '台北西區' }, 5000);
-  assert.deepEqual(loadSession(storage, 'brunch', 5000 + 6 * HOUR), { index: 2, startedAtMs: 1000, district: '台北西區' });
+  assert.deepEqual(loadSession(storage, 'brunch', 5000 + 24 * HOUR), { index: 2, startedAtMs: 1000, district: '台北西區' });
   assert.deepEqual(JSON.parse(storage.getItem('brotime:live:brunch')), {
     index: 2,
     startedAtMs: 1000,
@@ -87,10 +87,10 @@ test('a session saved without a district comes back with district null', () => {
   assert.deepEqual(loadSession(storage, 'brunch', 2000), { index: 0, startedAtMs: 1000, district: null });
 });
 
-test('a session older than six hours is dropped', () => {
+test('a session older than a day is dropped', () => {
   const storage = memoryStorage();
   saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: null }, 5000);
-  assert.equal(loadSession(storage, 'brunch', 5000 + 6 * HOUR + SECOND), null);
+  assert.equal(loadSession(storage, 'brunch', 5000 + 24 * HOUR + SECOND), null);
 });
 
 test('sessions are kept per activity', () => {
