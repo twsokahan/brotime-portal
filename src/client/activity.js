@@ -160,7 +160,7 @@ function setUpDistrictPicker() {
 
   select.addEventListener('change', () => choose(select.value));
   startButton.disabled = true;
-  startButton.textContent = '先選區，再開始活動';
+  startButton.textContent = '先選區，再開始';
   const initial = savedDistrict();
   if (initial) choose(initial);
   return choose;
@@ -470,7 +470,7 @@ function showStep(index, startedAtMs = Date.now()) {
     el('div', { className: 'live-nav' }, [
       next
         ? button(`下一步：${next.title} →`, () => showStep(index + 1), 'live-next')
-        : button('活動結束', finishLive, 'live-next'),
+        : button('今天到這裡', finishLive, 'live-next'),
       button('上一步', () => (index === 0 ? showPreflight() : showStep(index - 1)), 'live-prev'),
     ]),
   ]);
@@ -498,8 +498,8 @@ function showPreflight() {
     screenTitle('帶齊了嗎？'),
     el('ul', { className: 'preflight' }, items),
     el('div', { className: 'live-nav' }, [
-      button('開始活動 ▶', () => loadThenShowStep(0), 'live-next'),
-      button('回到活動頁', closeLive, 'live-prev'),
+      button('開始 ▶', () => loadThenShowStep(0), 'live-next'),
+      button('回到說明', closeLive, 'live-prev'),
     ]),
   ]);
 }
@@ -509,9 +509,9 @@ function finishLive() {
   stopTimer();
   letScreenSleep();
   showScreen([
-    screenTitle('活動結束，辛苦了！'),
+    screenTitle('今天辛苦了！'),
     el('div', { className: 'staff-survey' }, [cloneTemplate('staff-survey'), cloneTemplate('activity-report')]),
-    el('div', { className: 'live-nav' }, [button('回到活動頁', closeLive, 'live-next')]),
+    el('div', { className: 'live-nav' }, [button('回到說明', closeLive, 'live-next')]),
   ]);
 }
 

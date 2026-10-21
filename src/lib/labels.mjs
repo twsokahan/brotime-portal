@@ -11,7 +11,7 @@ export const PLACE = Object.freeze({
 });
 
 export const RAIN = Object.freeze({
-  ok: '下雨也能辦',
+  ok: '雨天照常',
   move: '雨天改地點',
   postpone: '雨天延期',
 });

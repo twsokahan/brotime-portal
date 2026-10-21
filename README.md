@@ -30,7 +30,7 @@
 
 ### 把 `review` 改成 `ready`
 
-1. `npm run preview`、`npm run serve`，在手機寬度把整頁看一遍，按「開始活動」把當天的每一步走一遍。
+1. `npm run preview`、`npm run serve`，在手機寬度把整頁看一遍，按「開始」把當天的每一步走一遍。
 2. 打開 `content/activities/<id>.json`，把 `"status": "review"` 改成 `"status": "ready"`。
 3. `npm test` 通過後 commit，推到 `main`，幾分鐘後就上線了。
 

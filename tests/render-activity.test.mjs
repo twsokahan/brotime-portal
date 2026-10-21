@@ -4,7 +4,7 @@ import { renderActivityMain, renderPreparingMain } from '../src/render/activity.
 import { readyActivity, preparingActivity, fixtureSite } from './fixtures/activities.mjs';
 
 const REL = '../../';
-const OFFLINE_HINT = '要去沒訊號的地方，出發前在有訊號處先按『開始活動』。';
+const OFFLINE_HINT = '要去沒訊號的地方，出發前在有訊號處先按『開始』。';
 
 const render = ({ activity = readyActivity(), site = fixtureSite() } = {}) =>
   renderActivityMain({ activity, site, rel: REL });
@@ -41,7 +41,7 @@ const BRUNCH_NAME = encodeURIComponent('兄弟早午餐會');
 
 test('the activity page shows the prep lists, the flow and the start button', () => {
   const html = render();
-  for (const text of ['企劃室提供', '你要做的', '60 分鐘這樣過', '開始活動 ▶', OFFLINE_HINT]) {
+  for (const text of ['企劃室提供', '你要做的', '60 分鐘這樣過', '開始 ▶', OFFLINE_HINT]) {
     assert.ok(html.includes(text), `expected ${text}`);
   }
 });
@@ -163,21 +163,21 @@ test('with an activity report form the todo list ends with its own group for fil
   const html = render({ site: siteWithSurveys({ participant: null, staff: null, report: REPORT_FORM }) });
   const groups = todoGroups(todoBox(html));
   const last = groups.at(-1);
-  assert.equal(last.when, '活動後一週內');
+  assert.equal(last.when, '結束後一週內');
   assert.equal(last.rows.length, 1);
-  assert.ok(last.rows[0].includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填寫線上回報表</a>`));
-  assert.equal(groups.filter(({ when }) => when === '活動後一週內').length, 1);
+  assert.ok(last.rows[0].includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填線上回報表</a>`));
+  assert.equal(groups.filter(({ when }) => when === '結束後一週內').length, 1);
 });
 
 test('without an activity report form the todo list has no report row', () => {
-  assert.ok(!todoBox(render()).includes('活動後一週內'));
+  assert.ok(!todoBox(render()).includes('結束後一週內'));
 });
 
 test('with an activity report form the end screen template links to it', () => {
   const html = render({ site: siteWithSurveys({ participant: null, staff: null, report: REPORT_FORM }) });
   assert.ok(
     templateContent(html, 'activity-report').includes(
-      `<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">一週內填活動回報表</a>`,
+      `<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">一週內填回報表</a>`,
     ),
   );
 });
@@ -239,7 +239,7 @@ test('a preparing activity only says it is on the way and links back home', () =
   const html = renderPreparingMain({ activity: preparingActivity(), rel: REL });
   assert.ok(html.includes('<h1>河濱夜跑・單車</h1>'));
   assert.ok(html.includes('下班後沿著河濱跑一段，邊跑邊聊'));
-  assert.ok(html.includes('這個活動還在準備中，做好後會放在這裡。'));
+  assert.ok(html.includes('這一段還在準備中，做好後會放在這裡。'));
   assert.ok(html.includes('<a href="../../">← 看其他兄弟時光</a>'));
-  assert.ok(!html.includes('開始活動'));
+  assert.ok(!html.includes('id="start-live"'));
 });

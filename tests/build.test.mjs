@@ -54,12 +54,12 @@ before(async () => {
 after(() => Promise.all(tempDirs.map((dir) => rm(dir, { recursive: true, force: true }))));
 
 test('production shows a review activity as preparing and a ready one with its start button', async () => {
-  assert.ok((await read(production, 'a/city-walk/index.html')).includes('這個活動還在準備中'));
-  assert.ok((await read(production, 'a/brunch/index.html')).includes('開始活動 ▶'));
+  assert.ok((await read(production, 'a/city-walk/index.html')).includes('這一段還在準備中'));
+  assert.ok((await read(production, 'a/brunch/index.html')).includes('開始 ▶'));
 });
 
 test('preview shows a review activity as a ready page', async () => {
-  assert.ok((await read(preview, 'a/city-walk/index.html')).includes('開始活動 ▶'));
+  assert.ok((await read(preview, 'a/city-walk/index.html')).includes('開始 ▶'));
 });
 
 test('no page carries a preview banner', async () => {

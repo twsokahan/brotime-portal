@@ -27,8 +27,8 @@ function renderTodoRow({ task, detail }) {
 function renderReportTodo(reportUrl) {
   if (!reportUrl) return '';
   return renderTodoGroup(
-    '活動後一週內',
-    `<li><span><a href="${escapeHtml(reportUrl)}">區負責人填寫線上回報表</a></span></li>`,
+    '結束後一週內',
+    `<li><span><a href="${escapeHtml(reportUrl)}">區負責人填線上回報表</a></span></li>`,
   );
 }
 
@@ -48,7 +48,7 @@ function renderPrepare(activity, site) {
 <h2>要準備</h2>
 <div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
 <div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
-<div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，活動最後掃 QR code，不用印。</p></div>
+<div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，結束前掃 QR code，不用印。</p></div>
 </section>`;
 }
 
@@ -86,8 +86,8 @@ function renderFlow(activity, rel) {
 
 function renderStart() {
   return `<div class="start">
-<button id="start-live" type="button">開始活動 ▶</button>
-<p class="hint">要去沒訊號的地方，出發前在有訊號處先按『開始活動』。</p>
+<button id="start-live" type="button">開始 ▶</button>
+<p class="hint">要去沒訊號的地方，出發前在有訊號處先按『開始』。</p>
 </div>`;
 }
 
@@ -134,7 +134,7 @@ function renderSurveyTemplates(activity, site) {
     ? `<template id="staff-survey"><a href="${escapeHtml(staff)}">填工作人員問卷</a></template>`
     : '<template id="staff-survey"><p>工作人員問卷連結準備中</p></template>';
   const report = surveyLink(activity, site, 'report');
-  const reportLink = report ? `<p><a href="${escapeHtml(report)}">一週內填活動回報表</a></p>` : '';
+  const reportLink = report ? `<p><a href="${escapeHtml(report)}">一週內填回報表</a></p>` : '';
   return `${participantTemplate}${staffTemplate}<template id="activity-report">${reportLink}</template>`;
 }
 
@@ -169,6 +169,6 @@ export function renderActivityMain({ activity, site, rel }) {
 export function renderPreparingMain({ activity, rel }) {
   return `<h1>${escapeHtml(activity.name)}</h1>
 <p class="tagline">${escapeHtml(activity.tagline)}</p>
-<p>這個活動還在準備中，做好後會放在這裡。</p>
+<p>這一段還在準備中，做好後會放在這裡。</p>
 <p><a href="${rel}">${HOME_LINK_TEXT}</a></p>`;
 }

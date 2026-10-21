@@ -155,7 +155,7 @@ function cardPage({ activity, card, site }) {
   });
 }
 
-function renderPages({ site, routes, activityFiles }, preview) {
+export function renderPages({ site, routes, activityFiles }, preview) {
   const activities = activityFiles.map(({ activity }) => ({
     ...activity,
     status: shownStatus(activity.status, preview),
