@@ -37,7 +37,6 @@
 
 每個活動的問題列在 `docs/content-notes/<id>.md` 的「要請你決定的」，常見的有：
 
-- 收尾的話（企劃案附件三）不在故事卡上，所以網站沒有放，流程只寫「念企劃案附件三」。要不要做成卡片或放進網站？
 - 「你要做的」裡有幾個時間點是企劃案沒寫、實作時自己定的。
 - 用詞：「主辦人」改成「約大家的人」、「在會館辦」改成「約在會館」順不順（`docs/wording-changes.md`）。
 - 城市散步的故事卡印刷版有 47.5 MB，沒有放上網站。
@@ -51,7 +50,7 @@
 - **GitHub 推送**：本機 SSH 金鑰是公司帳號。這個 repo 的 remote 是 HTTPS，本地設定 `credential.helper` 用 `gh auth git-credential`（同 `~/code/city-walk-review`）。gh token 要有 `workflow` 權限才推得動 `.github/workflows/`。
 - **整個 repo 是公開的**：不要寫個人信箱、電話、金鑰、token，也不要放表單的編輯網址或回覆試算表網址。
 - **實體卡**：巷口泡茶會的話題卡由創價班企劃室印好寄給各區（網站不要叫主持人自己印，印刷檔只當備用）；新春唱題會照企劃案 v4，素材由各區列印、刮開區各區自己做。
-- **內容規則**：引文只能用故事卡上已有的文字；故事全文、卡名、出處一字不改。內容來源在 `~/code/sokahan-propalsal-2026/`。
+- **內容規則**：故事全文、卡名、出處照故事卡一字不改；企劃案裡要主持人念的段落（收尾的話、主持稿）照企劃案原文放進該步驟的 `readAloud`，不要叫主持人去翻企劃案（使用者 2026-10-22 決定）。內容來源在 `~/code/sokahan-propalsal-2026/`。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
 - **完成通知**：做完、test 和 build 都過之後，用 terminal-notifier 和 Pushover 以繁體中文通知使用者（參數見 `~/CLAUDE.md`）。
@@ -69,7 +68,7 @@ review 找到、但照三道閘門不修的 low／minor。
 - Build：`--out src`／`content`／`public` 會通過保護檢查並清掉輸入資料夾；CLI 的 `main()` 沒有測試；`readJson` 遇到 ENOENT 以外的錯誤直接丟原始錯誤；README 寫了 DNS 服務商和 TXT 名稱（不是秘密）。
 - 入口：選項按鈕帶空的 `class=""`；偶數卡片往下錯位 32px 是實作者加的風格，使用者沒說不喜歡就留著；沒有任何上線活動時，標題那句仍寫「回答 4 題幫你挑」。
 - 當天模式：城市散步在沒有選區時按「重新開始」會出錯（要有存檔卻沒有區名才會發生）；載入中按返回鍵時步驟仍會在隱藏圖層跑起來；故事卡切換的縮圖沒有預先載入，沒訊號時小卡改顯示卡名；切換區塊的標題和 aria-label 會被讀兩次。
-- 內容：好幾個活動最後一步寫「念企劃案附件三的收尾的話」，網站上看不到附件三；部分步驟的「做什麼」超過 150 字，手機上偏長；「戶外不安排題目三唱」是企劃案用語，第一次主持的人可能看不懂。已上線活動的內容筆記還寫「狀態是 review」；設計文件和 `docs/tags-review.md` 還寫爸爸帶娃日企劃案 v6。
+- 內容：部分步驟的「做什麼」超過 150 字，手機上偏長；「戶外不安排題目三唱」是企劃案用語，第一次主持的人可能看不懂。已上線活動的內容筆記還寫「狀態是 review」；設計文件和 `docs/tags-review.md` 還寫爸爸帶娃日企劃案 v6。
 - 企劃案 PDF：用 soffice 轉，字型看當次挑到哪個備用字型；田園烤肉會附件前的本文溢出 3 行到第 2 頁（Word 排是一頁剛好），使用者說不用改用 Word 轉（2026-10-22）。新春拜年團那份是用 macOS 轉的。
 - LINE 自動跳：網址路徑如果以 `//` 開頭，轉址會變成跳到別的網站（要刻意造網址才會發生，而且 GitHub Pages 會先回 404）；一行就能加固，例如 `location.pathname.replace(/^\/+/, '/')`。
 - 測試：幾個測試用字串切 HTML、比對字面 `<script type="module"`，改版型時要跟著改。
