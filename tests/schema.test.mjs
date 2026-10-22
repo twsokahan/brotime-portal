@@ -110,6 +110,7 @@ test('showStoryQuestions can only be true', () => {
     activity.steps[3].showStoryQuestions = value;
     assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[3].showStoryQuestions 只能是 true']);
   }
+});
 
 function withIchiban(grades = { A: 1, B: 2, C: 3, D: 4 }) {
   const activity = readyActivity();
