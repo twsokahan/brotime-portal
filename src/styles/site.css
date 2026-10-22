@@ -401,6 +401,35 @@ main > p > a {
   border-radius: 14px;
   background: var(--box);
   box-shadow: 0 8px 20px -10px var(--ink);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.act:focus-visible img {
+  box-shadow: 0 18px 30px -12px var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .act:hover img {
+    box-shadow: 0 18px 30px -12px var(--ink);
+  }
+
+  .act.is-dim:hover {
+    opacity: 0.8;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .act:focus-visible img {
+    transform: translateY(-6px);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .act:hover img {
+    transform: translateY(-6px);
+  }
 }
 
 .act h2 {
