@@ -6,10 +6,10 @@
 
 - 原始碼：公開 repo `twsokahan/brotime-portal`。推到 `main` 就會由 GitHub Actions 跑測試、build、部署到 Pages。
 - 轉址網站：公開 repo `twsokahan/brotime-redirect`（`index.html` 和 `404.html` 必須一模一樣）。
-- 已上線 14 個：兄弟早午餐會、河濱夜跑・單車、清晨登山、露營星空夜、職場人生對話、男人的廚房、爸爸帶娃日、農事體驗日、釣魚聊天會、師傅手藝教室、城市散步、新春拜年團（2026-10-22，內容筆記 `docs/content-notes/new-year-visit.md`）、田園烤肉會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/bbq.md`）、巷口泡茶會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/tea.md`）。前 11 個使用者決定先上線、邊用邊修，所以沒有逐一確認內容。
+- 已上線 15 個：兄弟早午餐會、河濱夜跑・單車、清晨登山、露營星空夜、職場人生對話、男人的廚房、爸爸帶娃日、農事體驗日、釣魚聊天會、師傅手藝教室、城市散步、新春拜年團（2026-10-22，內容筆記 `docs/content-notes/new-year-visit.md`）、田園烤肉會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/bbq.md`）、巷口泡茶會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/tea.md`）、新春唱題會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/new-year-daimoku.md`）。前 11 個使用者決定先上線、邊用邊修，所以沒有逐一確認內容。
 - 2026-10-22 換成新版故事卡：清晨登山 v4 新版畫・晨光（只換插畫）、爸爸帶娃日 v9 插畫版（A、D 卡各多一句，企劃案跟著換成 v7）、城市散步 v3 速寫本（只換插畫，印刷版 45.7 MB 仍然沒放）。改了什麼寫在各自的 `docs/content-notes/<id>.md`。
 - 田園烤肉會的雨天說明照企劃案 v2 改掉了「車庫」（封閉車庫燒炭有一氧化碳風險），使用者確認過。
-- 新春唱題會（2026-10-22）：內容做好，`status` 是 `review`，正式網站仍顯示準備中，`npm run preview` 才看得到。素材是企劃案 v4、航空海報故事卡 A／B，決意卡、一番賞、一番賞看板只放印刷檔（網站不顯示刮刮卡的獎項）。等使用者回答 `docs/content-notes/new-year-daimoku.md` 的問題後改 `ready`。電子版一番賞（主持人手機傳下去、每人選一張撕開）正在設計。
+- 新春唱題會的電子版一番賞正在設計：`docs/superpowers/specs/2026-10-22-electronic-ichiban-design.md`（在另一個 branch，還沒合進 main）。
 - 還在準備中的 1 個：桌遊之夜（還沒有企劃案）。素材齊了以後，照實作計畫 Task 12 的「內容製作程序」做，`status` 先設 `review` 給使用者看預覽，確認後改 `ready`。
 - **2026-10-21 使用者決定**：「家族辦桌拜年」併進「新春拜年團」，空出來的第 10 個換成「新春唱題會」，所以還是 16 個。理由：家族辦桌拜年改成「大家帶菜來一起吃」後，跟男人的廚房、新春唱題會重疊，獨有的只剩「到兄弟家拜年、見到他的家人」，而這本來就是新春拜年團在做的事。新春拜年團寫企劃案時要加一句給鄉鎮用：鄉下人家常會留客吃飯，主人家真心邀就留下，但不要事先排成聚餐。新春唱題會的 `edition` 沿用 `rural` 只是為了接手第 10 個位置（網站不顯示版別），內容都會、鄉鎮都適用；`templates`、`slots`、`interests` 是照企劃案 v3 推測的。
 - 執行紀錄（每個任務的 commit、裁定、延後的 minor）在 `.superpowers/sdd/` 底下（git 不追蹤，只在本機，可以刪）。
@@ -50,6 +50,7 @@
 - **subagent 的模型**：review 類用 `model: "sonnet"`，實作用預設模型。
 - **GitHub 推送**：本機 SSH 金鑰是公司帳號。這個 repo 的 remote 是 HTTPS，本地設定 `credential.helper` 用 `gh auth git-credential`（同 `~/code/city-walk-review`）。gh token 要有 `workflow` 權限才推得動 `.github/workflows/`。
 - **整個 repo 是公開的**：不要寫個人信箱、電話、金鑰、token，也不要放表單的編輯網址或回覆試算表網址。
+- **實體卡**：實體卡（泡茶會話題卡、新春唱題會故事卡等）由創價班企劃室印好寄給各區，網站不要叫主持人自己印；印刷檔只當備用。
 - **內容規則**：引文只能用故事卡上已有的文字；故事全文、卡名、出處一字不改。內容來源在 `~/code/sokahan-propalsal-2026/`。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
