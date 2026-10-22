@@ -9,7 +9,7 @@
 - 已上線 15 個：兄弟早午餐會、河濱夜跑・單車、清晨登山、露營星空夜、職場人生對話、男人的廚房、爸爸帶娃日、農事體驗日、釣魚聊天會、師傅手藝教室、城市散步、新春拜年團（2026-10-22，內容筆記 `docs/content-notes/new-year-visit.md`）、田園烤肉會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/bbq.md`）、巷口泡茶會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/tea.md`）、新春唱題會（2026-10-22，使用者看過問題後確認上線，內容筆記 `docs/content-notes/new-year-daimoku.md`）。前 11 個使用者決定先上線、邊用邊修，所以沒有逐一確認內容。
 - 2026-10-22 換成新版故事卡：清晨登山 v4 新版畫・晨光（只換插畫）、爸爸帶娃日 v9 插畫版（A、D 卡各多一句，企劃案跟著換成 v7）、城市散步 v3 速寫本（只換插畫，印刷版 45.7 MB 仍然沒放）。改了什麼寫在各自的 `docs/content-notes/<id>.md`。
 - 田園烤肉會的雨天說明照企劃案 v2 改掉了「車庫」（封閉車庫燒炭有一氧化碳風險），使用者確認過。
-- 新春唱題會的電子版一番賞正在設計：`docs/superpowers/specs/2026-10-22-electronic-ichiban-design.md`（在另一個 branch，還沒合進 main）。
+- 新春唱題會有電子一番賞（2026-10-22）：頁面 `a/new-year-daimoku/ichiban/`，主持人填 A～D 賞各幾份，手機傳下去，每人選一張登機證撕開；實體刮刮卡或電子版由各區自己決定。設計 `docs/superpowers/specs/2026-10-22-electronic-ichiban-design.md`、計畫 `docs/superpowers/plans/2026-10-22-electronic-ichiban.md`。活動資料的 `ichiban.grades` 是預設份數，步驟的 `tool: "ichiban"` 放「打開電子一番賞」按鈕；這一輪存在手機的 localStorage（`ichiban:<活動 id>`），24 小時沒動就當成上一場。撕的手感還沒用真的手機試過。
 - 還在準備中的 1 個：桌遊之夜（還沒有企劃案）。素材齊了以後，照實作計畫 Task 12 的「內容製作程序」做，`status` 先設 `review` 給使用者看預覽，確認後改 `ready`。
 - **2026-10-21 使用者決定**：「家族辦桌拜年」併進「新春拜年團」，空出來的第 10 個換成「新春唱題會」，所以還是 16 個。理由：家族辦桌拜年改成「大家帶菜來一起吃」後，跟男人的廚房、新春唱題會重疊，獨有的只剩「到兄弟家拜年、見到他的家人」，而這本來就是新春拜年團在做的事。新春拜年團寫企劃案時要加一句給鄉鎮用：鄉下人家常會留客吃飯，主人家真心邀就留下，但不要事先排成聚餐。新春唱題會的 `edition` 沿用 `rural` 只是為了接手第 10 個位置（網站不顯示版別），內容都會、鄉鎮都適用；`templates`、`slots`、`interests` 是照企劃案 v3 推測的。
 - 執行紀錄（每個任務的 commit、裁定、延後的 minor）在 `.superpowers/sdd/` 底下（git 不追蹤，只在本機，可以刪）。
@@ -51,6 +51,7 @@
 - **整個 repo 是公開的**：不要寫個人信箱、電話、金鑰、token，也不要放表單的編輯網址或回覆試算表網址。
 - **實體卡**：巷口泡茶會的話題卡由創價班企劃室印好寄給各區（網站不要叫主持人自己印，印刷檔只當備用）；新春唱題會照企劃案 v4，素材由各區列印、刮開區各區自己做。
 - **內容規則**：故事全文、卡名、出處照故事卡一字不改；企劃案裡要主持人念的段落（收尾的話、主持稿）照企劃案原文放進該步驟的 `readAloud`，不要叫主持人去翻企劃案（使用者 2026-10-22 決定）。內容來源在 `~/code/sokahan-propalsal-2026/`。
+- **電子一番賞給別的活動用**：加 `ichiban` 設定和某一步的 `tool: "ichiban"` 就有，但登機證上的字（冬 ✈ 春、唱題會）是為新春唱題會寫的，要先改。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
 - **完成通知**：做完、test 和 build 都過之後，用 terminal-notifier 和 Pushover 以繁體中文通知使用者（參數見 `~/CLAUDE.md`）。
