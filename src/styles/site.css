@@ -1199,8 +1199,6 @@ html:has(#ichiban-app) > body {
   --pass-navy: #1f2f52;
   --pass-red: #c8442d;
   --pass-paper: #fbf6ea;
-  --pass-edge: #d8ccb6;
-  --pass-perforation: #b9ab92;
   --pass-plane: #8fb6c9;
 }
 
@@ -1449,87 +1447,142 @@ html:has(#ichiban-app) > body {
 .ticket-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
-  gap: 8px;
+  gap: 14px 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.ticket-grid li {
+  container-type: inline-size;
+}
+
 .ticket {
-  display: flex;
+  --u: calc(100cqw / 257);
+  position: relative;
+  display: block;
   width: 100%;
-  min-height: 56px;
+  height: calc(106 * var(--u));
+  min-height: 0;
   padding: 0;
-  overflow: hidden;
-  border: 1px solid var(--pass-edge);
-  border-radius: 8px;
-  background: var(--pass-paper);
+  border: 0;
+  border-radius: 0;
+  background: none;
   color: var(--pass-navy);
   line-height: 1.3;
   text-align: left;
 }
 
-button.ticket:active {
-  background: #f1e8d4;
+.ticket .ticket-pass {
+  top: calc(4 * var(--u));
+  left: calc(21 * var(--u));
+  width: calc(236 * var(--u));
+  height: calc(98 * var(--u));
+  filter: drop-shadow(0 1px 1.5px rgba(50, 30, 10, 0.25));
+  transition: transform 0.12s ease;
 }
 
-.ticket-main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  padding: 4px 8px;
+button.ticket:active .ticket-pass {
+  transform: scale(0.96);
 }
 
-.ticket-route {
-  display: flex;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 700;
+.ticket .peel-band b {
+  font-size: calc(17 * var(--u));
 }
 
-.ticket-main b {
-  font-size: 17px;
-  font-weight: 900;
-  white-space: nowrap;
+.ticket .peel-band small {
+  display: none;
 }
 
-.ticket-stub {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  border-left: 2px dashed var(--pass-paper);
-  background: var(--pass-red);
-  color: var(--pass-paper);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  writing-mode: vertical-rl;
+.ticket .peel-seat {
+  top: calc(40 * var(--u));
+  right: calc(16 * var(--u));
+  font-size: calc(20 * var(--u));
 }
 
-.ticket.torn {
-  align-items: center;
-  border-style: dashed;
-  border-color: var(--pass-perforation);
-  background: transparent;
+.ticket .peel-seat span {
+  font-size: calc(13 * var(--u));
 }
 
-.ticket.torn .ticket-main {
-  opacity: 0.45;
+.ticket.torn .ticket-pass {
+  left: 0;
+  visibility: visible;
+  filter: drop-shadow(1px 2px 1.5px rgba(50, 30, 10, 0.3)) drop-shadow(3px 7px 5px rgba(50, 30, 10, 0.3));
 }
 
-.ticket-grade {
-  flex: none;
-  margin: 0 8px 0 0;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--grade);
-  color: var(--on-grade);
-  font-size: 15px;
-  font-weight: 900;
+.ticket-curl {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(28 * var(--u));
+  border-radius: calc(12 * var(--u)) 0 0 calc(12 * var(--u));
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.3) 0,
+    rgba(0, 0, 0, 0.12) calc(4 * var(--u)),
+    rgba(255, 255, 255, 0.24) calc(8 * var(--u)),
+    rgba(255, 255, 255, 0.08) calc(15 * var(--u)),
+    rgba(255, 255, 255, 0) calc(26 * var(--u))
+  );
+}
+
+::view-transition-group(picked-ticket) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+
+::view-transition-old(picked-ticket),
+::view-transition-new(picked-ticket) {
+  animation-duration: 0.15s;
+}
+
+html[data-zoom]::view-transition-old(root),
+html[data-zoom]::view-transition-new(root) {
+  transform-origin: var(--zoom-origin);
+  animation-fill-mode: both;
+}
+
+html[data-zoom="in"]::view-transition-old(root) {
+  animation: zoom-past 0.3s ease-in both;
+}
+
+html[data-zoom="in"]::view-transition-new(root) {
+  animation: zoom-fade-in 0.25s ease-out 0.25s both;
+}
+
+html[data-zoom="out"]::view-transition-old(root) {
+  animation: zoom-fade-out 0.2s ease-out both;
+}
+
+html[data-zoom="out"]::view-transition-new(root) {
+  animation: zoom-back 0.5s cubic-bezier(0.3, 0.9, 0.3, 1) both;
+}
+
+@keyframes zoom-past {
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes zoom-back {
+  from {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes zoom-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes zoom-fade-out {
+  to {
+    opacity: 0;
+  }
 }
 
 .tear-head {
@@ -1556,6 +1609,7 @@ button.ticket:active {
 }
 
 .peel-stage {
+  --u: 1px;
   --peel-card: #f3d77f;
   --peel-card-edge: #6b5446;
   --peel-trace: #fffdf7;
@@ -1648,60 +1702,60 @@ button.ticket:active {
 .peel-teeth::after {
   content: "";
   position: absolute;
-  left: 13px;
-  width: 204px;
-  height: 4px;
-  background: radial-gradient(circle at 6px 4px, var(--tooth) 3.4px, transparent 3.9px) repeat-x;
-  background-size: 12px 4px;
+  left: calc(13 * var(--u));
+  width: calc(204 * var(--u));
+  height: calc(4 * var(--u));
+  background: radial-gradient(circle at calc(6 * var(--u)) calc(4 * var(--u)), var(--tooth) calc(3.4 * var(--u)), transparent calc(3.9 * var(--u))) repeat-x;
+  background-size: calc(12 * var(--u)) calc(4 * var(--u));
 }
 
 .peel-teeth::before {
   --tooth: var(--tooth-top);
-  top: -4px;
+  top: calc(-4 * var(--u));
 }
 
 .peel-teeth::after {
   --tooth: var(--tooth-bottom);
-  bottom: -4px;
+  bottom: calc(-4 * var(--u));
   transform: scaleY(-1);
 }
 
 .peel-tab {
   position: absolute;
   top: 50%;
-  width: 42px;
-  height: 42px;
-  margin-top: -21px;
+  width: calc(42 * var(--u));
+  height: calc(42 * var(--u));
+  margin-top: calc(-21 * var(--u));
   border-radius: 50%;
   background: inherit;
 }
 
 .peel-slot .peel-tab {
-  left: -21px;
+  left: calc(-21 * var(--u));
 }
 
 .peel-front {
   --tooth-top: var(--pass-navy);
   --tooth-bottom: var(--pass-paper);
   left: 0;
-  border-radius: 6px 12px 12px 6px;
+  border-radius: calc(6 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u)) calc(6 * var(--u));
   background: var(--pass-paper);
 }
 
 .peel-front .peel-tab {
-  left: -21px;
+  left: calc(-21 * var(--u));
   display: flex;
   align-items: center;
-  padding-left: 7px;
+  padding-left: calc(7 * var(--u));
   color: var(--pass-red);
-  font-size: 11px;
+  font-size: calc(11 * var(--u));
   font-weight: 900;
 }
 
 .peel-front .peel-tab::before {
   content: "";
   position: absolute;
-  inset: -6px 0 -6px -9px;
+  inset: calc(-6 * var(--u)) 0 calc(-6 * var(--u)) calc(-9 * var(--u));
 }
 
 .peel-band {
@@ -1711,50 +1765,50 @@ button.ticket:active {
   left: 0;
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  height: 28px;
+  gap: calc(6 * var(--u));
+  height: calc(28 * var(--u));
   margin: 0;
-  padding: 6px 0 0 22px;
-  border-radius: 6px 12px 0 0;
+  padding: calc(6 * var(--u)) 0 0 calc(22 * var(--u));
+  border-radius: calc(6 * var(--u)) calc(12 * var(--u)) 0 0;
   background: var(--pass-navy);
   color: var(--pass-paper);
   line-height: 1;
 }
 
 .peel-band b {
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   letter-spacing: 0.06em;
 }
 
 .peel-band small {
   color: var(--pass-plane);
-  font-size: 8px;
+  font-size: calc(8 * var(--u));
   font-weight: 700;
   letter-spacing: 0.2em;
 }
 
 .peel-route {
   position: absolute;
-  top: 38px;
-  left: 22px;
+  top: calc(38 * var(--u));
+  left: calc(22 * var(--u));
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 30px;
+  gap: calc(6 * var(--u));
+  font-size: calc(30 * var(--u));
   font-weight: 900;
   line-height: 1.2;
 }
 
 .peel-route .route-plane {
-  font-size: 22px;
+  font-size: calc(22 * var(--u));
 }
 
 .peel-seat {
   position: absolute;
-  top: 44px;
-  right: 26px;
+  top: calc(44 * var(--u));
+  right: calc(26 * var(--u));
   margin: 0;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   font-weight: 900;
   text-align: right;
   white-space: nowrap;
@@ -1762,12 +1816,12 @@ button.ticket:active {
 
 .peel-seat span {
   display: block;
-  margin-bottom: 3px;
-  padding: 1px 6px;
-  border-radius: 4px;
+  margin-bottom: calc(3 * var(--u));
+  padding: calc(1 * var(--u)) calc(6 * var(--u));
+  border-radius: calc(4 * var(--u));
   background: var(--pass-red);
   color: var(--pass-paper);
-  font-size: 10px;
+  font-size: calc(10 * var(--u));
   font-weight: 700;
   letter-spacing: 0.2em;
   text-align: center;
@@ -1778,9 +1832,9 @@ button.ticket:active {
   --tooth-bottom: var(--grade, var(--peel-blank));
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 22px;
-  border-radius: 12px 6px 6px 12px;
+  gap: calc(12 * var(--u));
+  padding: 0 calc(22 * var(--u));
+  border-radius: calc(12 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u)) calc(12 * var(--u));
   background: var(--grade, var(--peel-blank));
   color: var(--on-grade);
   visibility: hidden;
@@ -1788,23 +1842,23 @@ button.ticket:active {
 
 .peel-back::before,
 .peel-back::after {
-  left: 19px;
+  left: calc(19 * var(--u));
 }
 
 .peel-back .peel-tab {
-  right: -21px;
+  right: calc(-21 * var(--u));
 }
 
 .peel-grade {
   flex: none;
   margin: 0;
-  font-size: 66px;
+  font-size: calc(66 * var(--u));
   font-weight: 900;
   line-height: 1;
 }
 
 .peel-grade small {
-  font-size: 22px;
+  font-size: calc(22 * var(--u));
 }
 
 .peel-prize {
@@ -1813,7 +1867,7 @@ button.ticket:active {
   min-width: 0;
   margin: 0;
   overflow: hidden;
-  font-size: 15px;
+  font-size: calc(15 * var(--u));
   font-weight: 700;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;

@@ -25,6 +25,7 @@ const FINISH_MS = 320;
 const AUTO_TEAR_MS = 650;
 const MAX_LEFT_FADE = 64;
 const TEAR_VIBRATION_MS = 30;
+const ZOOM_NAME = 'picked-ticket';
 const PLANE = '✈\uFE0E';
 const PROBLEM_TEXT = {
   'bad-count': '份數要填 0～99',
@@ -97,13 +98,13 @@ const gradeClass = (grade) => `grade-${grade}`;
 const seatNumber = (seatIndex) => String(seatIndex + 1).padStart(2, '0');
 const seatLabel = (seatIndex) => `座位 ${seatNumber(seatIndex)}`;
 
-function show(children, heading) {
+function show(children, heading, scrollY = 0) {
   app.replaceChildren(...children.filter(Boolean));
   if (!hasRendered) {
     hasRendered = true;
     return;
   }
-  window.scrollTo(0, 0);
+  window.scrollTo(0, scrollY);
   heading.focus({ preventScroll: true });
 }
 
@@ -227,24 +228,59 @@ function restartButton() {
   return restart;
 }
 
-function ticketFace(seatIndex, side) {
-  return [el('span', { className: 'ticket-main' }, [routeLine('ticket-route'), el('b', { textContent: seatLabel(seatIndex) })]), side];
+function passFace(seatIndex, block) {
+  return [
+    el(block, { className: 'peel-band' }, [el('b', { textContent: '新春一番賞' }), el('small', { textContent: 'BOARDING PASS' })]),
+    routeLine('peel-route'),
+    el(block, { className: 'peel-seat' }, [el('span', { textContent: 'SEAT' }), seatLabel(seatIndex)]),
+    el('span', { className: 'peel-tab', textContent: '拉' }),
+  ];
+}
+
+function zoom(direction, from, render) {
+  if (!document.startViewTransition || reducedMotion.matches) return render();
+  const root = document.documentElement;
+  const aim = (node) => {
+    const { left, top, width, height } = node.getBoundingClientRect();
+    root.style.setProperty('--zoom-origin', `${left + width / 2}px ${top + height / 2}px`);
+  };
+  if (direction === 'in') aim(from);
+  from.style.viewTransitionName = ZOOM_NAME;
+  root.dataset.zoom = direction;
+  let to = null;
+  const transition = document.startViewTransition(() => {
+    from.style.viewTransitionName = '';
+    to = render();
+    to.style.viewTransitionName = ZOOM_NAME;
+    if (direction === 'out') aim(to);
+  });
+  transition.finished.finally(() => {
+    if (to) to.style.viewTransitionName = '';
+    delete root.dataset.zoom;
+  });
 }
 
 function untornTicket(seatIndex) {
-  return el(
-    'button',
-    { type: 'button', className: 'ticket', onclick: () => showTear(seatIndex) },
-    ticketFace(seatIndex, decorative(el('span', { className: 'ticket-stub', textContent: 'SEAT' }))),
-  );
+  const pass = decorative(el('span', { className: 'ticket-pass peel-front peel-teeth' }, passFace(seatIndex, 'span')));
+  const pick = () => {
+    const scrollY = window.scrollY;
+    zoom('in', pass, () => showTear(seatIndex, scrollY));
+  };
+  return labelled(el('button', { type: 'button', className: 'ticket', onclick: pick }, [pass]), seatLabel(seatIndex));
 }
 
 function tornTicket(seatIndex, grade) {
-  return el(
-    'div',
-    { className: `ticket torn ${gradeClass(grade)}` },
-    ticketFace(seatIndex, el('span', { className: 'ticket-grade', textContent: `${grade}賞` })),
-  );
+  const ticket = el('div', { className: `ticket torn ${gradeClass(grade)}` }, [
+    decorative(
+      el('span', { className: 'ticket-pass peel-back peel-teeth' }, [
+        el('span', { className: 'peel-grade' }, [grade, el('small', { textContent: '賞' })]),
+        el('span', { className: 'peel-tab' }),
+        el('span', { className: 'ticket-curl' }),
+      ]),
+    ),
+  ]);
+  ticket.setAttribute('role', 'img');
+  return labelled(ticket, `${seatLabel(seatIndex)}：${grade}賞`);
 }
 
 function prizeBoard() {
@@ -261,7 +297,7 @@ function prizeBoard() {
   );
 }
 
-function showPick() {
+function showPick(scrollY = 0) {
   const left = ticketsLeft(round);
   const heading = el('h1', { tabIndex: -1, textContent: left > 0 ? '選一張，按下去' : '全部抽完了' });
   const restart = restartButton();
@@ -281,18 +317,14 @@ function showPick() {
       left > 0 && el('div', { className: 'pick-restart' }, [restart]),
     ],
     heading,
+    scrollY,
   );
+  return tickets;
 }
 
 function peelTicket(seatIndex) {
   const lift = el('div', { className: 'peel-lift' });
-  const front = el('div', { className: 'peel-front peel-teeth' }, [
-    el('p', { className: 'peel-band' }, [el('b', { textContent: '新春一番賞' }), el('small', { textContent: 'BOARDING PASS' })]),
-    routeLine('peel-route'),
-    el('p', { className: 'peel-seat' }, [el('span', { textContent: 'SEAT' }), seatLabel(seatIndex)]),
-    el('span', { className: 'peel-tab', textContent: '拉' }),
-    el('div', { className: 'peel-shade' }, [lift]),
-  ]);
+  const front = el('div', { className: 'peel-front peel-teeth' }, [...passFace(seatIndex, 'p'), el('div', { className: 'peel-shade' }, [lift])]);
   const bend = el('div', { className: 'peel-bend' });
   const back = el('div', { className: 'peel-back peel-teeth' }, [
     el('span', { className: 'peel-tab' }),
@@ -467,16 +499,20 @@ function resultView(grade, isLast) {
   ];
 }
 
-function showTear(seatIndex) {
-  if (round.torn[seatIndex]) return showPick();
+const pickedPass = (tickets, seatIndex) => tickets.children[seatIndex].querySelector('.ticket-pass');
+
+function showTear(seatIndex, pickScrollY) {
+  if (round.torn[seatIndex]) return pickedPass(showPick(pickScrollY), seatIndex);
   const peel = peelTicket(seatIndex);
   const heading = el('h1', { tabIndex: -1, textContent: seatLabel(seatIndex) });
-  const back = button('換一張', showPick, 'tear-back');
+  const backToPick = () =>
+    zoom('out', revealed ? peel.back : peel.front, () => pickedPass(showPick(pickScrollY), seatIndex));
+  const back = button('換一張', backToPick, 'tear-back');
   const hint = el('p', { className: 'tear-hint', textContent: '手指按住左邊的「拉」，往右上拉開' });
   const tearButton = button('撕開', () => tearOpen(), 'tear-button');
   const after = el('div', { className: 'tear-after' });
   after.setAttribute('aria-live', 'polite');
-  const next = button('交給下一位 →', showPick, 'ichiban-primary');
+  const next = button('交給下一位 →', backToPick, 'ichiban-primary');
   let revealed = null;
 
   function reveal() {
@@ -511,6 +547,7 @@ function showTear(seatIndex) {
     heading,
   );
   const tearOpen = peelToOpen(peel, { onReveal: reveal, onOpen: showResult });
+  return peel.front;
 }
 
 const savedRound = parseSaved(saved.read());
