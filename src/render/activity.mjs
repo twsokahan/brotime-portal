@@ -56,6 +56,7 @@ ${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}<div class="box todo"><h3>你要�
 function thumbCards(set, step) {
   if (step.cardIds) return set.cards.filter((card) => step.cardIds.includes(card.id));
   if (set.thumbs) return set.thumbs.map((cardId) => set.cards.find((card) => card.id === cardId));
+  if (set.kind === 'story') return set.cards;
   return set.cards.slice(0, DEFAULT_THUMB_COUNT);
 }
 

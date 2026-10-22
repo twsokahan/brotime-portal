@@ -116,6 +116,22 @@ test('cardIds pick which thumbnails a step shows', () => {
   assert.ok(!step.includes('cards/brunch/t02-thumb.webp'));
 });
 
+test('a step shows every story card, even past three', () => {
+  const activity = readyActivity();
+  const [first] = activity.cardSets.story.cards;
+  activity.cardSets.story.cards.push(...['s2', 's3', 's4'].map((id) => ({ ...first, id })));
+  const step = stepItem(render({ activity }), '一起讀故事');
+  for (const id of ['s1', 's2', 's3', 's4']) assert.ok(step.includes(`cards/brunch/${id}-thumb.webp`), id);
+});
+
+test('a step shows only the first three topic cards', () => {
+  const activity = readyActivity();
+  activity.cardSets.topic.cards.push({ id: 't12', title: '測試用的第四張話題卡？', group: '前菜' });
+  const step = stepItem(render({ activity }), '邊吃邊聊');
+  assert.ok(step.includes('cards/brunch/t11-thumb.webp'));
+  assert.ok(!step.includes('cards/brunch/t12-thumb.webp'));
+});
+
 test('a story card thumbnail links to its own card page and has a QR template', () => {
   const html = render();
   const step = stepItem(html, '一起讀故事');
