@@ -499,7 +499,7 @@ function showStep(index, startedAtMs = Date.now()) {
     el('p', { className: 'live-say', textContent: `說：${step.say}` }),
     step.showStoryQuestions && earlierStoryQuestions(index),
     ...stepCardSets(step).map((set) => cardSetView(set, index)),
-    step.tool === 'ichiban' && externalLink('打開電子一番賞', 'ichiban/', 'ichiban-open'),
+    step.tool === 'ichiban' && externalLink('打開電子一番賞', 'ichiban/', 'button-link ichiban-open'),
     step.mapsUrl && externalLink(step.mapsLabel, step.mapsUrl, 'button-link live-maps'),
     !next && participantSurvey(),
     el('div', { className: 'live-nav' }, [
