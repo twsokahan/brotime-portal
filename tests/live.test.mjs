@@ -12,6 +12,7 @@ import {
   groupsOf,
   groupsNeedFullRow,
   drawCard,
+  storyCardBefore,
 } from '../src/lib/live.mjs';
 import { readyActivity } from './fixtures/activities.mjs';
 
@@ -156,6 +157,46 @@ test('image urls only include the chosen cards when a step names them', () => {
 test('steps without cards need no images', () => {
   const activity = readyActivity();
   assert.deepEqual(imageUrlsFor(activity, [activity.steps[0]]), []);
+});
+
+function activityWithThreeStoryCards() {
+  const activity = readyActivity();
+  const [first] = activity.cardSets.story.cards;
+  activity.cardSets.story.cards.push({ ...first, id: 's2', title: '第二張' }, { ...first, id: 's3', title: '第三張' });
+  return activity;
+}
+
+test('the sharing step shows the first card of the story step before it when nothing was picked', () => {
+  const activity = activityWithThreeStoryCards();
+  assert.equal(storyCardBefore(activity, activity.steps, 3, new Map()).id, 's1');
+  assert.equal(storyCardBefore(activity, activity.steps, 4, new Map()).id, 's1');
+});
+
+test('the sharing step shows the story card picked on the story step', () => {
+  const activity = activityWithThreeStoryCards();
+  const picks = new Map([['2:story', 's3']]);
+  assert.equal(storyCardBefore(activity, activity.steps, 3, picks).id, 's3');
+});
+
+test('the sharing step falls back to the first card shown when the pick is unknown', () => {
+  const activity = activityWithThreeStoryCards();
+  activity.steps[2].cardIds = ['s2', 's3'];
+  assert.equal(storyCardBefore(activity, activity.steps, 3, new Map()).id, 's2');
+  assert.equal(storyCardBefore(activity, activity.steps, 3, new Map([['2:story', 's1']])).id, 's2');
+  assert.equal(storyCardBefore(activity, activity.steps, 3, new Map([['2:story', 'gone']])).id, 's2');
+});
+
+test('the sharing step uses the nearest story step before it', () => {
+  const activity = activityWithThreeStoryCards();
+  const steps = [...activity.steps.slice(0, 4), { ...activity.steps[2], cardIds: ['s3'] }, activity.steps[3]];
+  assert.equal(storyCardBefore(activity, steps, 5, new Map([['2:story', 's2']])).id, 's3');
+  assert.equal(storyCardBefore(activity, steps, 3, new Map([['2:story', 's2']])).id, 's2');
+});
+
+test('there is no story card to share before the story step', () => {
+  const activity = readyActivity();
+  assert.equal(storyCardBefore(activity, activity.steps, 2, new Map()), null);
+  assert.equal(storyCardBefore(activity, activity.steps, 0, new Map()), null);
 });
 
 test('preload reports urls that never load and still resolves', async () => {

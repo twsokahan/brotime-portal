@@ -10,6 +10,7 @@ import {
   preload,
   progressText,
   saveSession,
+  storyCardBefore,
   timerText,
 } from './lib/live.mjs';
 import { cardPageUrl, shareFallbacks } from './lib/share.mjs';
@@ -290,10 +291,10 @@ function shareControls(title, url) {
   return holder;
 }
 
-const storyQuestions = (questions) =>
+const storyQuestions = (questions, heading = '分享提問') =>
   questions &&
   el('div', { className: 'story-questions' }, [
-    el('h3', { textContent: '分享提問' }),
+    el('h3', { textContent: heading }),
     el('ol', {}, questions.map((question) => el('li', { textContent: question }))),
   ]);
 
@@ -459,6 +460,12 @@ function participantSurvey() {
 const readAloudBlock = (text) =>
   el('section', { className: 'read-aloud' }, [el('h3', { textContent: '念這段：' }), el('p', { textContent: text })]);
 
+function earlierStoryQuestions(index) {
+  const card = storyCardBefore(activity, live.steps, index, storyPicks);
+  if (!card) return null;
+  return card.questions ? storyQuestions(card.questions, `〈${card.title}〉的分享提問`) : storyNote(card.note);
+}
+
 function showStep(index, startedAtMs = Date.now()) {
   live.index = index;
   live.startedAtMs = startedAtMs;
@@ -483,6 +490,7 @@ function showStep(index, startedAtMs = Date.now()) {
     el('p', { className: 'live-do', textContent: step.do }),
     el('p', { className: 'live-say', textContent: `說：${step.say}` }),
     step.readAloud && readAloudBlock(step.readAloud),
+    step.showStoryQuestions && earlierStoryQuestions(index),
     ...stepCardSets(step).map((set) => cardSetView(set, index)),
     step.mapsUrl && externalLink(step.mapsLabel, step.mapsUrl, 'button-link live-maps'),
     !next && participantSurvey(),

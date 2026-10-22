@@ -194,7 +194,18 @@ function checkStepCards(check, step, path, cardSets) {
   });
 }
 
-function checkStep(check, step, path, cardSets) {
+const usesStoryCards = (step, cardSets) =>
+  Array.isArray(step?.cards) && step.cards.some((key) => cardSets[key]?.kind === 'story');
+
+function checkShowStoryQuestions(check, step, path, earlierSteps, cardSets) {
+  if (step.showStoryQuestions === undefined) return;
+  if (step.showStoryQuestions !== true) check.fail(`${path}.showStoryQuestions`, '只能是 true');
+  else if (!earlierSteps.some((earlier) => usesStoryCards(earlier, cardSets))) {
+    check.fail(`${path}.showStoryQuestions`, '前面要有一步用到故事卡');
+  }
+}
+
+function checkStep(check, step, path, cardSets, earlierSteps) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
   if (step.minutes !== null && !(Number.isInteger(step.minutes) && step.minutes > 0)) {
@@ -207,12 +218,13 @@ function checkStep(check, step, path, cardSets) {
   if (step.readAloud !== undefined) check.text(step.readAloud, `${path}.readAloud`);
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
   if (step.routeLeg !== undefined) check.oneOf(step.routeLeg, ROUTE_LEGS, `${path}.routeLeg`);
+  checkShowStoryQuestions(check, step, path, earlierSteps, cardSets);
 }
 
 function checkSteps(check, steps, cardSets) {
   if (!check.list(steps, 'steps', 1)) return;
   const sets = isObject(cardSets) ? cardSets : {};
-  steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, sets));
+  steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, sets, steps.slice(0, i)));
 }
 
 function checkPlanFile(check, planFile, id) {

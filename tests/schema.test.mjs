@@ -88,6 +88,30 @@ test('cardIds must belong to the card sets of that step', () => {
   assertReports(validateActivity(activity, allFilesExist), '.cardIds[0]');
 });
 
+test('a step after the story step may show its sharing questions', () => {
+  const activity = readyActivity();
+  activity.steps[3].showStoryQuestions = true;
+  activity.steps[4].showStoryQuestions = true;
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('showStoryQuestions needs a story step before it', () => {
+  const activity = readyActivity();
+  activity.steps[1].showStoryQuestions = true;
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[1].showStoryQuestions 前面要有一步用到故事卡']);
+  delete activity.steps[1].showStoryQuestions;
+  activity.steps[2].showStoryQuestions = true;
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[2].showStoryQuestions 前面要有一步用到故事卡']);
+});
+
+test('showStoryQuestions can only be true', () => {
+  const activity = readyActivity();
+  for (const value of [false, 'true', 1]) {
+    activity.steps[3].showStoryQuestions = value;
+    assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[3].showStoryQuestions 只能是 true']);
+  }
+});
+
 test('rain other than ok needs a rainNote', () => {
   const activity = readyActivity();
   activity.tags.rain = 'postpone';

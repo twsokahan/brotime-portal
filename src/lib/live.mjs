@@ -62,16 +62,29 @@ export function clearSession(storage, activityId) {
   }
 }
 
+function cardsShownIn(activity, step, key) {
+  const cards = activity.cardSets[key].cards;
+  return step.cardIds ? cards.filter((card) => step.cardIds.includes(card.id)) : cards;
+}
+
 export function imageUrlsFor(activity, steps) {
   const urls = new Set();
   for (const step of steps) {
     for (const key of step.cards ?? []) {
-      const cards = activity.cardSets[key].cards;
-      const used = step.cardIds ? cards.filter((card) => step.cardIds.includes(card.id)) : cards;
-      for (const card of used) urls.add(`cards/${activity.id}/${card.id}.webp`);
+      for (const card of cardsShownIn(activity, step, key)) urls.add(`cards/${activity.id}/${card.id}.webp`);
     }
   }
   return [...urls];
+}
+
+export function storyCardBefore(activity, steps, index, picks) {
+  for (let i = index - 1; i >= 0; i -= 1) {
+    const key = steps[i].cards?.find((cardKey) => activity.cardSets[cardKey].kind === 'story');
+    if (key === undefined) continue;
+    const cards = cardsShownIn(activity, steps[i], key);
+    return cards.find((card) => card.id === picks.get(`${i}:${key}`)) ?? cards[0] ?? null;
+  }
+  return null;
 }
 
 function loadsWithin(url, loadOne, timeoutMs) {
