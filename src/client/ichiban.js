@@ -1,3 +1,4 @@
+import { autoTearAt, centredShift, finishAt, keepFlapInView, limitPull, peelLayout } from './lib/peel.mjs';
 import {
   GRADES,
   MAX_PER_GRADE,
@@ -14,8 +15,14 @@ import {
 } from './lib/ichiban.mjs';
 
 const RESTART_CONFIRM_MS = 4000;
-const TEAR_AT_SHARE_OF_STUB = 0.4;
-const MAX_PULL_SHARE_OF_STUB = 0.9;
+const REVEAL_AT_PEELED_SHARE = 0.03;
+const OPEN_AT_PEELED_SHARE = 0.5;
+const MAX_PULL_ANGLE = Math.PI / 3;
+const PULL_PAST_OPEN = 40;
+const DRAG_REACH = Object.freeze({ up: 140, down: 80 });
+const SPRING_BACK_MS = 240;
+const FINISH_MS = 320;
+const AUTO_TEAR_MS = 650;
 const TEAR_VIBRATION_MS = 30;
 const PLANE = '✈\uFE0E';
 const PROBLEM_TEXT = {
@@ -276,59 +283,142 @@ function showPick() {
   );
 }
 
-function boardingPass(seatIndex) {
-  const stubBox = el('span', { className: 'stub-box', textContent: seatNumber(seatIndex) });
-  const stub = el('div', { className: 'pass-stub is-hinting' }, [el('span', { className: 'stub-head', textContent: 'SEAT' }), stubBox]);
-  const meta = [
-    ['航班 FLIGHT', '2027'],
-    ['日期 DATE', '新春'],
-    ['登機門 GATE', '唱題會'],
-  ];
-  const main = el('div', { className: 'pass-main' }, [
-    el('p', { className: 'pass-head' }, [el('b', { textContent: '新春一番賞' }), el('small', { textContent: 'BOARDING PASS' })]),
-    el('div', { className: 'pass-route' }, [
-      el('span', {}, [el('small', { textContent: '出發 FROM' }), el('b', { textContent: '冬' })]),
-      el('span', { className: 'route-plane', textContent: PLANE }),
-      el('span', {}, [el('small', { textContent: '目的地 TO' }), el('b', { className: 'route-to', textContent: '春' })]),
-    ]),
-    el(
-      'dl',
-      { className: 'pass-meta' },
-      meta.map(([label, value]) => el('div', {}, [el('dt', { textContent: label }), el('dd', { textContent: value })])),
-    ),
+function peelTicket(seatIndex) {
+  const front = el('div', { className: 'peel-front peel-perforated' }, [
+    el('p', { className: 'peel-band' }, [el('b', { textContent: '新春一番賞' }), el('small', { textContent: 'BOARDING PASS' })]),
+    routeLine('peel-route'),
+    el('p', { className: 'peel-seat' }, [el('span', { textContent: 'SEAT' }), seatLabel(seatIndex)]),
+    el('span', { className: 'peel-tab', textContent: '拉' }),
   ]);
-  return { pass: decorative(el('div', { className: 'pass' }, [main, stub])), stub, stubBox };
+  const back = el('div', { className: 'peel-back peel-perforated' }, [el('span', { className: 'peel-back-tab' })]);
+  const curl = el('div', { className: 'peel-curl' });
+  const strip = el('div', { className: 'peel-strip' }, [front, back, curl]);
+  const ticket = el('div', { className: 'peel-ticket' }, [
+    el('div', { className: 'peel-card' }),
+    el('div', { className: 'peel-slot' }),
+    strip,
+  ]);
+  const stage = decorative(el('div', { className: 'peel-stage' }, [ticket]));
+  return { stage, ticket, strip, front, back, curl };
 }
 
-function dragToTear(stub, tear) {
-  let drag = null;
-  const tearAt = () => stub.offsetHeight * TEAR_AT_SHARE_OF_STUB;
+const cssPolygon = (points) =>
+  points.length ? `polygon(${points.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')})` : 'inset(100%)';
 
-  stub.addEventListener('pointerdown', (event) => {
-    if (drag || !event.isPrimary || event.button !== 0 || stub.classList.contains('is-torn')) return;
-    drag = { pointerId: event.pointerId, startY: event.clientY, pull: 0 };
-    stub.setPointerCapture(event.pointerId);
-    stub.classList.remove('is-hinting');
-    stub.classList.add('is-dragging');
+function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onOpen }) {
+  let size = null;
+  let tab = null;
+  let q = null;
+  let drag = null;
+  let frame = 0;
+  let opening = false;
+
+  function measure() {
+    size = { length: strip.offsetWidth, height: strip.offsetHeight };
+    tab = [0, size.height / 2];
+    q ??= tab;
+  }
+
+  const fit = () => ({ stripLeft: strip.offsetLeft, stageWidth: stage.offsetWidth });
+
+  function render(target, room) {
+    q = limitPull(tab, target, { maxAngle: MAX_PULL_ANGLE, maxLength: 2 * size.length + PULL_PAST_OPEN });
+    const layout = peelLayout(tab, q, size);
+    front.style.clipPath = cssPolygon(layout.front);
+    back.style.visibility = layout.back ? 'visible' : 'hidden';
+    if (layout.back) {
+      back.style.left = `${layout.back.left}px`;
+      back.style.clipPath = cssPolygon(layout.back.clip);
+      back.style.transformOrigin = `${layout.back.origin[0]}px ${layout.back.origin[1]}px`;
+      back.style.transform = `rotate(${layout.back.rotation}rad)`;
+    }
+    curl.style.display = layout.curl ? 'block' : 'none';
+    if (layout.curl) {
+      curl.style.left = `${layout.curl.from[0]}px`;
+      curl.style.top = `${layout.curl.from[1]}px`;
+      curl.style.height = `${layout.curl.length}px`;
+      curl.style.transform = `rotate(${layout.curl.rotation}rad) translateX(-3px)`;
+    }
+    ticket.style.transform = layout.back ? `translateX(${keepFlapInView(q, room)}px)` : '';
+    return layout.peeled;
+  }
+
+  function animate(pointAt, ms, then) {
+    cancelAnimationFrame(frame);
+    const room = fit();
+    if (reducedMotion.matches) {
+      render(pointAt(1), room);
+      then?.();
+      return;
+    }
+    const startedAt = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - startedAt) / ms);
+      render(pointAt(1 - (1 - progress) ** 3), room);
+      if (progress < 1) frame = requestAnimationFrame(step);
+      else then?.();
+    };
+    frame = requestAnimationFrame(step);
+  }
+
+  function open() {
+    stage.classList.add('is-open');
+    ticket.style.transform = `translateX(${centredShift({ ...fit(), length: size.length })}px)`;
+    onOpen();
+  }
+
+  function springBack() {
+    const [fromX, fromY] = q;
+    const [toX, toY] = tab;
+    animate((progress) => [fromX + (toX - fromX) * progress, fromY + (toY - fromY) * progress], SPRING_BACK_MS);
+  }
+
+  function finish() {
+    opening = true;
+    const from = q;
+    animate((progress) => finishAt(from, progress, size), FINISH_MS, open);
+  }
+
+  strip.addEventListener('pointerdown', (event) => {
+    if (opening || drag || !event.isPrimary || event.button !== 0) return;
+    try {
+      strip.setPointerCapture(event.pointerId);
+    } catch {
+      return;
+    }
+    cancelAnimationFrame(frame);
+    measure();
+    drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, from: q, room: fit(), peeled: 0 };
   });
 
-  stub.addEventListener('pointermove', (event) => {
+  strip.addEventListener('pointermove', (event) => {
     if (event.pointerId !== drag?.pointerId) return;
-    drag.pull = Math.min(Math.max(event.clientY - drag.startY, 0), stub.offsetHeight * MAX_PULL_SHARE_OF_STUB);
-    const progress = Math.min(drag.pull / tearAt(), 1);
-    stub.style.transform = `translate(${progress * 3}px, ${drag.pull}px) rotate(${progress * 4}deg)`;
-    stub.classList.toggle('is-ready', progress === 1);
+    const x = Math.min(2 * size.length + PULL_PAST_OPEN, drag.from[0] + event.clientX - drag.x);
+    const y = Math.min(size.height + DRAG_REACH.down, Math.max(-DRAG_REACH.up, drag.from[1] + event.clientY - drag.y));
+    drag.peeled = render([x, y], drag.room);
+    if (drag.peeled > REVEAL_AT_PEELED_SHARE) onReveal();
   });
 
   const release = (event) => {
     if (event.pointerId !== drag?.pointerId) return;
-    const pulledFarEnough = event.type === 'pointerup' && drag.pull >= tearAt();
+    const pulledOpen = event.type === 'pointerup' && drag.peeled > OPEN_AT_PEELED_SHARE;
     drag = null;
-    stub.classList.remove('is-dragging', 'is-ready');
-    stub.style.transform = '';
-    if (pulledFarEnough) tear();
+    if (pulledOpen) finish();
+    else springBack();
   };
-  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) stub.addEventListener(type, release);
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) strip.addEventListener(type, release);
+
+  measure();
+  render(tab, fit());
+
+  return function tearOpen() {
+    if (opening) return;
+    opening = true;
+    drag = null;
+    measure();
+    onReveal();
+    animate((progress) => autoTearAt(progress, size), AUTO_TEAR_MS, open);
+  };
 }
 
 function resultView(grade, isLast) {
@@ -349,35 +439,48 @@ function resultView(grade, isLast) {
 
 function showTear(seatIndex) {
   if (round.torn[seatIndex]) return showPick();
-  const { pass, stub, stubBox } = boardingPass(seatIndex);
+  const peel = peelTicket(seatIndex);
   const heading = el('h1', { tabIndex: -1, textContent: seatLabel(seatIndex) });
   const back = button('換一張', showPick, 'tear-back');
-  const hint = el('p', { className: 'tear-hint', textContent: '手指按住右邊的存根，沿著虛線往下拉' });
-  const tearButton = button('撕開', tear, 'tear-button');
+  const hint = el('p', { className: 'tear-hint', textContent: '手指按住左邊的「拉」，往右上拉開' });
+  const tearButton = button('撕開', () => tearOpen(), 'tear-button');
   const after = el('div', { className: 'tear-after' });
   after.setAttribute('aria-live', 'polite');
   const next = button('交給下一位 →', showPick, 'ichiban-primary');
+  let revealed = null;
 
-  function tear() {
+  function reveal() {
+    if (revealed) return;
     const torn = tearSeat(round, seatIndex, Date.now());
     if (!torn) return;
     round = torn.round;
     saved.write(round);
+    revealed = torn;
+    back.remove();
+    const prize = round.prizes[torn.grade];
+    peel.strip.classList.add(gradeClass(torn.grade));
+    peel.back.prepend(
+      ...[
+        el('p', { className: 'peel-grade' }, [torn.grade, el('small', { textContent: '賞' })]),
+        prize && el('p', { className: 'peel-prize', textContent: prize }),
+      ].filter(Boolean),
+    );
+  }
+
+  function showResult() {
+    if (!revealed) return;
     navigator.vibrate?.(TEAR_VIBRATION_MS);
-    stub.classList.remove('is-hinting');
-    stub.classList.add('is-torn', gradeClass(torn.grade));
-    stubBox.replaceChildren(torn.grade, el('small', { textContent: '賞' }));
-    for (const node of [back, hint, tearButton]) node.remove();
-    after.replaceChildren(...resultView(torn.grade, torn.isLast).filter(Boolean), next);
+    for (const node of [hint, tearButton]) node.remove();
+    after.replaceChildren(...resultView(revealed.grade, revealed.isLast).filter(Boolean), next);
     next.focus({ preventScroll: true });
     after.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' });
   }
 
-  dragToTear(stub, tear);
   show(
-    [el('div', { className: 'tear-head' }, [heading, back]), el('div', { className: 'tear-stage' }, [pass]), hint, tearButton, after],
+    [el('div', { className: 'tear-head' }, [heading, back]), el('div', { className: 'tear-stage' }, [peel.stage]), hint, tearButton, after],
     heading,
   );
+  const tearOpen = peelToOpen(peel, { onReveal: reveal, onOpen: showResult });
 }
 
 const savedRound = parseSaved(saved.read());
