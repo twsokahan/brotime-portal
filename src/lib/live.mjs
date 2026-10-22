@@ -1,5 +1,6 @@
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_PRELOAD_TIMEOUT_MS = 8000;
+const MAX_GROUP_CHARS_FOR_HALF_ROW = 6;
 
 const twoDigits = (value) => String(value).padStart(2, '0');
 
@@ -94,6 +95,10 @@ export async function preload(urls, loadOne, timeoutMs = DEFAULT_PRELOAD_TIMEOUT
 
 export function groupsOf(cards) {
   return [...new Set(cards.map((card) => card.group).filter(Boolean))];
+}
+
+export function groupsNeedFullRow(groups) {
+  return groups.some((group) => [...group].length > MAX_GROUP_CHARS_FOR_HALF_ROW);
 }
 
 export function drawCard(cards, drawnIds, group, random = Math.random) {

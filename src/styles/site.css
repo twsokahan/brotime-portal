@@ -947,6 +947,10 @@ p.rain,
   gap: 10px;
 }
 
+.topic-groups-full-rows {
+  grid-template-columns: 1fr;
+}
+
 .topic-group {
   padding: 8px 6px;
   border: 2px solid var(--dot-text);

@@ -2,6 +2,7 @@ import { districtLabel, routeSteps } from './lib/city-walk.mjs';
 import {
   clearSession,
   drawCard,
+  groupsNeedFullRow,
   groupsOf,
   imageUrlsFor,
   loadSession,
@@ -352,15 +353,16 @@ function topicDraw(cards, pickKey) {
   if (pick.card) showCard();
   else draw();
   return el('div', { className: 'topic-draw' }, [
-    groups.length > 0 && topicGroupPicker(groupButtons),
+    groups.length > 0 && topicGroupPicker(groupButtons, groupsNeedFullRow(groups)),
     cardSlot,
     button('換一張', draw, 'live-draw'),
   ]);
 }
 
-function topicGroupPicker(groupButtons) {
+function topicGroupPicker(groupButtons, fullRows) {
   const title = '從哪一類抽？';
-  const picker = el('div', { className: 'topic-groups' }, groupButtons);
+  const className = fullRows ? 'topic-groups topic-groups-full-rows' : 'topic-groups';
+  const picker = el('div', { className }, groupButtons);
   picker.setAttribute('role', 'group');
   picker.setAttribute('aria-label', title);
   return el('div', {}, [el('h3', { className: 'topic-groups-title', textContent: title }), picker]);

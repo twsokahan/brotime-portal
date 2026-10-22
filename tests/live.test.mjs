@@ -10,6 +10,7 @@ import {
   imageUrlsFor,
   preload,
   groupsOf,
+  groupsNeedFullRow,
   drawCard,
 } from '../src/lib/live.mjs';
 import { readyActivity } from './fixtures/activities.mjs';
@@ -187,6 +188,12 @@ test('groups are listed once each in the order they appear', () => {
   assert.deepEqual(groupsOf(topicCards()), ['前菜', '主餐', '飯後咖啡']);
   assert.deepEqual(groupsOf([...topicCards(), { id: 't12', title: '再一題', group: '前菜' }]), ['前菜', '主餐', '飯後咖啡']);
   assert.deepEqual(groupsOf([{ id: 'x', title: '沒有分類' }]), []);
+});
+
+test('group buttons take a full row each once a group name is longer than six characters', () => {
+  assert.equal(groupsNeedFullRow(['淺灘・暖身', '中層・近況', '深水・心裡話']), false);
+  assert.equal(groupsNeedFullRow(['淡茶・生活的話', '濃茶・深一點的話']), true);
+  assert.equal(groupsNeedFullRow([]), false);
 });
 
 test('drawing picks from the cards not drawn yet', () => {
