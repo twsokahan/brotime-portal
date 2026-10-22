@@ -2,7 +2,7 @@
   "id": "new-year-visit",
   "name": "新春拜年團",
   "tagline": "春節組隊到彼此家中拜年，帶春聯與小禮物，順道關心久未參加的會員。",
-  "status": "preparing",
+  "status": "ready",
   "edition": "metro",
   "templates": [
     "D"
@@ -107,7 +107,7 @@
       "minutes": 5,
       "title": "收尾",
       "do": "說下面這句，再請大家掃 QR code 填問卷，準時宣布「正式程序到此結束」，祝大家新年快樂。想早點回家陪家人的，安心離開。",
-      "say": "今天見過的人裡，有沒有一位你想過陣子再去看看的？放在心上就好。"
+      "say": "今天見過的人裡，有沒有一位你想過陣子再去看看的？放在心上就好，不用說出來。"
     }
   ],
   "cardSets": {
@@ -170,5 +170,11 @@
     "每組帶著分組拜訪表（企劃案附件七）",
     "手機有電，先連上網路"
   ],
-  "planFile": "files/new-year-visit-plan.pdf"
+  "planFile": "files/new-year-visit-plan.pdf",
+  "printFiles": [
+    {
+      "label": "故事卡（A4 雙面，一套 3 張）",
+      "file": "files/new-year-visit-cards-story.pdf"
+    }
+  ]
 }
