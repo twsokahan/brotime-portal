@@ -134,7 +134,7 @@ function checkRainNote(check, activity) {
   else if (rain !== undefined && rain !== 'ok') check.fail('rainNote', `必填（tags.rain 是 ${rain}）`);
 }
 
-function checkCard(check, card, path, { isStory, needsQuestions }, firstPathOfCardId) {
+function checkCard(check, card, path, { isStory, needsQuestionsOrNote }, firstPathOfCardId) {
   if (!check.object(card, path)) return;
   if (check.text(card.id, `${path}.id`)) {
     if (!isCardId(card.id)) check.fail(`${path}.id`, '只能用英文、數字和 -');
@@ -145,6 +145,8 @@ function checkCard(check, card, path, { isStory, needsQuestions }, firstPathOfCa
   if (card.group !== undefined) check.text(card.group, `${path}.group`);
   if (isStory || card.text !== undefined) check.text(card.text, `${path}.text`);
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
+  if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
+  const needsQuestions = needsQuestionsOrNote && card.note === undefined;
   if (needsQuestions || card.questions !== undefined) checkTextList(check, card.questions, `${path}.questions`, 1);
 }
 
@@ -167,7 +169,7 @@ function checkCardSets(check, cardSets, published) {
     check.text(set.label, `${path}.label`);
     if (check.list(set.cards, `${path}.cards`, 1)) {
       const isStory = set.kind === 'story';
-      const rules = { isStory, needsQuestions: isStory && published };
+      const rules = { isStory, needsQuestionsOrNote: isStory && published };
       set.cards.forEach((card, i) => checkCard(check, card, `${path}.cards[${i}]`, rules, firstPathOfCardId));
     }
     if (set.thumbs !== undefined) checkThumbs(check, set, path);

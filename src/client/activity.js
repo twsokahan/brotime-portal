@@ -290,16 +290,28 @@ function shareControls(title, url) {
   return holder;
 }
 
+const storyQuestions = (questions) =>
+  questions &&
+  el('div', { className: 'story-questions' }, [
+    el('h3', { textContent: '分享提問' }),
+    el('ol', {}, questions.map((question) => el('li', { textContent: question }))),
+  ]);
+
+const storyNote = (note) =>
+  note &&
+  el('div', { className: 'story-questions' }, [
+    el('h3', { textContent: note.label }),
+    el('p', { textContent: note.text }),
+  ]);
+
 const storyText = (card) =>
   el('section', { className: 'story-text' }, [
     el('h3', { textContent: '故事全文' }),
     el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
     ...card.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
     el('p', { className: 'source', textContent: `出處：${card.source}` }),
-    el('div', { className: 'story-questions' }, [
-      el('h3', { textContent: '分享提問' }),
-      el('ol', {}, card.questions.map((question) => el('li', { textContent: question }))),
-    ]),
+    storyQuestions(card.questions),
+    storyNote(card.note),
   ]);
 
 function storyCardView(card) {

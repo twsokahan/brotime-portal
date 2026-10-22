@@ -61,3 +61,32 @@ test('sharing questions are escaped', () => {
   storyCard(activity).questions = ['<i>你</i> & 我？'];
   assert.ok(render(activity).includes('<li>&lt;i&gt;你&lt;/i&gt; &amp; 我？</li>'));
 });
+
+test('a story card without sharing questions shows the note printed on its front under its own label', () => {
+  const activity = readyActivity();
+  delete storyCard(activity).questions;
+  storyCard(activity).note = { label: '想一想', text: '這是測試用的卡片正面短文。' };
+  const html = render(activity);
+  assert.ok(
+    html.includes('<section class="story-questions">\n<h2>想一想</h2>\n<p>這是測試用的卡片正面短文。</p>\n</section>'),
+    html,
+  );
+  assert.ok(html.indexOf('出處：') < html.indexOf('想一想'));
+  assert.ok(!html.includes('分享提問'));
+});
+
+test('a card with both shows the sharing questions, then the note', () => {
+  const activity = readyActivity();
+  storyCard(activity).note = { label: '帶回家的一句', text: '這是測試用的卡片正面短文。' };
+  const html = render(activity);
+  assert.ok(html.indexOf('分享提問') < html.indexOf('<h2>帶回家的一句</h2>'), html);
+});
+
+test('the note is escaped', () => {
+  const activity = readyActivity();
+  delete storyCard(activity).questions;
+  storyCard(activity).note = { label: '<b>想</b>', text: '「你」 & <i>我</i>' };
+  const html = render(activity);
+  assert.ok(html.includes('<h2>&lt;b&gt;想&lt;/b&gt;</h2>'));
+  assert.ok(html.includes('<p>「你」 &amp; &lt;i&gt;我&lt;/i&gt;</p>'));
+});

@@ -200,6 +200,34 @@ test('sharing questions must be a non-empty list of text', () => {
   assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].questions 要是陣列');
 });
 
+test('a story card of a ready or review activity may show the note printed on its front instead of sharing questions', () => {
+  const activity = readyActivity();
+  const card = activity.cardSets.story.cards[0];
+  delete card.questions;
+  card.note = { label: '想一想', text: '這是測試用的卡片正面短文。' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.status = 'review';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a story card may carry both sharing questions and a note', () => {
+  const activity = readyActivity();
+  activity.cardSets.story.cards[0].note = { label: '想一想', text: '這是測試用的卡片正面短文。' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a note needs both its printed label and its text', () => {
+  const activity = readyActivity();
+  const card = activity.cardSets.story.cards[0];
+  delete card.questions;
+  card.note = { label: '想一想' };
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].note.text 必填');
+  card.note = { label: ' ', text: '這是測試用的卡片正面短文。' };
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].note.label 要是有內容的文字');
+  card.note = '想一想';
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].note 要是物件');
+});
+
 test('sharing questions are optional on topic cards but checked when given', () => {
   const activity = readyActivity();
   const topicCard = activity.cardSets.topic.cards[0];
