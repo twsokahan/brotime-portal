@@ -325,7 +325,11 @@ function peelToOpen({ stage, fade, ticket, strip, front, back, lift, bend }, { o
   function measure() {
     size = { length: strip.offsetWidth, height: strip.offsetHeight };
     scale = Math.min(1, stage.offsetWidth / ticket.offsetWidth);
-    room = { stripLeft: strip.offsetLeft, stageWidth: stage.offsetWidth / scale };
+    room = {
+      stripLeft: strip.offsetLeft,
+      stageWidth: stage.offsetWidth / scale,
+      viewRight: (fade.offsetWidth - ticket.offsetLeft) / scale,
+    };
     tab = [0, size.height / 2];
     q ??= tab;
   }
@@ -364,7 +368,7 @@ function peelToOpen({ stage, fade, ticket, strip, front, back, lift, bend }, { o
       shade(lift, layout.fold.front, layout.fold.angle);
       shade(bend, layout.fold.back, -layout.fold.angle);
     }
-    slide(layout.back ? keepFlapInView(q, room) : 0);
+    slide(layout.back ? keepFlapInView(layout.reach, room) : 0);
     return layout.peeled;
   }
 
@@ -388,7 +392,7 @@ function peelToOpen({ stage, fade, ticket, strip, front, back, lift, bend }, { o
   function open() {
     stage.classList.add('is-open');
     const centred = centredShift({ ...room, length: size.length });
-    const openStripLeft = (room.stripLeft + size.length + centred) * scale;
+    const openStripLeft = ticket.offsetLeft + (room.stripLeft + size.length + centred) * scale;
     slide(centred, openStripLeft);
     onOpen();
   }

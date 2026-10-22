@@ -1190,6 +1190,11 @@ p.rain,
   color: var(--muted);
 }
 
+html:has(#ichiban-app),
+html:has(#ichiban-app) > body {
+  overflow-x: clip;
+}
+
 #ichiban-app {
   --pass-navy: #1f2f52;
   --pass-red: #c8442d;
@@ -1547,9 +1552,7 @@ button.ticket:active {
 }
 
 .tear-stage {
-  margin: 0 -16px 8px;
-  padding: 0 16px;
-  overflow-x: clip;
+  margin: 0 0 8px;
 }
 
 .peel-stage {
@@ -1557,6 +1560,7 @@ button.ticket:active {
   --peel-card-edge: #6b5446;
   --peel-trace: #fffdf7;
   --peel-blank: #e6dcc8;
+  --peel-reach-up: 200px;
   position: relative;
   height: 200px;
   touch-action: none;
@@ -1567,14 +1571,14 @@ button.ticket:active {
 
 .peel-fade {
   position: absolute;
-  inset: -160px -16px -120px 0;
+  inset: calc(-1 * var(--peel-reach-up)) -16px -150px -16px;
   pointer-events: none;
 }
 
 .peel-ticket {
   position: absolute;
-  top: 184px;
-  left: 0;
+  top: calc(var(--peel-reach-up) + 24px);
+  left: 16px;
   width: 300px;
   height: 150px;
   transform-origin: 0 0;
@@ -1692,6 +1696,12 @@ button.ticket:active {
   color: var(--pass-red);
   font-size: 11px;
   font-weight: 900;
+}
+
+.peel-front .peel-tab::before {
+  content: "";
+  position: absolute;
+  inset: -6px 0 -6px -9px;
 }
 
 .peel-band {

@@ -282,11 +282,42 @@ test('finishing a released peel runs from where it was let go to fully open', ()
   assertPointNear(finishAt([300, 80], 0.5, SIZE), [386, (80 + 49) / 2 - 30 * 0.4], 'least lift');
 });
 
-test('the ticket only slides left when the flap would leave the stage', () => {
-  const stage = { stripLeft: 40, stageWidth: 358 };
-  assert.equal(keepFlapInView([100, 49], stage), 0);
-  assert.equal(keepFlapInView([400, 49], stage), 348 - (40 + 400 + 24));
-  assert.equal(keepFlapInView(OPEN, { stripLeft: 40, stageWidth: 288 }), 278 - (40 + 472 + 24));
+function paintedFlapCorners(back) {
+  const edges = [
+    [[0, 0], [1, 0]],
+    [[SIZE.length, 0], [-1, 0]],
+    [[0, -4], [0, 1]],
+    [[0, SIZE.height + 4], [0, -1]],
+  ];
+  const onPaper = edges.reduce((polygon, [point, normal]) => clipHalfPlane(polygon, point, normal, true), back.clip);
+  return onPaper.map((corner) => placeOnStrip(back, corner));
+}
+
+test('reach is the rightmost point of the flap, its pull tab included', () => {
+  for (const target of samplePulls()) {
+    const q = limitPull(TAB, target, LIMITS);
+    const { back, reach } = peelLayout(TAB, q, SIZE);
+    if (!back) continue;
+    const rightmost = Math.max(q[0] + 21, ...paintedFlapCorners(back).map(([x]) => x));
+    assertNear(reach, rightmost, `reach for ${target}`, 1e-6);
+  }
+});
+
+test('a straight pull reaches as far as the pull tab past Q', () => {
+  assertNear(peelLayout(TAB, [200, TAB[1]], SIZE).reach, 221, 'reach');
+});
+
+test('an angled pull swings the flap corner well past Q', () => {
+  const q = limitPull(TAB, [284, -140], LIMITS);
+  assert.ok(peelLayout(TAB, q, SIZE).reach > q[0] + 40);
+});
+
+test('the ticket only slides left when the flap and its shadow would leave the view', () => {
+  const view = { stripLeft: 40, viewRight: 374 };
+  assert.equal(keepFlapInView(300, view), 0);
+  assert.equal(keepFlapInView(312, view), 0);
+  assert.equal(keepFlapInView(400, view), 374 - 22 - (40 + 400));
+  assert.equal(keepFlapInView(493, { stripLeft: 40, viewRight: 304 / 0.96 }), 304 / 0.96 - 22 - (40 + 493));
 });
 
 test('the open strip is centred on the stage', () => {

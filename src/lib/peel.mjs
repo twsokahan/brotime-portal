@@ -1,7 +1,8 @@
 const REST_PULL = 2;
 const FLAP_MARGIN = Object.freeze({ left: 30, top: 12, right: 40, bottom: 12 });
-const FLAP_ROOM = 24;
-const STAGE_ROOM = 10;
+const TOOTH_HEIGHT = 4;
+const TAB_RADIUS = 21;
+const SHADOW_ROOM = 22;
 const AUTO_TEAR_LIFT = 70;
 const FINISH_LIFT = Object.freeze({ least: 30, share: 0.4 });
 
@@ -72,36 +73,51 @@ export function foldSegment(midpoint, direction, { left, top, right, bottom }) {
   return [at(from), at(to)];
 }
 
-export function peeledFraction(peeledPolygon, { left, top, right, bottom }) {
+function clipToRect(polygon, { left, top, right, bottom }) {
   const edges = [
     [[left, 0], [1, 0]],
     [[right, 0], [-1, 0]],
     [[0, top], [0, 1]],
     [[0, bottom], [0, -1]],
   ];
-  const onStrip = edges.reduce((polygon, [point, normal]) => clipHalfPlane(polygon, point, normal, true), peeledPolygon);
-  return polygonArea(onStrip) / ((right - left) * (bottom - top));
+  return edges.reduce((clipped, [point, normal]) => clipHalfPlane(clipped, point, normal, true), polygon);
+}
+
+export function peeledFraction(peeledPolygon, rect) {
+  const { left, top, right, bottom } = rect;
+  return polygonArea(clipToRect(peeledPolygon, rect)) / ((right - left) * (bottom - top));
+}
+
+function placeBackPoint({ left, origin, rotation }, [u, y]) {
+  const [dx, dy] = [u - origin[0], y - origin[1]];
+  return [
+    origin[0] + left + dx * Math.cos(rotation) - dy * Math.sin(rotation),
+    origin[1] + dx * Math.sin(rotation) + dy * Math.cos(rotation),
+  ];
 }
 
 export function peelLayout(a, q, size) {
   const { length, height } = size;
   const box = flapBox(size);
   const pull = [q[0] - a[0], q[1] - a[1]];
-  if (Math.hypot(pull[0], pull[1]) < REST_PULL) return { front: box, back: null, fold: null, peeled: 0 };
+  if (Math.hypot(pull[0], pull[1]) < REST_PULL) return { front: box, back: null, fold: null, reach: 0, peeled: 0 };
   const mid = [(a[0] + q[0]) / 2, (a[1] + q[1]) / 2];
   const angle = Math.atan2(pull[1], pull[0]);
   const paper = { left: 0, top: 0, right: length, bottom: height };
   const flap = clipHalfPlane(box, mid, pull, false);
   const chord = foldSegment(mid, [-Math.sin(angle), Math.cos(angle)], paper);
   const anchor = chord && lerp(chord[0], chord[1], 0.5);
+  const back = {
+    left: 2 * mid[0] - length,
+    clip: flap.map(([x, y]) => [length - x, y]),
+    origin: [length - mid[0], mid[1]],
+    rotation: 2 * angle,
+  };
+  const paintedFlap = clipToRect(back.clip, { ...paper, top: -TOOTH_HEIGHT, bottom: height + TOOTH_HEIGHT });
   return {
     front: clipHalfPlane(box, mid, pull, true),
-    back: {
-      left: 2 * mid[0] - length,
-      clip: flap.map(([x, y]) => [length - x, y]),
-      origin: [length - mid[0], mid[1]],
-      rotation: 2 * angle,
-    },
+    back,
+    reach: Math.max(q[0] + TAB_RADIUS, ...paintedFlap.map((point) => placeBackPoint(back, point)[0])),
     fold: anchor && { front: anchor, back: [length - anchor[0], anchor[1]], angle },
     peeled: peeledFraction(flap, paper),
   };
@@ -119,8 +135,8 @@ export function finishAt(start, progress, size) {
   return [x, y - lift * Math.sin(Math.PI * progress)];
 }
 
-export function keepFlapInView(q, { stripLeft, stageWidth }) {
-  return Math.min(0, stageWidth - STAGE_ROOM - (stripLeft + q[0] + FLAP_ROOM));
+export function keepFlapInView(reach, { stripLeft, viewRight }) {
+  return Math.min(0, viewRight - SHADOW_ROOM - (stripLeft + reach));
 }
 
 export function centredShift({ stripLeft, length, stageWidth }) {
