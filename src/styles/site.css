@@ -850,6 +850,10 @@ p.rain,
   white-space: pre-line;
 }
 
+.read-aloud p + p {
+  margin-top: 12px;
+}
+
 .story-text {
   margin: 24px 0 0;
   padding: 16px 0 0;

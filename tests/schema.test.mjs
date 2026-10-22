@@ -112,6 +112,49 @@ test('showStoryQuestions can only be true', () => {
   }
 });
 
+test('a step may give what to read aloud as plain text', () => {
+  const activity = readyActivity();
+  activity.steps[4].readAloud = '謝謝大家今天一起來。';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.steps[4].readAloud = '';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[4].readAloud 要是有內容的文字']);
+});
+
+test('a step may give what to read aloud with a label and a source', () => {
+  const activity = readyActivity();
+  activity.steps[4].readAloud = { label: '收尾的話', text: '第一段。\n\n第二段。', source: '《新・人間革命》第11卷〈躍進〉' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.steps[4].readAloud = { text: '只有要念的文字。' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('what to read aloud needs its text', () => {
+  const activity = readyActivity();
+  activity.steps[4].readAloud = { label: '收尾的話' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[4].readAloud.text 必填']);
+  activity.steps[4].readAloud = { text: ' ' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[4].readAloud.text 要是有內容的文字']);
+});
+
+test('the label and source of what to read aloud cannot be empty', () => {
+  const activity = readyActivity();
+  activity.steps[4].readAloud = { label: '', text: '要念的文字。', source: '' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), [
+    'brunch: steps[4].readAloud.label 要是有內容的文字',
+    'brunch: steps[4].readAloud.source 要是有內容的文字',
+  ]);
+});
+
+test('what to read aloud only takes a label, text and source', () => {
+  const activity = readyActivity();
+  activity.steps[4].readAloud = { text: '要念的文字。', title: '收尾的話' };
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[4].readAloud.title 只能有 label、text、source']);
+  for (const value of [['要念的文字。'], 42]) {
+    activity.steps[4].readAloud = value;
+    assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[4].readAloud 要是文字，或有 text 的物件']);
+  }
+});
+
 test('rain other than ok needs a rainNote', () => {
   const activity = readyActivity();
   activity.tags.rain = 'postpone';

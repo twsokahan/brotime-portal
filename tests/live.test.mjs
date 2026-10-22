@@ -13,6 +13,7 @@ import {
   groupsNeedFullRow,
   drawCard,
   storyCardBefore,
+  readAloudParts,
 } from '../src/lib/live.mjs';
 import { readyActivity } from './fixtures/activities.mjs';
 
@@ -197,6 +198,27 @@ test('there is no story card to share before the story step', () => {
   const activity = readyActivity();
   assert.equal(storyCardBefore(activity, activity.steps, 2, new Map()), null);
   assert.equal(storyCardBefore(activity, activity.steps, 0, new Map()), null);
+});
+
+test('plain read-aloud text keeps the default heading and stays one paragraph', () => {
+  assert.deepEqual(readAloudParts('第一段。\n\n第二段。'), {
+    label: '念這段：',
+    paragraphs: ['第一段。\n\n第二段。'],
+    source: null,
+  });
+});
+
+test('read-aloud text with a label splits into paragraphs and keeps verse line breaks', () => {
+  const readAloud = { label: '收尾的話', text: '第一段。\n\n詩的第一行\n詩的第二行', source: '《新・人間革命》第11卷〈躍進〉' };
+  assert.deepEqual(readAloudParts(readAloud), {
+    label: '收尾的話',
+    paragraphs: ['第一段。', '詩的第一行\n詩的第二行'],
+    source: '《新・人間革命》第11卷〈躍進〉',
+  });
+});
+
+test('read-aloud text without a label or source falls back to the default heading and no source', () => {
+  assert.deepEqual(readAloudParts({ text: '要念的文字。' }), { label: '念這段：', paragraphs: ['要念的文字。'], source: null });
 });
 
 test('preload reports urls that never load and still resolves', async () => {

@@ -9,6 +9,7 @@ import {
   preflightItems,
   preload,
   progressText,
+  readAloudParts,
   saveSession,
   storyCardBefore,
   timerText,
@@ -457,8 +458,14 @@ function participantSurvey() {
   ]);
 }
 
-const readAloudBlock = (text) =>
-  el('section', { className: 'read-aloud' }, [el('h3', { textContent: '念這段：' }), el('p', { textContent: text })]);
+function readAloudBlock(readAloud) {
+  const { label, paragraphs, source } = readAloudParts(readAloud);
+  return el('section', { className: 'read-aloud' }, [
+    el('h3', { textContent: label }),
+    ...paragraphs.map((paragraph) => el('p', { textContent: paragraph })),
+    source && el('p', { className: 'source', textContent: `出處：${source}` }),
+  ]);
+}
 
 function earlierStoryQuestions(index) {
   const card = storyCardBefore(activity, live.steps, index, storyPicks);

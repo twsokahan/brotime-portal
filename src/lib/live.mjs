@@ -1,6 +1,7 @@
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_PRELOAD_TIMEOUT_MS = 8000;
 const MAX_GROUP_CHARS_FOR_HALF_ROW = 6;
+const DEFAULT_READ_ALOUD_LABEL = '念這段：';
 
 const twoDigits = (value) => String(value).padStart(2, '0');
 
@@ -125,4 +126,15 @@ export function drawCard(cards, drawnIds, group, random = Math.random) {
   const choices = startOver ? restartDeck : undrawn;
   const card = choices[Math.floor(random() * choices.length)];
   return { card, drawnIds: [...keptIds, card.id] };
+}
+
+export function readAloudParts(readAloud) {
+  if (typeof readAloud === 'string') {
+    return { label: DEFAULT_READ_ALOUD_LABEL, paragraphs: [readAloud], source: null };
+  }
+  return {
+    label: readAloud.label ?? DEFAULT_READ_ALOUD_LABEL,
+    paragraphs: readAloud.text.split('\n\n'),
+    source: readAloud.source ?? null,
+  };
 }

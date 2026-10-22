@@ -7,6 +7,7 @@ const TEMPLATES = ['A', 'B', 'C', 'D', 'E'];
 const CARD_SET_KINDS = ['story', 'topic', 'other'];
 const ROUTE_STOPS = ['start', 'stop1', 'end'];
 const ROUTE_LEGS = [0, 1];
+const READ_ALOUD_KEYS = ['label', 'text', 'source'];
 const ACTIVITY_ID = /^[a-z0-9-]+$/;
 const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
@@ -205,6 +206,23 @@ function checkShowStoryQuestions(check, step, path, earlierSteps, cardSets) {
   }
 }
 
+function checkReadAloud(check, readAloud, path) {
+  if (typeof readAloud === 'string') {
+    check.text(readAloud, path);
+    return;
+  }
+  if (!isObject(readAloud)) {
+    check.fail(path, '要是文字，或有 text 的物件');
+    return;
+  }
+  Object.keys(readAloud)
+    .filter((key) => !READ_ALOUD_KEYS.includes(key))
+    .forEach((key) => check.fail(`${path}.${key}`, `只能有 ${READ_ALOUD_KEYS.join('、')}`));
+  if (readAloud.label !== undefined) check.text(readAloud.label, `${path}.label`);
+  check.text(readAloud.text, `${path}.text`);
+  if (readAloud.source !== undefined) check.text(readAloud.source, `${path}.source`);
+}
+
 function checkStep(check, step, path, cardSets, earlierSteps) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
@@ -215,7 +233,7 @@ function checkStep(check, step, path, cardSets, earlierSteps) {
   check.text(step.do, `${path}.do`);
   checkShortText(check, step.say, `${path}.say`, MAX_SAY_CHARS);
   checkStepCards(check, step, path, cardSets);
-  if (step.readAloud !== undefined) check.text(step.readAloud, `${path}.readAloud`);
+  if (step.readAloud !== undefined) checkReadAloud(check, step.readAloud, `${path}.readAloud`);
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
   if (step.routeLeg !== undefined) check.oneOf(step.routeLeg, ROUTE_LEGS, `${path}.routeLeg`);
   checkShowStoryQuestions(check, step, path, earlierSteps, cardSets);
