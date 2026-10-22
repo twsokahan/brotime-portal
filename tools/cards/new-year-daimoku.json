@@ -1,0 +1,14 @@
+{
+  "activity": "new-year-daimoku",
+  "sets": {
+    "story": {
+      "pdf": "~/code/sokahan-propalsal-2026/新春唱題會/2027年創價班「新春唱題會」故事卡_v1_航空海報.pdf",
+      "dpi": 200,
+      "og": true,
+      "cards": [
+        { "id": "A", "page": 1, "box": [0.5125, 0.0354, 0.975, 0.9646] },
+        { "id": "B", "page": 2, "box": [0.5125, 0.0354, 0.975, 0.9646] }
+      ]
+    }
+  }
+}
