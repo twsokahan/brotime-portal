@@ -16,7 +16,6 @@ const SIZE = Object.freeze({ length: 236, height: 98 });
 const TAB = Object.freeze([0, SIZE.height / 2]);
 const OPEN = Object.freeze([2 * SIZE.length, SIZE.height / 2]);
 const STRIP = Object.freeze({ left: 0, top: 0, right: SIZE.length, bottom: SIZE.height });
-const STRIP_WITH_TAB = Object.freeze({ ...STRIP, left: -20 });
 const LIMITS = Object.freeze({ maxAngle: Math.PI / 3, maxLength: 2 * SIZE.length + 40 });
 const SQUARE = Object.freeze([
   [0, 0],
@@ -142,21 +141,49 @@ test('foldSegment returns null when the fold line misses the rectangle or barely
   assert.equal(foldSegment([0, 0], [Math.SQRT1_2, -Math.SQRT1_2], STRIP), null);
 });
 
-test('the curl along the fold stays inside the strip for every pull, steep and vertical ones included', () => {
-  const diagonal = Math.hypot(SIZE.length + 20, SIZE.height);
+test('the fold line across the paper stays inside the strip for every pull, steep and vertical ones included', () => {
+  const diagonal = Math.hypot(SIZE.length, SIZE.height);
   for (const target of samplePulls()) {
-    const { curl } = peelLayout(TAB, limitPull(TAB, target, LIMITS), SIZE);
-    if (!curl) continue;
-    const end = [
-      curl.from[0] - Math.sin(curl.rotation) * curl.length,
-      curl.from[1] + Math.cos(curl.rotation) * curl.length,
-    ];
-    for (const [x, y] of [curl.from, end]) {
-      assert.ok(x >= STRIP_WITH_TAB.left - 1e-6 && x <= STRIP_WITH_TAB.right + 1e-6, `x ${x} for ${target}`);
-      assert.ok(y >= STRIP_WITH_TAB.top - 1e-6 && y <= STRIP_WITH_TAB.bottom + 1e-6, `y ${y} for ${target}`);
+    const q = limitPull(TAB, target, LIMITS);
+    if (distance(TAB, q) < 2) continue;
+    const angle = angleOf(TAB, q);
+    const mid = [(TAB[0] + q[0]) / 2, (TAB[1] + q[1]) / 2];
+    const chord = foldSegment(mid, [-Math.sin(angle), Math.cos(angle)], STRIP);
+    if (!chord) continue;
+    for (const [x, y] of chord) {
+      assert.ok(x >= STRIP.left - 1e-6 && x <= STRIP.right + 1e-6, `x ${x} for ${target}`);
+      assert.ok(y >= STRIP.top - 1e-6 && y <= STRIP.bottom + 1e-6, `y ${y} for ${target}`);
     }
-    assert.ok(curl.length <= diagonal + 1e-6, `length ${curl.length} for ${target}`);
+    assert.ok(distance(...chord) <= diagonal + 1e-6, `length ${distance(...chord)} for ${target}`);
   }
+});
+
+test('the fold shading is anchored mid-way along the fold where it crosses the paper, on both faces', () => {
+  let anchored = 0;
+  for (const target of samplePulls()) {
+    const q = limitPull(TAB, target, LIMITS);
+    const { back, fold } = peelLayout(TAB, q, SIZE);
+    if (!fold) continue;
+    anchored += 1;
+    const [x, y] = fold.front;
+    assert.ok(x >= 0 && x <= SIZE.length && y >= 0 && y <= SIZE.height, `anchor ${fold.front} for ${target}`);
+    assertNear(distance(fold.front, TAB), distance(fold.front, q), `anchor on the fold for ${target}`, 1e-6);
+    assertNear(fold.angle, angleOf(TAB, q), `angle for ${target}`);
+    const along = [-Math.sin(fold.angle), Math.cos(fold.angle)];
+    const [start, end] = foldSegment(fold.front, along, STRIP);
+    assertNear(distance(start, fold.front), distance(end, fold.front), `centred for ${target}`, 1e-6);
+    assert.ok(distance(start, fold.front) < 110, `half chord ${distance(start, fold.front)} for ${target}`);
+    assertPointNear(placeOnStrip(back, fold.back), fold.front, `back anchor for ${target}`, 1e-6);
+  }
+  assert.ok(anchored > 200, `only ${anchored} pulls shaded`);
+});
+
+test('a long steep pull still shades the fold where it crosses the paper', () => {
+  const q = limitPull(TAB, [1, -140], LIMITS);
+  const mid = [(TAB[0] + q[0]) / 2, (TAB[1] + q[1]) / 2];
+  const { fold } = peelLayout(TAB, q, SIZE);
+  assert.ok(fold);
+  assert.ok(distance(fold.front, mid) > 100, 'the anchor is far from the A–Q midpoint');
 });
 
 test('peeledFraction is 0 for nothing, 1 for the whole strip and counts only what lies on the strip', () => {
@@ -189,7 +216,7 @@ test('at rest nothing is peeled and the whole strip front shows', () => {
   const rest = peelLayout(TAB, TAB, SIZE);
   assert.equal(rest.peeled, 0);
   assert.equal(rest.back, null);
-  assert.equal(rest.curl, null);
+  assert.equal(rest.fold, null);
   assertNear(peeledFraction(rest.front, STRIP), 1, 'front share');
 });
 
@@ -203,6 +230,8 @@ test('when fully open the whole strip is peeled and its back lies flat to the ri
   assertNear(peeledFraction(open.front, STRIP), 0, 'front share');
   assertNear(open.back.rotation, 0, 'rotation');
   assertNear(open.back.left, SIZE.length, 'back left');
+  assertPointNear(open.fold.front, [SIZE.length, SIZE.height / 2], 'front anchor at the hinge');
+  assertPointNear(open.fold.back, [0, SIZE.height / 2], 'back anchor at the hinge');
 });
 
 test('a straight pull peels the share of the strip left of the fold', () => {

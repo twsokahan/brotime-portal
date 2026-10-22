@@ -1,5 +1,4 @@
 const REST_PULL = 2;
-const TAB_OVERHANG = 20;
 const FLAP_MARGIN = Object.freeze({ left: 30, top: 12, right: 40, bottom: 12 });
 const FLAP_ROOM = 24;
 const STAGE_ROOM = 10;
@@ -88,16 +87,13 @@ export function peelLayout(a, q, size) {
   const { length, height } = size;
   const box = flapBox(size);
   const pull = [q[0] - a[0], q[1] - a[1]];
-  if (Math.hypot(pull[0], pull[1]) < REST_PULL) return { front: box, back: null, curl: null, peeled: 0 };
+  if (Math.hypot(pull[0], pull[1]) < REST_PULL) return { front: box, back: null, fold: null, peeled: 0 };
   const mid = [(a[0] + q[0]) / 2, (a[1] + q[1]) / 2];
   const angle = Math.atan2(pull[1], pull[0]);
+  const paper = { left: 0, top: 0, right: length, bottom: height };
   const flap = clipHalfPlane(box, mid, pull, false);
-  const fold = foldSegment(mid, [-Math.sin(angle), Math.cos(angle)], {
-    left: -TAB_OVERHANG,
-    top: 0,
-    right: length,
-    bottom: height,
-  });
+  const chord = foldSegment(mid, [-Math.sin(angle), Math.cos(angle)], paper);
+  const anchor = chord && lerp(chord[0], chord[1], 0.5);
   return {
     front: clipHalfPlane(box, mid, pull, true),
     back: {
@@ -106,12 +102,8 @@ export function peelLayout(a, q, size) {
       origin: [length - mid[0], mid[1]],
       rotation: 2 * angle,
     },
-    curl: fold && {
-      from: fold[0],
-      length: Math.hypot(fold[1][0] - fold[0][0], fold[1][1] - fold[0][1]),
-      rotation: angle,
-    },
-    peeled: peeledFraction(flap, { left: 0, top: 0, right: length, bottom: height }),
+    fold: anchor && { front: anchor, back: [length - anchor[0], anchor[1]], angle },
+    peeled: peeledFraction(flap, paper),
   };
 }
 

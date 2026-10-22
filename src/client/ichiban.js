@@ -23,6 +23,7 @@ const DRAG_REACH = Object.freeze({ up: 140, down: 80 });
 const SPRING_BACK_MS = 240;
 const FINISH_MS = 320;
 const AUTO_TEAR_MS = 650;
+const MAX_LEFT_FADE = 64;
 const TEAR_VIBRATION_MS = 30;
 const PLANE = '✈\uFE0E';
 const PROBLEM_TEXT = {
@@ -284,29 +285,37 @@ function showPick() {
 }
 
 function peelTicket(seatIndex) {
-  const front = el('div', { className: 'peel-front peel-perforated' }, [
+  const lift = el('div', { className: 'peel-lift' });
+  const front = el('div', { className: 'peel-front peel-teeth' }, [
     el('p', { className: 'peel-band' }, [el('b', { textContent: '新春一番賞' }), el('small', { textContent: 'BOARDING PASS' })]),
     routeLine('peel-route'),
     el('p', { className: 'peel-seat' }, [el('span', { textContent: 'SEAT' }), seatLabel(seatIndex)]),
     el('span', { className: 'peel-tab', textContent: '拉' }),
+    el('div', { className: 'peel-shade' }, [lift]),
   ]);
-  const back = el('div', { className: 'peel-back peel-perforated' }, [el('span', { className: 'peel-back-tab' })]);
-  const curl = el('div', { className: 'peel-curl' });
-  const strip = el('div', { className: 'peel-strip' }, [front, back, curl]);
+  const bend = el('div', { className: 'peel-bend' });
+  const back = el('div', { className: 'peel-back peel-teeth' }, [
+    el('span', { className: 'peel-tab' }),
+    el('div', { className: 'peel-shade' }, [bend]),
+  ]);
+  const strip = el('div', { className: 'peel-strip' }, [front, back]);
   const ticket = el('div', { className: 'peel-ticket' }, [
     el('div', { className: 'peel-card' }),
-    el('div', { className: 'peel-slot' }),
+    el('div', { className: 'peel-slot peel-teeth' }, [el('span', { className: 'peel-tab' })]),
     strip,
   ]);
-  const stage = decorative(el('div', { className: 'peel-stage' }, [ticket]));
-  return { stage, ticket, strip, front, back, curl };
+  const fade = el('div', { className: 'peel-fade' }, [ticket]);
+  const stage = decorative(el('div', { className: 'peel-stage' }, [fade]));
+  return { stage, fade, ticket, strip, front, back, lift, bend };
 }
 
 const cssPolygon = (points) =>
   points.length ? `polygon(${points.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')})` : 'inset(100%)';
 
-function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onOpen }) {
+function peelToOpen({ stage, fade, ticket, strip, front, back, lift, bend }, { onReveal, onOpen }) {
   let size = null;
+  let scale = 1;
+  let room = null;
   let tab = null;
   let q = null;
   let drag = null;
@@ -315,13 +324,30 @@ function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onO
 
   function measure() {
     size = { length: strip.offsetWidth, height: strip.offsetHeight };
+    scale = Math.min(1, stage.offsetWidth / ticket.offsetWidth);
+    room = { stripLeft: strip.offsetLeft, stageWidth: stage.offsetWidth / scale };
     tab = [0, size.height / 2];
     q ??= tab;
   }
 
-  const fit = () => ({ stripLeft: strip.offsetLeft, stageWidth: stage.offsetWidth });
+  function fadeLeftEdge(width) {
+    const mask = width > 0 ? `linear-gradient(90deg, transparent 0, #000 ${Math.min(MAX_LEFT_FADE, width)}px)` : 'none';
+    fade.style.maskImage = mask;
+    fade.style.webkitMaskImage = mask;
+  }
 
-  function render(target, room) {
+  function slide(shift, fadeWidth = -shift * scale) {
+    ticket.style.transform = `translateX(${shift * scale}px) scale(${scale})`;
+    fadeLeftEdge(fadeWidth);
+  }
+
+  function shade(band, point, rotation) {
+    band.style.left = `${point[0]}px`;
+    band.style.top = `${point[1]}px`;
+    band.style.transform = `rotate(${rotation}rad)`;
+  }
+
+  function render(target) {
     q = limitPull(tab, target, { maxAngle: MAX_PULL_ANGLE, maxLength: 2 * size.length + PULL_PAST_OPEN });
     const layout = peelLayout(tab, q, size);
     front.style.clipPath = cssPolygon(layout.front);
@@ -332,29 +358,27 @@ function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onO
       back.style.transformOrigin = `${layout.back.origin[0]}px ${layout.back.origin[1]}px`;
       back.style.transform = `rotate(${layout.back.rotation}rad)`;
     }
-    curl.style.display = layout.curl ? 'block' : 'none';
-    if (layout.curl) {
-      curl.style.left = `${layout.curl.from[0]}px`;
-      curl.style.top = `${layout.curl.from[1]}px`;
-      curl.style.height = `${layout.curl.length}px`;
-      curl.style.transform = `rotate(${layout.curl.rotation}rad) translateX(-3px)`;
+    lift.style.display = layout.fold ? 'block' : 'none';
+    bend.style.display = lift.style.display;
+    if (layout.fold) {
+      shade(lift, layout.fold.front, layout.fold.angle);
+      shade(bend, layout.fold.back, -layout.fold.angle);
     }
-    ticket.style.transform = layout.back ? `translateX(${keepFlapInView(q, room)}px)` : '';
+    slide(layout.back ? keepFlapInView(q, room) : 0);
     return layout.peeled;
   }
 
   function animate(pointAt, ms, then) {
     cancelAnimationFrame(frame);
-    const room = fit();
     if (reducedMotion.matches) {
-      render(pointAt(1), room);
+      render(pointAt(1));
       then?.();
       return;
     }
     const startedAt = performance.now();
     const step = (now) => {
       const progress = Math.min(1, (now - startedAt) / ms);
-      render(pointAt(1 - (1 - progress) ** 3), room);
+      render(pointAt(1 - (1 - progress) ** 3));
       if (progress < 1) frame = requestAnimationFrame(step);
       else then?.();
     };
@@ -363,7 +387,9 @@ function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onO
 
   function open() {
     stage.classList.add('is-open');
-    ticket.style.transform = `translateX(${centredShift({ ...fit(), length: size.length })}px)`;
+    const centred = centredShift({ ...room, length: size.length });
+    const openStripLeft = (room.stripLeft + size.length + centred) * scale;
+    slide(centred, openStripLeft);
     onOpen();
   }
 
@@ -388,14 +414,14 @@ function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onO
     }
     cancelAnimationFrame(frame);
     measure();
-    drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, from: q, room: fit(), peeled: 0 };
+    drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, from: q, peeled: 0 };
   });
 
   strip.addEventListener('pointermove', (event) => {
     if (event.pointerId !== drag?.pointerId) return;
-    const x = Math.min(2 * size.length + PULL_PAST_OPEN, drag.from[0] + event.clientX - drag.x);
-    const y = Math.min(size.height + DRAG_REACH.down, Math.max(-DRAG_REACH.up, drag.from[1] + event.clientY - drag.y));
-    drag.peeled = render([x, y], drag.room);
+    const x = Math.min(2 * size.length + PULL_PAST_OPEN, drag.from[0] + (event.clientX - drag.x) / scale);
+    const y = drag.from[1] + (event.clientY - drag.y) / scale;
+    drag.peeled = render([x, Math.min(size.height + DRAG_REACH.down, Math.max(-DRAG_REACH.up, y))]);
     if (drag.peeled > REVEAL_AT_PEELED_SHARE) onReveal();
   });
 
@@ -409,7 +435,7 @@ function peelToOpen({ stage, ticket, strip, front, back, curl }, { onReveal, onO
   for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) strip.addEventListener(type, release);
 
   measure();
-  render(tab, fit());
+  render(tab);
 
   return function tearOpen() {
     if (opening) return;
