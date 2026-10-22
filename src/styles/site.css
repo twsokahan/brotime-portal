@@ -1626,6 +1626,12 @@ button.ticket:active {
   touch-action: none;
 }
 
+.peel-cast {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(1px 2px 1.5px rgba(50, 30, 10, 0.35)) drop-shadow(5px 12px 8px rgba(50, 30, 10, 0.38));
+}
+
 .peel-front,
 .peel-back {
   position: absolute;

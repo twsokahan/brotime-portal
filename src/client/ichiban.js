@@ -298,7 +298,7 @@ function peelTicket(seatIndex) {
     el('span', { className: 'peel-tab' }),
     el('div', { className: 'peel-shade' }, [bend]),
   ]);
-  const strip = el('div', { className: 'peel-strip' }, [front, back]);
+  const strip = el('div', { className: 'peel-strip' }, [front, el('div', { className: 'peel-cast' }, [back])]);
   const ticket = el('div', { className: 'peel-ticket' }, [
     el('div', { className: 'peel-card' }),
     el('div', { className: 'peel-slot peel-teeth' }, [el('span', { className: 'peel-tab' })]),
