@@ -110,6 +110,59 @@ test('showStoryQuestions can only be true', () => {
     activity.steps[3].showStoryQuestions = value;
     assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[3].showStoryQuestions 只能是 true']);
   }
+
+function withIchiban(grades = { A: 1, B: 2, C: 3, D: 4 }) {
+  const activity = readyActivity();
+  activity.ichiban = { grades };
+  return activity;
+}
+
+test('an activity may offer the electronic ichiban kuji on one of its steps', () => {
+  const activity = withIchiban();
+  activity.steps[2].tool = 'ichiban';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('ichiban grades need exactly the grades A to D', () => {
+  assert.deepEqual(validateActivity(withIchiban({ A: 1, B: 2, C: 3 }), allFilesExist), [
+    'brunch: ichiban.grades 要剛好是 A、B、C、D 這 4 個等級',
+  ]);
+});
+
+test('ichiban grade counts must be whole numbers', () => {
+  assert.deepEqual(validateActivity(withIchiban({ A: 1, B: 2, C: 1.5, D: 4 }), allFilesExist), [
+    'brunch: ichiban.grades 每一賞要是 0–99 的整數',
+  ]);
+});
+
+test('ichiban grades need at least one ticket', () => {
+  assert.deepEqual(validateActivity(withIchiban({ A: 0, B: 0, C: 0, D: 0 }), allFilesExist), [
+    'brunch: ichiban.grades 加起來至少要有 1 張',
+  ]);
+});
+
+test('ichiban grades may add up to at most 100 tickets', () => {
+  assert.deepEqual(validateActivity(withIchiban({ A: 99, B: 2, C: 0, D: 0 }), allFilesExist), [
+    'brunch: ichiban.grades 加起來不能超過 100 張',
+  ]);
+});
+
+test('ichiban must be an object', () => {
+  const activity = readyActivity();
+  activity.ichiban = 'A1 B2 C3 D4';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: ichiban 要是物件']);
+});
+
+test('a step can use the ichiban tool only when the activity has an ichiban setting', () => {
+  const activity = readyActivity();
+  activity.steps[2].tool = 'ichiban';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[2].tool 要先有 ichiban 設定']);
+});
+
+test('a step tool must be a known tool', () => {
+  const activity = withIchiban();
+  activity.steps[2].tool = 'quiz';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[2].tool 要是 ichiban 其中之一']);
 });
 
 test('a step may give what to read aloud as plain text', () => {

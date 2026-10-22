@@ -1,4 +1,5 @@
 import { KIDS, PLACE, RAIN, SLOTS, INTERESTS } from './labels.mjs';
+import { GRADES, MAX_PER_GRADE, MAX_TICKETS, countsProblem } from './ichiban.mjs';
 
 const STATUSES = ['preparing', 'review', 'ready'];
 const PUBLISHED_STATUSES = ['review', 'ready'];
@@ -8,6 +9,12 @@ const CARD_SET_KINDS = ['story', 'topic', 'other'];
 const ROUTE_STOPS = ['start', 'stop1', 'end'];
 const ROUTE_LEGS = [0, 1];
 const READ_ALOUD_KEYS = ['label', 'text', 'source'];
+const STEP_TOOLS = ['ichiban'];
+const ICHIBAN_COUNT_PROBLEMS = {
+  'bad-count': `每一賞要是 0–${MAX_PER_GRADE} 的整數`,
+  empty: '加起來至少要有 1 張',
+  'too-many': `加起來不能超過 ${MAX_TICKETS} 張`,
+};
 const ACTIVITY_ID = /^[a-z0-9-]+$/;
 const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
@@ -223,7 +230,12 @@ function checkReadAloud(check, readAloud, path) {
   if (readAloud.source !== undefined) check.text(readAloud.source, `${path}.source`);
 }
 
-function checkStep(check, step, path, cardSets, earlierSteps) {
+function checkStepTool(check, tool, path, hasIchiban) {
+  if (tool === undefined || !check.oneOf(tool, STEP_TOOLS, path)) return;
+  if (!hasIchiban) check.fail(path, '要先有 ichiban 設定');
+}
+
+function checkStep(check, step, path, { cardSets, hasIchiban, earlierSteps }) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
   if (step.minutes !== null && !(Number.isInteger(step.minutes) && step.minutes > 0)) {
@@ -237,12 +249,26 @@ function checkStep(check, step, path, cardSets, earlierSteps) {
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
   if (step.routeLeg !== undefined) check.oneOf(step.routeLeg, ROUTE_LEGS, `${path}.routeLeg`);
   checkShowStoryQuestions(check, step, path, earlierSteps, cardSets);
+  checkStepTool(check, step.tool, `${path}.tool`, hasIchiban);
 }
 
-function checkSteps(check, steps, cardSets) {
+function checkSteps(check, steps, { cardSets, hasIchiban }) {
   if (!check.list(steps, 'steps', 1)) return;
-  const sets = isObject(cardSets) ? cardSets : {};
-  steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, sets, steps.slice(0, i)));
+  const context = { cardSets: isObject(cardSets) ? cardSets : {}, hasIchiban };
+  steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, { ...context, earlierSteps: steps.slice(0, i) }));
+}
+
+function checkIchiban(check, ichiban) {
+  if (!check.object(ichiban, 'ichiban') || !check.object(ichiban.grades, 'ichiban.grades')) return;
+  const { grades } = ichiban;
+  const hasExactlyGrades =
+    Object.keys(grades).length === GRADES.length && GRADES.every((grade) => Object.hasOwn(grades, grade));
+  if (!hasExactlyGrades) {
+    check.fail('ichiban.grades', `要剛好是 ${GRADES.join('、')} 這 ${GRADES.length} 個等級`);
+    return;
+  }
+  const problem = countsProblem(grades);
+  if (problem !== null) check.fail('ichiban.grades', ICHIBAN_COUNT_PROBLEMS[problem]);
 }
 
 function checkPlanFile(check, planFile, id) {
@@ -294,7 +320,9 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('provided')) checkRows(check, activity.provided, 'provided', ['item', 'qty'], 1);
   if (shouldCheck('todo')) checkTodo(check, activity.todo);
   if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets, published);
-  if (shouldCheck('steps')) checkSteps(check, activity.steps, activity.cardSets);
+  if (shouldCheck('steps')) {
+    checkSteps(check, activity.steps, { cardSets: activity.cardSets, hasIchiban: activity.ichiban !== undefined });
+  }
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
   if (shouldCheck('extra30')) checkTextList(check, activity.extra30, 'extra30');
   if (shouldCheck('planFile')) checkPlanFile(check, activity.planFile, activity.id);
@@ -302,6 +330,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (activity.printFiles !== undefined) checkRows(check, activity.printFiles, 'printFiles', ['label', 'file']);
   if (activity.flowTitle !== undefined) check.text(activity.flowTitle, 'flowTitle');
   if (activity.surveys !== undefined) checkSurveys(check, activity.surveys);
+  if (activity.ichiban !== undefined) checkIchiban(check, activity.ichiban);
   if (published && fileExists) {
     checkCardImages(check, activity, fileExists);
     checkPdfFiles(check, activity, fileExists);
