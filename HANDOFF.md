@@ -50,7 +50,7 @@
 - **subagent 的模型**：review 類用 `model: "sonnet"`，實作用預設模型。
 - **GitHub 推送**：本機 SSH 金鑰是公司帳號。這個 repo 的 remote 是 HTTPS，本地設定 `credential.helper` 用 `gh auth git-credential`（同 `~/code/city-walk-review`）。gh token 要有 `workflow` 權限才推得動 `.github/workflows/`。
 - **整個 repo 是公開的**：不要寫個人信箱、電話、金鑰、token，也不要放表單的編輯網址或回覆試算表網址。
-- **實體卡**：實體卡（泡茶會話題卡、新春唱題會故事卡等）由創價班企劃室印好寄給各區，網站不要叫主持人自己印；印刷檔只當備用。
+- **實體卡**：巷口泡茶會的話題卡由創價班企劃室印好寄給各區（網站不要叫主持人自己印，印刷檔只當備用）；新春唱題會照企劃案 v4，素材由各區列印、刮開區各區自己做。
 - **內容規則**：引文只能用故事卡上已有的文字；故事全文、卡名、出處一字不改。內容來源在 `~/code/sokahan-propalsal-2026/`。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
