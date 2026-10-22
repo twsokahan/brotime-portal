@@ -5,7 +5,8 @@ import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build, unsafeOutDirReason } from '../scripts/build.mjs';
+import { build, renderPages, unsafeOutDirReason } from '../scripts/build.mjs';
+import { fixtureSite, readyActivity } from './fixtures/activities.mjs';
 
 const FIXTURES = fileURLToPath(new URL('./fixtures/', import.meta.url));
 const CONTENT_DIR = path.join(FIXTURES, 'content');
@@ -215,6 +216,31 @@ test('build returns the pages it wrote', async () => {
     'a/night-run/index.html',
     'index.html',
   ]);
+});
+
+const ICHIBAN_PAGE = 'a/brunch/ichiban/index.html';
+
+const withIchiban = (status) => ({ ...readyActivity(), status, ichiban: { grades: { A: 1, B: 2, C: 3, D: 4 } } });
+
+const pagesFor = (activity, preview) =>
+  new Map(renderPages({ site: fixtureSite(), routes: undefined, activityFiles: [{ fileName: 'brunch.json', activity }] }, preview));
+
+test('a ready activity with an ichiban setting gets an ichiban page that loads its script and leaves LINE', () => {
+  const html = pagesFor(withIchiban('ready'), false).get(ICHIBAN_PAGE);
+  assert.ok(html, `expected ${ICHIBAN_PAGE}`);
+  assert.ok(html.includes('<script type="module" src="../../../js/ichiban.js"></script>'));
+  assert.ok(html.includes('openExternalBrowser') && html.includes('<div class="line-notice">'));
+  assert.ok(html.includes('<title>電子一番賞｜兄弟早午餐會</title>'));
+  assert.ok(html.includes('<meta property="og:url" content="https://cades.github.io/brotime-portal/a/brunch/ichiban/">'));
+});
+
+test('a review activity with an ichiban setting gets the ichiban page in preview only', () => {
+  assert.ok(pagesFor(withIchiban('review'), true).has(ICHIBAN_PAGE));
+  assert.ok(!pagesFor(withIchiban('review'), false).has(ICHIBAN_PAGE));
+});
+
+test('a ready activity without an ichiban setting gets no ichiban page', () => {
+  assert.ok(!pagesFor(readyActivity(), false).has(ICHIBAN_PAGE));
 });
 
 const PLACES = { repoRoot: '/work/brotime-portal', cwd: '/work/brotime-portal', home: '/Users/me' };

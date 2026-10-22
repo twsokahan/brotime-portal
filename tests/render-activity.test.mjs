@@ -235,6 +235,21 @@ test('inserted text is escaped', () => {
   assert.ok(!html.includes('<i>'));
 });
 
+const ICHIBAN_LINK = '<a href="ichiban/">電子一番賞（不用刮刮卡也能抽）</a>';
+
+test('an activity with an ichiban setting links to the electronic ichiban right after the provided list', () => {
+  const activity = { ...readyActivity(), ichiban: { grades: { A: 1, B: 2, C: 3, D: 4 } } };
+  const html = render({ activity });
+  const link = html.indexOf(ICHIBAN_LINK);
+  assert.ok(link >= 0, 'expected the ichiban link');
+  assert.ok(html.indexOf('企劃室提供') < link);
+  assert.ok(link < html.indexOf('你要做的'));
+});
+
+test('an activity without an ichiban setting has no ichiban link', () => {
+  assert.ok(!render().includes('電子一番賞'));
+});
+
 test('a preparing activity only says it is on the way and links back home', () => {
   const html = renderPreparingMain({ activity: preparingActivity(), rel: REL });
   assert.ok(html.includes('<h1>河濱夜跑・單車</h1>'));

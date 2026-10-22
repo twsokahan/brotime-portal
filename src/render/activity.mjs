@@ -5,6 +5,7 @@ import { qrSvg } from './qr.mjs';
 const DEFAULT_FLOW_TITLE = '60 分鐘這樣過';
 const DEFAULT_THUMB_COUNT = 3;
 const HOME_LINK_TEXT = '← 看其他兄弟時光';
+const ICHIBAN_LINK = '<p class="ichiban-link"><a href="ichiban/">電子一番賞（不用刮刮卡也能抽）</a></p>';
 
 const list = (items, renderItem) => items.map(renderItem).join('');
 
@@ -47,7 +48,7 @@ function renderPrepare(activity, site) {
   return `<section class="prepare">
 <h2>要準備</h2>
 <div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
-<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
+${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
 <div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，結束前掃 QR code，不用印。</p></div>
 </section>`;
 }
