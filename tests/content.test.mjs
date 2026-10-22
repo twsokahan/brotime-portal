@@ -19,6 +19,7 @@ const OLD_EVENT_WORDING = [
   '活動回報表',
   '主辦',
 ];
+const STORY_CARD_ORIGINALS_KEPT_WORD_FOR_WORD = ['帳篷中舉辦懇談'];
 
 test('the real content and public files pass validation', async () => {
   assert.deepEqual(contentErrors(await readContent(CONTENT_DIR), PUBLIC_DIR), []);
@@ -37,7 +38,8 @@ async function browserScripts() {
 test('no page of the preview build or its browser scripts uses the old 活動／舉辦 wording', async () => {
   const pages = renderPages(await readContent(CONTENT_DIR), true);
   for (const [file, text] of [...pages, ...(await browserScripts())]) {
-    for (const phrase of OLD_EVENT_WORDING) assert.ok(!text.includes(phrase), `${file} still says ${phrase}`);
+    const ownWording = STORY_CARD_ORIGINALS_KEPT_WORD_FOR_WORD.reduce((rest, kept) => rest.replaceAll(kept, ''), text);
+    for (const phrase of OLD_EVENT_WORDING) assert.ok(!ownWording.includes(phrase), `${file} still says ${phrase}`);
   }
 });
 
