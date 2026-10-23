@@ -337,6 +337,28 @@ test('a story card may carry both sharing questions and a note', () => {
   assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
+test('a card may carry the answer that is revealed after the vote', () => {
+  const activity = readyActivity();
+  activity.cardSets.topic.kind = 'other';
+  activity.cardSets.topic.cards[0].reveal = {
+    lead: '這是測試用的揭曉引言——',
+    text: '這是測試用的揭曉原文第一段。\n\n這是第二段。',
+    source: '《新・人間革命》第 7 卷〈早春〉p.228-229',
+  };
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a revealed answer needs its lead, its text and its source', () => {
+  const activity = readyActivity();
+  const card = activity.cardSets.topic.cards[0];
+  card.reveal = { lead: '這是測試用的揭曉引言——', text: '這是測試用的揭曉原文。' };
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal.source 必填');
+  card.reveal = { text: '這是測試用的揭曉原文。', source: '《新・人間革命》第 7 卷〈早春〉' };
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal.lead 必填');
+  card.reveal = '這是測試用的揭曉原文。';
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal 要是物件');
+});
+
 test('a note needs both its printed label and its text', () => {
   const activity = readyActivity();
   const card = activity.cardSets.story.cards[0];

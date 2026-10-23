@@ -109,10 +109,12 @@ function renderPrintFiles(activity, rel) {
 
 function renderMore(activity, rel) {
   const textItems = (items) => list(items, (text) => `<li>${escapeHtml(text)}</li>`);
+  const extras = activity.extra30.length
+    ? `<details><summary>想多留 30 分鐘（選配）</summary><ul>${textItems(activity.extra30)}</ul></details>\n`
+    : '';
   return `<section class="more">
 <details><summary>第一次主持記得 ${activity.firstTime.length} 件事</summary><ol>${textItems(activity.firstTime)}</ol></details>
-<details><summary>想多留 30 分鐘（選配）</summary><ul>${textItems(activity.extra30)}</ul></details>
-<details><summary>完整企劃案</summary><p><a href="${rel}${escapeHtml(activity.planFile)}">下載企劃案（PDF）</a></p>${renderPrintFiles(activity, rel)}</details>
+${extras}<details><summary>完整企劃案</summary><p><a href="${rel}${escapeHtml(activity.planFile)}">下載企劃案（PDF）</a></p>${renderPrintFiles(activity, rel)}</details>
 </section>`;
 }
 

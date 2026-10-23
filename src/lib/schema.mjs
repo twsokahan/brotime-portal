@@ -154,6 +154,7 @@ function checkCard(check, card, path, { isStory, needsQuestionsOrNote }, firstPa
   if (isStory || card.text !== undefined) check.text(card.text, `${path}.text`);
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
   if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
+  if (card.reveal !== undefined) checkTextFields(check, card.reveal, `${path}.reveal`, ['lead', 'text', 'source']);
   const needsQuestions = needsQuestionsOrNote && card.note === undefined;
   if (needsQuestions || card.questions !== undefined) checkTextList(check, card.questions, `${path}.questions`, 1);
 }

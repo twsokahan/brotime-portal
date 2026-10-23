@@ -382,6 +382,20 @@ function topicGroupPicker(groupButtons, fullRows) {
   return el('div', {}, [el('h3', { className: 'topic-groups-title', textContent: title }), picker]);
 }
 
+const revealAnswer = (reveal) =>
+  el('details', { className: 'reveal' }, [
+    el('summary', { textContent: '投完票再揭曉：池田先生的話' }),
+    el('p', { className: 'reveal-lead', textContent: reveal.lead }),
+    ...reveal.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
+    el('p', { className: 'source', textContent: `出處：${reveal.source}` }),
+  ]);
+
+const viewerSlide = (card) =>
+  el('div', { className: card.reveal ? 'viewer-slide has-reveal' : 'viewer-slide' }, [
+    cardImage(card, 'viewer-image'),
+    card.reveal && revealAnswer(card.reveal),
+  ]);
+
 function openCardViewer(set, startIndex, opener) {
   const close = () => {
     viewer.remove();
@@ -389,11 +403,7 @@ function openCardViewer(set, startIndex, opener) {
     opener.focus();
   };
   const closeButton = button('關閉', close, 'viewer-close');
-  const strip = el(
-    'div',
-    { className: 'viewer-strip', tabIndex: 0 },
-    set.cards.map((card) => el('div', { className: 'viewer-slide' }, [cardImage(card, 'viewer-image')])),
-  );
+  const strip = el('div', { className: 'viewer-strip', tabIndex: 0 }, set.cards.map(viewerSlide));
   const viewer = el('div', { className: 'card-viewer' }, [closeButton, strip]);
   viewer.setAttribute('role', 'dialog');
   viewer.setAttribute('aria-modal', 'true');

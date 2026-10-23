@@ -218,6 +218,14 @@ test('the collapsed sections count first-time tips and link the plan file', () =
   assert.ok(!html.includes('想印實體卡的話：'));
 });
 
+test('an activity with nothing to add for a longer stay leaves that section out', () => {
+  const activity = readyActivity();
+  activity.extra30 = [];
+  const html = render({ activity });
+  assert.ok(!html.includes('想多留 30 分鐘'));
+  assert.ok(html.includes('第一次主持記得 3 件事'));
+});
+
 test('print files are offered as PDF downloads', () => {
   const activity = readyActivity();
   activity.printFiles = [{ label: '故事卡（A4）', file: 'files/brunch-cards-story.pdf' }];
