@@ -443,13 +443,29 @@ test('validateAll reports a repeated id', () => {
   assertReports(validateAll(content, allFilesExist), 'id');
 });
 
+const cityWalkRoute = (district, storyCard, overrides = {}) => ({
+  district,
+  stop1: { storyCard },
+  legTexts: ['測試公園 → 測試館', '測試館 → 測試公園'],
+  legPaths: [
+    [
+      [25, 121],
+      [25, 121.001],
+    ],
+    [
+      [25, 121.001],
+      [25, 121],
+    ],
+  ],
+  legNavUrls: ['https://www.google.com/maps/dir/?api=1&leg=1', 'https://www.google.com/maps/dir/?api=1&leg=2'],
+  ...overrides,
+});
+
+const routeErrorsFor = (route) => validateAll({ activities: [cityWalkActivity()], site: fixtureSite(), routes: [route] }, allFilesExist);
+
 test('validateAll checks city-walk route story cards against the story set', () => {
   const site = fixtureSite();
-  const routes = [
-    { district: '台北西區', stop1: { storyCard: 'P' } },
-    { district: '台北東區', stop1: { storyCard: null } },
-    { district: '新竹區', stop1: { storyCard: 'Q' } },
-  ];
+  const routes = [cityWalkRoute('台北西區', 'P'), cityWalkRoute('台北東區', null), cityWalkRoute('新竹區', 'Q')];
   const errors = validateAll({ activities: [cityWalkActivity()], site, routes }, allFilesExist);
   assert.equal(errors.length, 2, JSON.stringify(errors));
   assertReports(errors, '台北東區');
@@ -462,4 +478,28 @@ test('validateAll skips route checks while city-walk is preparing', () => {
   const routes = [{ district: '台北東區', stop1: { storyCard: null } }];
   const errors = validateAll({ activities: [preparing], site: fixtureSite(), routes }, allFilesExist);
   assert.deepEqual(errors, []);
+});
+
+test('a complete city-walk route passes the route checks', () => {
+  assert.deepEqual(routeErrorsFor(cityWalkRoute('台北東區', 'P')), []);
+});
+
+test('a city-walk route needs the road names of both legs', () => {
+  const errors = routeErrorsFor(cityWalkRoute('台北東區', 'P', { legTexts: ['測試公園 → 測試館'] }));
+  assert.equal(errors.length, 1, JSON.stringify(errors));
+  assertReports(errors, 'routes[台北東區].legTexts');
+});
+
+test('a city-walk route needs a drawable path for both legs', () => {
+  const errors = routeErrorsFor(cityWalkRoute('台北東區', 'P', { legPaths: [[[25, 121], [25, 121.001]], [[25, 121]]] }));
+  assert.equal(errors.length, 1, JSON.stringify(errors));
+  assertReports(errors, 'routes[台北東區].legPaths');
+});
+
+test('a city-walk route needs a Google Maps link for both legs', () => {
+  const errors = routeErrorsFor(
+    cityWalkRoute('台北東區', 'P', { legNavUrls: ['https://www.google.com/maps/dir/?api=1&leg=1', 'https://example.com/'] }),
+  );
+  assert.equal(errors.length, 1, JSON.stringify(errors));
+  assertReports(errors, 'routes[台北東區].legNavUrls');
 });

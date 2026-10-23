@@ -364,16 +364,34 @@ function duplicateErrors(activities, key) {
   return errors;
 }
 
+const GOOGLE_DIRECTIONS_URL = 'https://www.google.com/maps/dir/';
+const isTwo = (value, isLeg) => Array.isArray(value) && value.length === 2 && value.every(isLeg);
+const isRoadNames = (text) => typeof text === 'string' && text.trim() !== '';
+const isDrawablePath = (path) => Array.isArray(path) && path.length >= 2;
+const isDirectionsUrl = (url) => typeof url === 'string' && url.startsWith(GOOGLE_DIRECTIONS_URL);
+
+function storyCardErrors(route, path, storyCardIds) {
+  const storyCard = route?.stop1?.storyCard;
+  if (storyCard === null || storyCard === undefined) return [`${CITY_WALK_ID}: ${path}.stop1.storyCard 沒有填`];
+  if (!storyCardIds.has(storyCard)) return [`${CITY_WALK_ID}: ${path}.stop1.storyCard ${storyCard} 不在 cardSets.story 裡`];
+  return [];
+}
+
+function legErrors(route, path) {
+  return [
+    !isTwo(route?.legTexts, isRoadNames) && `${CITY_WALK_ID}: ${path}.legTexts 要有兩段的路名`,
+    !isTwo(route?.legPaths, isDrawablePath) && `${CITY_WALK_ID}: ${path}.legPaths 要有兩段、每段至少兩個點`,
+    !isTwo(route?.legNavUrls, isDirectionsUrl) && `${CITY_WALK_ID}: ${path}.legNavUrls 要有兩段的 Google 地圖路線網址`,
+  ].filter(Boolean);
+}
+
 function routeErrors(activities, routes) {
   const cityWalk = activities.find((activity) => activity?.id === CITY_WALK_ID);
   if (!routes || !isPublished(cityWalk)) return [];
   const storyCardIds = cardIdsOf(cityWalk.cardSets?.story);
   return routes.flatMap((route, i) => {
-    const path = `routes[${route?.district ?? i}].stop1.storyCard`;
-    const storyCard = route?.stop1?.storyCard;
-    if (storyCard === null || storyCard === undefined) return [`${CITY_WALK_ID}: ${path} 沒有填`];
-    if (!storyCardIds.has(storyCard)) return [`${CITY_WALK_ID}: ${path} ${storyCard} 不在 cardSets.story 裡`];
-    return [];
+    const path = `routes[${route?.district ?? i}]`;
+    return [...storyCardErrors(route, path, storyCardIds), ...legErrors(route, path)];
   });
 }
 

@@ -114,7 +114,8 @@ function routeSummary(route) {
       { className: 'route-facts' },
       facts.flatMap(([label, value]) => [el('dt', { textContent: label }), el('dd', { textContent: value })]),
     ),
-    externalLink('整條路線在 Google 地圖開啟', route.googleRouteUrl, 'button-link'),
+    externalLink('第一段在 Google 地圖開啟', route.legNavUrls[0], 'button-link'),
+    externalLink('第二段在 Google 地圖開啟', route.legNavUrls[1], 'button-link'),
   ];
 }
 

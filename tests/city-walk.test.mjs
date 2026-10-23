@@ -1,7 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { districtLabel, normalizeRoute, walkingLink, routeSteps } from '../src/lib/city-walk.mjs';
+import {
+  districtLabel,
+  legNavUrl,
+  normalizeRoute,
+  routeSteps,
+  splitLegTexts,
+  streetViewUrl,
+  walkingLink,
+} from '../src/lib/city-walk.mjs';
 
 const rawRoute = () => JSON.parse(readFileSync(new URL('./fixtures/raw-route.json', import.meta.url), 'utf8'));
 
@@ -80,13 +88,14 @@ test('the first stop reads the intro aloud with its story card and leads to the 
   assert.equal(stop1.readAloud, route.stop1.intro);
   assert.deepEqual(stop1.cardIds, ['P']);
   assert.ok(stop1.mapsLabel.startsWith('走到下一站：'));
+  assert.equal(stop1.mapsUrl, route.legNavUrls[1]);
 });
 
 test('the start and end steps lead to the next stop and back to the meeting point', () => {
   const route = normalizeRoute(rawRoute(), '北一圈');
   const filled = routeSteps(cityWalkSteps(), route);
   assert.equal(filled[0].do, '集合點：捷運小南門站3號出口');
-  assert.equal(filled[0].mapsUrl, walkingLink(route.stop1));
+  assert.equal(filled[0].mapsUrl, route.legNavUrls[0]);
   assert.equal(filled[4].do, `終點：${route.end.place}`);
   assert.deepEqual(filled[4].cardIds, ['Z']);
   assert.equal(filled[4].mapsLabel, '回到集合點：捷運小南門站3號出口');
@@ -123,4 +132,56 @@ test('an island district reads as its place with its circle in brackets', () => 
 
 test('an ordinary district reads as its own name', () => {
   assert.equal(districtLabel('台北西區'), '台北西區');
+});
+
+test('route text splits into two legs with spaced arrows', () => {
+  assert.deepEqual(splitLegTexts(rawRoute().text.路線), [
+    '從3號出口進台北植物園，沿園內步道走到臘葉館',
+    '臘葉館 → 荷花池 → 園內步道往西北 → 小南門',
+  ]);
+});
+
+test('a trailing remark after the distance does not break the split', () => {
+  const text =
+    '第一段（約17分鐘）：南苗市場→中山路→羅福星像。第二段（約20分鐘）：羅福星像→園內步道→南苗三角公園。全程約2.6公里，含園內步道。';
+  assert.deepEqual(splitLegTexts(text), ['南苗市場 → 中山路 → 羅福星像', '羅福星像 → 園內步道 → 南苗三角公園']);
+});
+
+test('route text without two legs cannot be split', () => {
+  assert.equal(splitLegTexts('從公園走到車站。'), null);
+});
+
+test('a leg navigation link walks from one stop to the next through three points on the path', () => {
+  assert.equal(
+    legNavUrl({ lat: 25, lon: 121 }, [[25, 121], [25, 121.004]], { lat: 25, lon: 121.004 }),
+    'https://www.google.com/maps/dir/?api=1&travelmode=walking&dir_action=navigate' +
+      '&origin=25.000000,121.000000&destination=25.000000,121.004000' +
+      '&waypoints=25.000000,121.001000%7C25.000000,121.002000%7C25.000000,121.003000',
+  );
+});
+
+test('a street view link opens the panorama nearest the point', () => {
+  assert.equal(
+    streetViewUrl({ lat: 25.1, lon: 121.5 }),
+    'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=25.1,121.5',
+  );
+});
+
+test('normalizing a route carries both legs for the map and navigation', () => {
+  const route = normalizeRoute(rawRoute(), '北一圈');
+  assert.equal(route.legPaths.length, 2);
+  assert.equal(route.legPaths[0].length, 42);
+  const [lat, lon] = route.legPaths[0][0];
+  assert.ok(Math.abs(lat - 25.035325) <= 0.000005 && Math.abs(lon - 121.511042) <= 0.000005);
+  assert.equal(lat, Number(lat.toFixed(5)));
+  assert.deepEqual(route.legMeters, [537, 1130]);
+  assert.deepEqual(route.legTexts, splitLegTexts(rawRoute().text.路線));
+  assert.equal(route.legNavUrls[1], legNavUrl(route.stop1, rawRoute().legs[1].path, route.end));
+  assert.equal(route.googleRouteUrl, undefined);
+});
+
+test('normalizing a route whose text has no two legs names the district', () => {
+  const raw = rawRoute();
+  raw.text.路線 = '從公園走到車站。';
+  assert.throws(() => normalizeRoute(raw, '北一圈'), /台北西區/);
 });
