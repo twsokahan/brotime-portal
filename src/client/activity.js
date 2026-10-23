@@ -1,4 +1,4 @@
-import { districtLabel, routeSteps } from './lib/city-walk.mjs';
+import { routeOptionLabel, routeSteps } from './lib/city-walk.mjs';
 import { el, externalLink } from './dom.js';
 import { renderRouteBook } from './route-book.js';
 import {
@@ -63,7 +63,9 @@ function cardImage(card, className, file = card.id) {
 }
 
 let district = null;
-const routeFor = (name) => routes?.find((route) => route.district === name) ?? null;
+// A district can hold more than one route, so the picker, address bar and saved session keep the route id.
+// A district's first route has the district name as its id, so links saved before that still open it.
+const routeFor = (id) => routes?.find((route) => route.id === id) ?? null;
 const flowFor = (name) => routeFlow(activity.steps, routeFor(name));
 const liveStepsFor = (name) => (routes ? flowFor(name).steps : activity.steps);
 const routeReminders = () => (routes && live.district ? [flowFor(live.district).overtimeNote].filter(Boolean) : []);
@@ -103,12 +105,12 @@ function savedDistrict() {
 
 function districtOptions() {
   const circles = new Map();
-  for (const route of routes) circles.set(route.circle, [...(circles.get(route.circle) ?? []), route.district]);
-  return [...circles].map(([circle, districts]) =>
+  for (const route of routes) circles.set(route.circle, [...(circles.get(route.circle) ?? []), route]);
+  return [...circles].map(([circle, circleRoutes]) =>
     el(
       'optgroup',
       { label: circle },
-      districts.map((name) => el('option', { value: name, textContent: districtLabel(name) })),
+      circleRoutes.map((route) => el('option', { value: route.id, textContent: routeOptionLabel(route, routes) })),
     ),
   );
 }

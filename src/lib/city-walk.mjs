@@ -43,6 +43,7 @@ export function normalizeRoute(raw, circleName) {
   const { text, points } = raw;
   const [firstLegMinutes, secondLegMinutes] = raw.timeline.legMinutes;
   return {
+    id: raw.id,
     district: raw.district,
     circle: circleName,
     title: raw.title,
@@ -76,6 +77,12 @@ export function normalizeRoute(raw, circleName) {
 export function districtLabel(id) {
   const [circle, place] = id.split('_');
   return place ? `${place}（${circle}）` : id;
+}
+
+export function routeOptionLabel(route, routes) {
+  const place = districtLabel(route.district);
+  const sharesDistrict = routes.filter((other) => other.district === route.district).length > 1;
+  return sharesDistrict ? `${place}・${route.title.split('：')[1]}` : place;
 }
 
 export function walkingLink({ lat, lon }) {

@@ -5,6 +5,7 @@ import {
   districtLabel,
   legNavUrl,
   normalizeRoute,
+  routeOptionLabel,
   routeSteps,
   splitLegTexts,
   streetViewUrl,
@@ -132,6 +133,32 @@ test('an island district reads as its place with its circle in brackets', () => 
 
 test('an ordinary district reads as its own name', () => {
   assert.equal(districtLabel('台北西區'), '台北西區');
+});
+
+test('normalizing a route keeps the review site id so a district can hold two routes', () => {
+  assert.equal(normalizeRoute({ ...rawRoute(), id: '台北西區-2' }, '北一圈').id, '台北西區-2');
+});
+
+test('a route option reads as its district while the district has one route', () => {
+  const routes = [
+    { id: '台北西區', district: '台北西區', title: '台北西區：植物園小南門線' },
+    { id: '南二圈_澎湖', district: '南二圈_澎湖', title: '澎湖（南二圈）：中央老街線' },
+  ];
+  assert.deepEqual(
+    routes.map((route) => routeOptionLabel(route, routes)),
+    ['台北西區', '澎湖（南二圈）'],
+  );
+});
+
+test('a route option adds its line name when the district has two routes', () => {
+  const routes = [
+    { id: '基隆北區', district: '基隆北區', title: '基隆北區：梓桑古厝線' },
+    { id: '基隆北區-2', district: '基隆北區', title: '基隆北區：三連棟線' },
+  ];
+  assert.deepEqual(
+    routes.map((route) => routeOptionLabel(route, routes)),
+    ['基隆北區・梓桑古厝線', '基隆北區・三連棟線'],
+  );
 });
 
 test('route text splits into two legs with spaced arrows', () => {

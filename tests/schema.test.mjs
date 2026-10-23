@@ -444,6 +444,7 @@ test('validateAll reports a repeated id', () => {
 });
 
 const cityWalkRoute = (district, storyCard, overrides = {}) => ({
+  id: district,
   district,
   stop1: { storyCard },
   legTexts: ['測試公園 → 測試館', '測試館 → 測試公園'],

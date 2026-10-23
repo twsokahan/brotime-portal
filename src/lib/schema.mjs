@@ -390,7 +390,7 @@ function routeErrors(activities, routes) {
   if (!routes || !isPublished(cityWalk)) return [];
   const storyCardIds = cardIdsOf(cityWalk.cardSets?.story);
   return routes.flatMap((route, i) => {
-    const path = `routes[${route?.district ?? i}]`;
+    const path = `routes[${route?.id ?? i}]`;
     return [...storyCardErrors(route, path, storyCardIds), ...legErrors(route, path)];
   });
 }
