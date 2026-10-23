@@ -16,12 +16,12 @@
   - 一區一桌、約 5～8 人（一盒 8 個謝幕信封）；人多時怎麼辦不寫（使用者不要「問圈負責人有沒有多的盒子」）；不做一分鐘計時器。
   - 企劃案先另存 v5 照卡牌成品改（v4 沒動，v5 由 `plan-builder/build_boardgame_plan_v5.py` 從 v4 改出來，改了哪些寫在內容筆記），網站主持稿和 PDF 照 v5。v5 附件三的引文也對過書改正了（第 27 卷〈求道〉p.328「一起充滿快樂地生活」），這件不在卡牌那邊的 `內容核對紀錄.md` 裡。
   - 首頁封面是盒蓋正面，用 `tools/cards.py` 的 `pad` 補成 4:5；沒有故事卡時首頁取 `cardSets` 第一組的第一張，所以盒子那組排第一。
-- **名畫小旅行：2026-10-24 上線**（第 17 個，照 `~/code/sokahan-propalsal-2026/名畫小旅行/交接_網站上線.md`；內容筆記 `docs/content-notes/masterpiece-trip.md`，「要請你決定的」有 4 題還沒問）。跟其他 16 個不一樣：
-  - 只限 2027 年 10 月高雄創價美術館「西洋名畫展」展期，資料用新欄位 `availability`。活動頁寫「只限…」，首頁卡片和「幫我挑」標「限 2027 年 10 月」；「幫我挑」只在 2027-09-01 到 2027-10-31 推它。確切展期還沒公布，日期先填整個 10 月，公布後要改。
+- **名畫小旅行：2026-10-24 上線**（第 17 個，照 `~/code/sokahan-propalsal-2026/名畫小旅行/交接_網站上線.md`；內容筆記 `docs/content-notes/masterpiece-trip.md`，使用者的決定記在最後）。跟其他 16 個不一樣：
+  - 只限 2027 年 10 月高雄創價美術館「西洋名畫展」展期，資料用新欄位 `availability`。活動頁寫「只限…」，首頁卡片和「幫我挑」標「限 2027 年 10 月」；「幫我挑」在 2027-08-01 到 2027-10-31 推它（展期前兩個月，`DATED_LEAD_MONTHS`）。確切展期還沒公布，日期先填整個 10 月，公布後要改。
   - 全部自費、全台各區都能約、流程只是建議（流程標題「建議這樣過（約 160 分鐘）」）。
-  - 「想多留 30 分鐘」換成「加碼推薦（選配）」（`extraTitle`），三條城市散步高雄路線用 `cityWalkRoute` 直接連到路線頁。
+  - 「想多留 30 分鐘」換成「加碼推薦（選配）」（`extraTitle`），四條城市散步高雄路線（東區楠梓古碑線離美術館最近，排第一）用 `cityWalkRoute` 直接連到路線頁。
   - 首頁那句「16 種過兄弟時光的方式」、meta description、「看全部 16 種」改成照活動數算，以後加減不用再改字。
-  - 三份問卷要加「名畫小旅行」選項：`建立問卷表單.gs` 已加進 `ACTIVITIES`，並新增 `appendNewActivityChoices`（見「待使用者做的」），**表單本身還沒改**。
+  - 三份問卷的「名畫小旅行」選項：使用者 2026-10-24 跑了 `建立問卷表單.gs` 的 `appendNewActivityChoices`，三份表單都補上了（17 項）。
 - **城市散步路書：2026-10-23 上線**。設計 `docs/superpowers/specs/2026-10-23-city-walk-route-book-design.md`、計畫 `docs/superpowers/plans/2026-10-23-city-walk-route-book.md`。選好區之後，活動頁的路線區塊是：國土測繪中心底圖上畫兩段路線（Leaflet）＋拉桿（拖到第幾分鐘，紅點走到哪）＋由上往下的路書（每段幾分、幾公里、經過哪些路），每個點「看街景」、每段「在 Google 地圖看這一段」。使用者 2026-10-23 的決定：
   - 走路時用 Google 地圖導航，到點通知就用 Google 地圖自己的「已抵達」；導航拆成兩段（集合點→停留點一、停留點一→終點），每段帶起點、終點、3 個中途點（手機瀏覽器最多吃 3 個）。當天模式的「走到下一站」也改用這兩個網址。
   - 免費底圖、不嵌 Google 地圖、不用金鑰；街景用連結跳到 Google 地圖。
@@ -80,14 +80,9 @@
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
 - **完成通知**：做完、test 和 build 都過之後，用 terminal-notifier 和 Pushover 以繁體中文通知使用者（參數見 `~/CLAUDE.md`）。
 
-## 待使用者做的（名畫小旅行的問卷選項）
-
-1. 用企劃室帳號在 Apps Script 把 `~/code/sokahan-propalsal-2026/兄弟時光/問卷/建立問卷表單.gs` **全選覆蓋**貼上（備份 `建立問卷表單.before-masterpiece.gs`），跑一次 `appendNewActivityChoices`。它會先確認三份表單現有的活動選項跟 `ACTIVITIES` 前 16 項一樣，再在最後加上「名畫小旅行」；接著自動跑 `addCityWalkRouteSection` 重設回報表的跳轉（還沒有「城市散步的路線」區段的話會順便建好）。
-2. 跑完打開三份表單看「活動」題最後一項是「名畫小旅行」；活動回報表選「城市散步」會跳到路線區段，選別的直接送出。
-
 ## 待使用者做的（城市散步路書）
 
-1. 用企劃室帳號在 Apps Script（`~/code/sokahan-propalsal-2026/兄弟時光/問卷/建立問卷表單.gs`，備份 `建立問卷表單.before-city-walk.gs`）貼上新函式，跑一次 `addCityWalkRouteSection`。跑完打開活動回報表確認：選「城市散步」會跳到新區段，選別的直接送出。
+1. ~~跑 `addCityWalkRouteSection`~~：2026-10-24 使用者跑 `appendNewActivityChoices` 時一起跑了，執行紀錄是「已加上『城市散步的路線』區段」。還沒確認的是：打開活動回報表，選「城市散步」會跳到新區段，選別的直接送出。
 2. 手機實測：台北東區、苗栗區再加一條的兩段「在 Google 地圖看這一段」，看 Google 畫的路跟網站地圖一不一樣；「看街景」打開的是街景、不是黑畫面或室內照；在家按當天模式的「走到下一站」看到的是路線預覽。不準的話調 `legNavUrl` 取中途點的方式（41 條有來回重疊的路段）。
 3. 超過 60 分的 26 條路線，企劃室另外檢討（路線優化）。
 

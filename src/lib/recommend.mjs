@@ -11,14 +11,15 @@ const PLACE_POINTS = {
 };
 const MATCH_POINTS = 2;
 const NO_MATCH_NOTE = '沒有剛好符合的，換個條件試試看。';
+const DATED_LEAD_MONTHS = 2;
 
 const twoDigits = (number) => String(number).padStart(2, '0');
 const isoDate = (date) => `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
 
 function isPlannableNow(availability, today) {
   if (!availability) return true;
-  const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-  return availability.from <= isoDate(endOfNextMonth) && isoDate(today) <= availability.to;
+  const endOfLeadWindow = new Date(today.getFullYear(), today.getMonth() + DATED_LEAD_MONTHS + 1, 0);
+  return availability.from <= isoDate(endOfLeadWindow) && isoDate(today) <= availability.to;
 }
 
 function isExcluded(tags, answers) {

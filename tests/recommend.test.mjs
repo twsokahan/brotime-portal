@@ -142,9 +142,9 @@ const tripPickedOn = (today) =>
     'exhibition-trip',
   );
 
-test('a dated activity is picked from the month before its dates through its last day', () => {
-  assert.equal(tripPickedOn(new Date(2027, 7, 31)), false, 'end of August');
-  assert.equal(tripPickedOn(new Date(2027, 8, 1)), true, 'start of September');
+test('a dated activity is picked from two months before its dates through its last day', () => {
+  assert.equal(tripPickedOn(new Date(2027, 6, 31)), false, 'end of July');
+  assert.equal(tripPickedOn(new Date(2027, 7, 1)), true, 'start of August');
   assert.equal(tripPickedOn(new Date(2027, 9, 31, 23, 59)), true, 'last day');
   assert.equal(tripPickedOn(new Date(2027, 10, 1)), false, 'day after');
 });
