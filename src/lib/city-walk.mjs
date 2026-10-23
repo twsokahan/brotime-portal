@@ -75,8 +75,7 @@ export function normalizeRoute(raw, circleName) {
 }
 
 export function districtLabel(id) {
-  const [circle, place] = id.split('_');
-  return place ? `${place}（${circle}）` : id;
+  return id.split('_').at(-1);
 }
 
 export function routeOptionLabel(route, routes) {

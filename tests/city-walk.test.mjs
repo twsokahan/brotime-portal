@@ -125,10 +125,10 @@ test('filling route steps leaves the original steps untouched', () => {
   assert.deepEqual(steps, cityWalkSteps());
 });
 
-test('an island district reads as its place with its circle in brackets', () => {
-  assert.equal(districtLabel('南二圈_澎湖'), '澎湖（南二圈）');
-  assert.equal(districtLabel('基宜圈_馬祖'), '馬祖（基宜圈）');
-  assert.equal(districtLabel('總合本部_金門'), '金門（總合本部）');
+test('an island district reads as its place alone', () => {
+  assert.equal(districtLabel('南二圈_澎湖'), '澎湖');
+  assert.equal(districtLabel('基宜圈_馬祖'), '馬祖');
+  assert.equal(districtLabel('總合本部_金門'), '金門');
 });
 
 test('an ordinary district reads as its own name', () => {
@@ -142,11 +142,11 @@ test('normalizing a route keeps the review site id so a district can hold two ro
 test('a route option reads as its district while the district has one route', () => {
   const routes = [
     { id: '台北西區', district: '台北西區', title: '台北西區：植物園小南門線' },
-    { id: '南二圈_澎湖', district: '南二圈_澎湖', title: '澎湖（南二圈）：中央老街線' },
+    { id: '南二圈_澎湖', district: '南二圈_澎湖', title: '澎湖：中央老街線' },
   ];
   assert.deepEqual(
     routes.map((route) => routeOptionLabel(route, routes)),
-    ['台北西區', '澎湖（南二圈）'],
+    ['台北西區', '澎湖'],
   );
 });
 
