@@ -14,10 +14,10 @@ const ENTRY_ACTIONS = `<div class="entry-actions">
 <button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters"><span class="filter-summary">篩選</span> <span class="caret" aria-hidden="true">▾</span></button>
 </div>`;
 
-function renderHead(canPick) {
+function renderHead(canPick, count) {
   return `<header class="entry-head">
 <h1>下個月，<span>約兄弟做什麼？</span></h1>
-<p class="lead">16 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}
+<p class="lead">${count} 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}
 </header>`;
 }
 
@@ -43,13 +43,18 @@ function renderCover(activity, rel) {
   return `<img src="${rel}cards/${escapeHtml(activity.id)}/${escapeHtml(cardId)}-thumb.webp" alt="" loading="lazy">`;
 }
 
+function renderOnlyDuring(availability) {
+  if (!availability) return '';
+  return `\n<p class="only-during"><span class="badge">限 ${escapeHtml(availability.label)}</span></p>`;
+}
+
 function renderCard(activity, rel) {
   const id = escapeHtml(activity.id);
   const interests = activity.tags.interests.map((key) => INTERESTS[key]).join('・');
   return `<a class="act" data-id="${id}" href="${rel}a/${id}/">
 ${renderCover(activity, rel)}
 <h2>${escapeHtml(activity.name)}</h2>
-<p class="interests">${escapeHtml(interests)}</p>
+<p class="interests">${escapeHtml(interests)}</p>${renderOnlyDuring(activity.availability)}
 </a>`;
 }
 
@@ -70,7 +75,14 @@ function renderPreparing(preparing, rel) {
 }
 
 function renderData(activities) {
-  const data = activities.map(({ id, name, status, order, tags }) => ({ id, name, status, order, tags: tags ?? null }));
+  const data = activities.map(({ id, name, status, order, tags, availability }) => ({
+    id,
+    name,
+    status,
+    order,
+    tags: tags ?? null,
+    ...(availability && { availability }),
+  }));
   return `<script type="application/json" id="activities-data">${jsonForScript(data)}</script>`;
 }
 
@@ -81,7 +93,7 @@ export function renderEntryMain({ activities, rel }) {
   const preparing = ordered.filter((activity) => activity.status !== 'ready');
   const canPick = ready.length > 0;
   return [
-    renderHead(canPick),
+    renderHead(canPick, activities.length),
     canPick && renderFilters(countMatches(activities, emptyFilters())),
     renderWall(ready, rel),
     renderPreparing(preparing, rel),

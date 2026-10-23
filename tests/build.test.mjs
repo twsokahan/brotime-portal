@@ -104,7 +104,7 @@ test('the entry page shows a review activity as preparing in production and as r
 
 test('the entry page description avoids the words 活動 and 辦', async () => {
   const html = await read(production, 'index.html');
-  assert.ok(html.includes('<meta name="description" content="下個月，約兄弟做什麼？16 種過兄弟時光的方式，回答 4 題幫你挑。">'));
+  assert.ok(html.includes('<meta name="description" content="下個月，約兄弟做什麼？3 種過兄弟時光的方式，回答 4 題幫你挑。">'));
 });
 
 test('activity pages carry their own og:url', async () => {

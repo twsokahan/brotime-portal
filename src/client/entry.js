@@ -134,10 +134,11 @@ function askQuestion(index) {
   ]);
 }
 
-function pickItem({ id, name, reasons }) {
+function pickItem({ id, name, reasons, onlyDuring }) {
   const link = el('a', { href: `a/${id}/` }, [
     el('h3', { textContent: name }),
     reasons.length > 0 && el('p', { className: 'why', textContent: reasons.join('・') }),
+    onlyDuring && el('p', { className: 'only-during' }, [el('span', { className: 'badge', textContent: `限 ${onlyDuring}` })]),
   ]);
   return el('li', { className: 'pick' }, [link]);
 }
@@ -150,7 +151,7 @@ function showResult() {
     picks.length > 0 && el('ol', { className: 'picks' }, picks.map(pickItem)),
     note && el('p', { className: 'quiz-note', textContent: note }),
     note && button('重新回答', startQuiz),
-    button('看全部 16 種 →', closeQuiz, 'see-all'),
+    button(`看全部 ${activities.length} 種 →`, closeQuiz, 'see-all'),
   ]);
 }
 

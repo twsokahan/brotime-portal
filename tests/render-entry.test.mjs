@@ -149,3 +149,19 @@ test('og:image is present only when an image is given', () => {
 test('og:title is escaped', () => {
   assert.ok(layout({ title: '"兄弟" & <時光>' }).includes('property="og:title" content="&quot;兄弟&quot; &amp; &lt;時光&gt;"'));
 });
+
+test('the lead counts every way to spend the time, ready or not', () => {
+  const html = renderEntryMain({ activities: sixteenActivities().slice(0, 5), rel: '' });
+  assert.ok(html.includes('<p class="lead">5 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>'));
+});
+
+test('a dated card says when it is on, and the quiz data carries its dates', () => {
+  const activities = sixteenActivities();
+  activities[0].availability = { from: '2027-10-01', to: '2027-10-31', label: '2027 年 10 月' };
+  const html = renderEntryMain({ activities, rel: '' });
+  const card = html.slice(html.indexOf(`data-id="${activities[0].id}"`), html.indexOf('</a>', html.indexOf(`data-id="${activities[0].id}"`)));
+  assert.ok(card.includes('<span class="badge">限 2027 年 10 月</span>'), card);
+  assert.equal(occurrences(html, 'class="badge"'), 1);
+  const [dated] = activitiesData(html);
+  assert.deepEqual(dated.availability, activities[0].availability);
+});

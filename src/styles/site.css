@@ -207,6 +207,12 @@ main > p > a {
   padding-left: 1.2em;
 }
 
+.more li a {
+  display: inline;
+  min-height: 0;
+  padding: 10px 0;
+}
+
 .box li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -444,6 +450,11 @@ main > p > a {
   font-size: 14px;
 }
 
+.act .only-during,
+.pick .only-during {
+  margin: 4px 0 0;
+}
+
 .act.is-dim {
   opacity: 0.35;
 }
@@ -611,6 +622,7 @@ main > p > a {
 }
 
 p.rain,
+p.availability,
 .quiz-note {
   padding: 12px 16px;
   border-left: 4px solid var(--step4);

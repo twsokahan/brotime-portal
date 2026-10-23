@@ -3,18 +3,25 @@ import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
 
 const DEFAULT_FLOW_TITLE = '60 分鐘這樣過';
+const DEFAULT_EXTRA_TITLE = '想多留 30 分鐘（選配）';
 const DEFAULT_THUMB_COUNT = 3;
 const HOME_LINK_TEXT = '← 看其他兄弟時光';
 const ICHIBAN_LINK = '<p class="ichiban-link"><a href="ichiban/">電子一番賞（不用刮刮卡也能抽）</a></p>';
 
 const list = (items, renderItem) => items.map(renderItem).join('');
 
+function renderAvailability(availability) {
+  if (!availability) return '';
+  const { label, note } = availability;
+  return `\n<p class="availability">只限 ${escapeHtml(label)}${note ? `：${escapeHtml(note)}` : ''}</p>`;
+}
+
 function renderHead(activity) {
   const { people, duration, place } = activity.facts;
   return `<header class="activity-head">
 <h1>${escapeHtml(activity.name)}</h1>
 <p class="tagline">${escapeHtml(activity.tagline)}</p>
-<ul class="facts"><li>${escapeHtml(people)}</li><li class="duration">${escapeHtml(duration)}</li><li>${escapeHtml(place)}</li></ul>
+<ul class="facts"><li>${escapeHtml(people)}</li><li class="duration">${escapeHtml(duration)}</li><li>${escapeHtml(place)}</li></ul>${renderAvailability(activity.availability)}
 </header>`;
 }
 
@@ -107,10 +114,17 @@ function renderPrintFiles(activity, rel) {
   return `<p>想印實體卡的話：</p><ul>${links}</ul>`;
 }
 
+function renderExtra(item, rel) {
+  if (typeof item === 'string') return `<li>${escapeHtml(item)}</li>`;
+  const routeUrl = `${rel}a/city-walk/?d=${encodeURIComponent(item.cityWalkRoute)}`;
+  return `<li>${escapeHtml(item.text)} <a href="${escapeHtml(routeUrl)}">看路線</a></li>`;
+}
+
 function renderMore(activity, rel) {
   const textItems = (items) => list(items, (text) => `<li>${escapeHtml(text)}</li>`);
+  const extraTitle = activity.extraTitle ?? DEFAULT_EXTRA_TITLE;
   const extras = activity.extra30.length
-    ? `<details><summary>想多留 30 分鐘（選配）</summary><ul>${textItems(activity.extra30)}</ul></details>\n`
+    ? `<details><summary>${escapeHtml(extraTitle)}</summary><ul>${list(activity.extra30, (item) => renderExtra(item, rel))}</ul></details>\n`
     : '';
   return `<section class="more">
 <details><summary>第一次主持記得 ${activity.firstTime.length} 件事</summary><ol class="first-time">${textItems(activity.firstTime)}</ol></details>
@@ -119,7 +133,7 @@ ${extras}<details><summary>完整企劃案</summary><p><a href="${rel}${escapeHt
 }
 
 function renderLiveData(activity, site) {
-  const { extra30, firstTime, ...liveActivity } = activity;
+  const { extra30, extraTitle, firstTime, ...liveActivity } = activity;
   return `<script type="application/json" id="activity-data">${jsonForScript({ ...liveActivity, baseUrl: site.baseUrl })}</script>`;
 }
 

@@ -20,7 +20,7 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'src/client');
 const STYLESHEET = path.join(REPO_ROOT, 'src/styles/site.css');
 
 const CITY_WALK_ID = 'city-walk';
-const ENTRY_DESCRIPTION = '下個月，約兄弟做什麼？16 種過兄弟時光的方式，回答 4 題幫你挑。';
+const entryDescription = (count) => `下個月，約兄弟做什麼？${count} 種過兄弟時光的方式，回答 4 題幫你挑。`;
 const ICHIBAN_DESCRIPTION = '填好 A～D 賞各幾份，手機傳下去，每人選一張登機證撕開。';
 const ENTRY_REL = '';
 const ACTIVITY_REL = '../../';
@@ -182,7 +182,7 @@ export function renderPages({ site, routes, activityFiles }, preview) {
       'index.html',
       page({
         title: site.title,
-        description: ENTRY_DESCRIPTION,
+        description: entryDescription(activities.length),
         rel: ENTRY_REL,
         main: renderEntryMain({ activities, rel: ENTRY_REL }),
         scripts: activities.some((activity) => activity.status === 'ready') ? ['js/entry.js'] : [],

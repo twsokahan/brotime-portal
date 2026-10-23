@@ -19,7 +19,8 @@ const ACTIVITY_ID = /^[a-z0-9-]+$/;
 const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
 const FORM_ENTRY = /^entry\.\d+$/;
-const MAX_ORDER = 16;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_ORDER = 17;
 const MAX_SAY_CHARS = 45;
 const MAX_TODO_TASK_CHARS = 20;
 const MAX_THUMBS = 3;
@@ -31,6 +32,8 @@ const isText = (value) => typeof value === 'string' && value.trim() !== '';
 const isActivityId = (value) => typeof value === 'string' && ACTIVITY_ID.test(value);
 const isCardId = (value) => typeof value === 'string' && CARD_ID.test(value);
 const charCount = (text) => [...text].length;
+const isCalendarDate = (value) =>
+  typeof value === 'string' && ISO_DATE.test(value) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value);
 const ownerOf = (activity) => (isText(activity?.id) ? activity.id : UNNAMED);
 const isPublished = (activity) => PUBLISHED_STATUSES.includes(activity?.status);
 const cardIdsOf = (set) => new Set(Array.isArray(set?.cards) ? set.cards.map((card) => card?.id) : []);
@@ -92,6 +95,35 @@ function checkTodo(check, todo) {
     check.text(row.when, `${path}.when`);
     checkShortText(check, row.task, `${path}.task`, MAX_TODO_TASK_CHARS);
     if (row.detail !== undefined) check.text(row.detail, `${path}.detail`);
+  });
+}
+
+function checkDate(check, value, path) {
+  if (!check.text(value, path)) return false;
+  if (isCalendarDate(value)) return true;
+  check.fail(path, '要是 YYYY-MM-DD 的日期');
+  return false;
+}
+
+function checkAvailability(check, availability) {
+  if (!check.object(availability, 'availability')) return;
+  const fromOk = checkDate(check, availability.from, 'availability.from');
+  const toOk = checkDate(check, availability.to, 'availability.to');
+  if (fromOk && toOk && availability.to < availability.from) check.fail('availability.to', '不能早於 from');
+  check.text(availability.label, 'availability.label');
+  if (availability.note !== undefined) check.text(availability.note, 'availability.note');
+}
+
+function checkExtras(check, extras) {
+  if (!check.list(extras, 'extra30')) return;
+  extras.forEach((item, i) => {
+    const path = `extra30[${i}]`;
+    if (!isObject(item)) {
+      check.text(item, path);
+      return;
+    }
+    check.text(item.text, `${path}.text`);
+    check.text(item.cityWalkRoute, `${path}.cityWalkRoute`);
   });
 }
 
@@ -325,7 +357,9 @@ export function validateActivity(activity, { fileExists } = {}) {
     checkSteps(check, activity.steps, { cardSets: activity.cardSets, hasIchiban: activity.ichiban !== undefined });
   }
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
-  if (shouldCheck('extra30')) checkTextList(check, activity.extra30, 'extra30');
+  if (shouldCheck('extra30')) checkExtras(check, activity.extra30);
+  if (activity.extraTitle !== undefined) check.text(activity.extraTitle, 'extraTitle');
+  if (activity.availability !== undefined) checkAvailability(check, activity.availability);
   if (shouldCheck('planFile')) checkPlanFile(check, activity.planFile, activity.id);
   if (shouldCheck('preflight')) checkTextList(check, activity.preflight, 'preflight', 1);
   if (activity.printFiles !== undefined) checkRows(check, activity.printFiles, 'printFiles', ['label', 'file']);
@@ -395,6 +429,18 @@ function routeErrors(activities, routes) {
   });
 }
 
+function extraRouteErrors(activities, routes) {
+  if (!routes) return [];
+  const routeIds = new Set(routes.map((route) => route?.id));
+  return activities.flatMap((activity) =>
+    (Array.isArray(activity?.extra30) ? activity.extra30 : []).flatMap((item, i) =>
+      isText(item?.cityWalkRoute) && !routeIds.has(item.cityWalkRoute)
+        ? [`${ownerOf(activity)}: extra30[${i}].cityWalkRoute ${item.cityWalkRoute} 不在城市散步路線裡`]
+        : [],
+    ),
+  );
+}
+
 export function validateAll({ activities, site, routes }, opts = {}) {
   return [
     ...validateSite(site),
@@ -402,5 +448,6 @@ export function validateAll({ activities, site, routes }, opts = {}) {
     ...duplicateErrors(activities, 'id'),
     ...duplicateErrors(activities, 'order'),
     ...routeErrors(activities, routes),
+    ...extraRouteErrors(activities, routes),
   ];
 }

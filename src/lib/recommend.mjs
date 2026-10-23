@@ -12,6 +12,15 @@ const PLACE_POINTS = {
 const MATCH_POINTS = 2;
 const NO_MATCH_NOTE = '沒有剛好符合的，換個條件試試看。';
 
+const twoDigits = (number) => String(number).padStart(2, '0');
+const isoDate = (date) => `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
+
+function isPlannableNow(availability, today) {
+  if (!availability) return true;
+  const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+  return availability.from <= isoDate(endOfNextMonth) && isoDate(today) <= availability.to;
+}
+
 function isExcluded(tags, answers) {
   if (answers.kids === 'yes' && tags.kids === 'no') return true;
   const slotMissed = !tags.slots.includes(answers.slot) && !tags.slots.includes(FLEXIBLE);
@@ -40,9 +49,14 @@ function noteFor(count) {
   return null;
 }
 
-export function recommend(activities, answers) {
+export function recommend(activities, answers, today = new Date()) {
   const picks = activities
-    .filter((activity) => activity.status === 'ready' && !isExcluded(activity.tags, answers))
+    .filter(
+      (activity) =>
+        activity.status === 'ready' &&
+        isPlannableNow(activity.availability, today) &&
+        !isExcluded(activity.tags, answers),
+    )
     .map((activity) => {
       const hits = hitsFor(activity.tags, answers);
       const score = hits.reduce((sum, hit) => sum + hit.points, 0);
@@ -50,6 +64,11 @@ export function recommend(activities, answers) {
     })
     .sort((a, b) => b.score - a.score || a.activity.order - b.activity.order)
     .slice(0, MAX_PICKS)
-    .map(({ activity, reasons }) => ({ id: activity.id, name: activity.name, reasons }));
+    .map(({ activity, reasons }) => ({
+      id: activity.id,
+      name: activity.name,
+      reasons,
+      ...(activity.availability && { onlyDuring: activity.availability.label }),
+    }));
   return { picks, note: noteFor(picks.length) };
 }

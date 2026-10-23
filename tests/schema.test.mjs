@@ -504,3 +504,56 @@ test('a city-walk route needs a Google Maps link for both legs', () => {
   assert.equal(errors.length, 1, JSON.stringify(errors));
   assertReports(errors, 'routes[台北東區].legNavUrls');
 });
+
+function datedActivity(availability) {
+  return { ...readyActivity(), availability };
+}
+
+const OCTOBER_2027 = { from: '2027-10-01', to: '2027-10-31', label: '2027 年 10 月', note: '確切日期以學會公告為準' };
+
+test('availability with dates, a label and an optional note is valid', () => {
+  assert.deepEqual(validateActivity(datedActivity(OCTOBER_2027), allFilesExist), []);
+  const { note, ...withoutNote } = OCTOBER_2027;
+  assert.deepEqual(validateActivity(datedActivity(withoutNote), allFilesExist), []);
+});
+
+test('availability needs real YYYY-MM-DD dates in order and a label', () => {
+  assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, from: '2027/10/01' }), allFilesExist), 'availability.from');
+  assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, to: '2027-02-30' }), allFilesExist), 'availability.to');
+  assertReports(
+    validateActivity(datedActivity({ ...OCTOBER_2027, from: '2027-11-01' }), allFilesExist),
+    'availability.to 不能早於 from',
+  );
+  assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, label: '' }), allFilesExist), 'availability.label');
+});
+
+test('an extra30 item can link a city-walk route, and a custom extras title must be text', () => {
+  const activity = readyActivity();
+  activity.extra30 = ['一起吃頓飯。', { text: '多走一段城市散步。', cityWalkRoute: '台北西區' }];
+  activity.extraTitle = '加碼推薦（選配）';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+
+  activity.extra30 = [{ text: '', cityWalkRoute: '台北西區' }, { cityWalkRoute: '台北西區' }, 3];
+  activity.extraTitle = '';
+  const errors = validateActivity(activity, allFilesExist);
+  assertReports(errors, 'extra30[0].text');
+  assertReports(errors, 'extra30[1].text');
+  assertReports(errors, 'extra30[2]');
+  assertReports(errors, 'extraTitle');
+});
+
+test('validateAll reports an extra30 route that is not a city-walk route', () => {
+  const activity = { ...readyActivity(), id: 'trip', order: 2, planFile: 'files/trip-plan.pdf' };
+  activity.extra30 = [
+    { text: '多走一段。', cityWalkRoute: '台北西區' },
+    { text: '再走一段。', cityWalkRoute: '火星區' },
+  ];
+  const routes = [cityWalkRoute('台北西區', 'P')];
+  const errors = validateAll({ activities: [cityWalkActivity(), activity], site: fixtureSite(), routes }, allFilesExist);
+  assert.deepEqual(errors, ['trip: extra30[1].cityWalkRoute 火星區 不在城市散步路線裡']);
+});
+
+test('order can go up to 17', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), order: 17 }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), order: 18 }, allFilesExist), 'order');
+});

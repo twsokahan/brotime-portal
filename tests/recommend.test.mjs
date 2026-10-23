@@ -122,3 +122,42 @@ test('when everything is left out there are no picks and a note to try other ans
   assert.equal(result.picks.length, 0);
   assert.equal(result.note, '沒有剛好符合的，換個條件試試看。');
 });
+
+const OCTOBER_2027 = { from: '2027-10-01', to: '2027-10-31', label: '2027 年 10 月' };
+
+function exhibitionTrip() {
+  const activity = tagged('exhibition-trip', 6, {
+    kids: 'ok',
+    place: 'indoor',
+    rain: 'ok',
+    slots: ['weekend-day'],
+    interests: ['play', 'talk'],
+  });
+  activity.availability = { ...OCTOBER_2027 };
+  return activity;
+}
+
+const tripPickedOn = (today) =>
+  pickedIds(recommend([exhibitionTrip()], { kids: 'no', slot: 'weekend-day', place: 'indoor', interest: 'talk' }, today)).includes(
+    'exhibition-trip',
+  );
+
+test('a dated activity is picked from the month before its dates through its last day', () => {
+  assert.equal(tripPickedOn(new Date(2027, 7, 31)), false, 'end of August');
+  assert.equal(tripPickedOn(new Date(2027, 8, 1)), true, 'start of September');
+  assert.equal(tripPickedOn(new Date(2027, 9, 31, 23, 59)), true, 'last day');
+  assert.equal(tripPickedOn(new Date(2027, 10, 1)), false, 'day after');
+});
+
+test('a dated pick says when it is on, and undated picks carry nothing extra', () => {
+  const answers = { kids: 'no', slot: 'weekend-day', place: 'indoor', interest: 'talk' };
+  const { picks } = recommend([readyActivity(), exhibitionTrip()], answers, new Date(2027, 9, 10));
+  assert.deepEqual(
+    picks.map(({ id, onlyDuring }) => ({ id, onlyDuring })),
+    [
+      { id: 'brunch', onlyDuring: undefined },
+      { id: 'exhibition-trip', onlyDuring: '2027 年 10 月' },
+    ],
+  );
+  assert.ok(!('onlyDuring' in picks[0]));
+});

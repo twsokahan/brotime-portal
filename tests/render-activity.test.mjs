@@ -289,3 +289,35 @@ test('the duration fact and the first-time list carry hooks for route timings', 
   assert.ok(html.includes(`<li class="duration">${duration}</li>`), html.slice(0, 600));
   assert.ok(html.includes('<ol class="first-time">'));
 });
+
+test('a dated activity says when it is on right under its facts', () => {
+  const activity = readyActivity();
+  activity.availability = { from: '2027-10-01', to: '2027-10-31', label: '2027 年 10 月', note: '確切日期以學會公告為準' };
+  const html = render({ activity });
+  const head = html.slice(html.indexOf('<header class="activity-head">'), html.indexOf('</header>'));
+  assert.ok(head.includes('<p class="availability">只限 2027 年 10 月：確切日期以學會公告為準</p>'), head);
+  delete activity.availability.note;
+  assert.ok(render({ activity }).includes('<p class="availability">只限 2027 年 10 月</p>'));
+  assert.ok(!render().includes('class="availability"'));
+});
+
+test('extras can carry their own title and link a city-walk route', () => {
+  const activity = readyActivity();
+  activity.extraTitle = '加碼推薦（選配）';
+  activity.extra30 = ['一起吃頓飯。', { text: '高雄北區：舊城護城河線，終點旁就是蓮池潭。', cityWalkRoute: '高雄北區' }];
+  const html = render({ activity });
+  assert.ok(html.includes('<summary>加碼推薦（選配）</summary>'));
+  assert.ok(!html.includes('想多留 30 分鐘'));
+  assert.ok(html.includes('<li>一起吃頓飯。</li>'));
+  assert.ok(
+    html.includes(
+      `<li>高雄北區：舊城護城河線，終點旁就是蓮池潭。 <a href="../../a/city-walk/?d=${encodeURIComponent('高雄北區')}">看路線</a></li>`,
+    ),
+  );
+});
+
+test('the live-mode data leaves out the extras title too', () => {
+  const activity = readyActivity();
+  activity.extraTitle = '加碼推薦（選配）';
+  assert.ok(!('extraTitle' in activityData(render({ activity }))));
+});
