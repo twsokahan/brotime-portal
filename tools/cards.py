@@ -2,6 +2,7 @@
 
 用法：python3 tools/cards.py tools/cards/<activity>.json
 spec 裡 box 是頁面寬高的比例 [x0, y0, x1, y1]；og 為 true 的組另外輸出 LINE 預覽用的 JPEG。
+卡片可加 "pad": {"aspect": [寬, 高], "color": "#rrggbb"}，裁完後置中補底色到這個比例（例如當首頁 4:5 封面）。
 """
 import json
 import os
@@ -31,6 +32,15 @@ def crop(page_image, box):
     width, height = page_image.size
     x0, y0, x1, y1 = box
     return page_image.crop((round(x0 * width), round(y0 * height), round(x1 * width), round(y1 * height)))
+
+
+def padded(image, pad):
+    aspect_width, aspect_height = pad["aspect"]
+    width = max(image.width, round(image.height * aspect_width / aspect_height))
+    height = max(image.height, round(image.width * aspect_height / aspect_width))
+    canvas = Image.new("RGB", (width, height), pad["color"])
+    canvas.paste(image, ((width - image.width) // 2, (height - image.height) // 2))
+    return canvas
 
 
 def scaled_to_width(image, width):
@@ -86,6 +96,8 @@ def main(spec_path):
                         pdf, card["page"], card_set["dpi"], Path(workdir) / f"{set_key}-{card['page']}"
                     )
                 image = crop(pages[card["page"]], card["box"])
+                if "pad" in card:
+                    image = padded(image, card["pad"])
                 if image.width < FULL_WIDTH:
                     print(f"注意：{card['id']} 裁出來只有 {image.width}px 寬，會被放大；把 dpi 調高", file=sys.stderr)
                 base = out_dir / card["id"]

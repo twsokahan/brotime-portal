@@ -418,7 +418,7 @@ function openCardViewer(set, startIndex, opener) {
 }
 
 function otherCards(set) {
-  return el(
+  const thumbs = el(
     'div',
     { className: 'thumbs live-thumbs' },
     set.cards.map((card, i) => {
@@ -427,6 +427,7 @@ function otherCards(set) {
       return thumb;
     }),
   );
+  return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: set.label }), thumbs]);
 }
 
 function storyTile(card, onclick) {
