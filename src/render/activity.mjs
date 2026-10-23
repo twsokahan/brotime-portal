@@ -14,7 +14,7 @@ function renderHead(activity) {
   return `<header class="activity-head">
 <h1>${escapeHtml(activity.name)}</h1>
 <p class="tagline">${escapeHtml(activity.tagline)}</p>
-<ul class="facts">${list([people, duration, place], (fact) => `<li>${escapeHtml(fact)}</li>`)}</ul>
+<ul class="facts"><li>${escapeHtml(people)}</li><li class="duration">${escapeHtml(duration)}</li><li>${escapeHtml(place)}</li></ul>
 </header>`;
 }
 
@@ -113,7 +113,7 @@ function renderMore(activity, rel) {
     ? `<details><summary>想多留 30 分鐘（選配）</summary><ul>${textItems(activity.extra30)}</ul></details>\n`
     : '';
   return `<section class="more">
-<details><summary>第一次主持記得 ${activity.firstTime.length} 件事</summary><ol>${textItems(activity.firstTime)}</ol></details>
+<details><summary>第一次主持記得 ${activity.firstTime.length} 件事</summary><ol class="first-time">${textItems(activity.firstTime)}</ol></details>
 ${extras}<details><summary>完整企劃案</summary><p><a href="${rel}${escapeHtml(activity.planFile)}">下載企劃案（PDF）</a></p>${renderPrintFiles(activity, rel)}</details>
 </section>`;
 }

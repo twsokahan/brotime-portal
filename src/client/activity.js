@@ -14,6 +14,7 @@ import {
   storyCardBefore,
   timerText,
 } from './lib/live.mjs';
+import { routeFlow, routeWording } from './lib/route-flow.mjs';
 import { cardPageUrl, shareFallbacks } from './lib/share.mjs';
 
 const REL = '../../';
@@ -70,7 +71,31 @@ function cardImage(card, className, file = card.id) {
 
 let district = null;
 const routeFor = (name) => routes?.find((route) => route.district === name) ?? null;
-const liveStepsFor = (name) => (routes ? routeSteps(activity.steps, routeFor(name)) : activity.steps);
+const flowFor = (name) => routeFlow(activity.steps, routeFor(name));
+const liveStepsFor = (name) => (routes ? flowFor(name).steps : activity.steps);
+const routeReminders = () => (routes && live.district ? [flowFor(live.district).overtimeNote].filter(Boolean) : []);
+
+let originalTimings = null;
+
+function showRouteTimes(flow) {
+  const title = document.querySelector('.flow h2');
+  const duration = document.querySelector('.facts .duration');
+  const tips = [...document.querySelectorAll('.first-time li')];
+  originalTimings ??= {
+    title: title.textContent,
+    duration: duration.textContent,
+    tips: tips.map((tip) => tip.textContent),
+  };
+  title.textContent = flow.flowTitle ?? originalTimings.title;
+  duration.textContent = flow.duration ?? originalTimings.duration;
+  document.querySelectorAll('.timeline > .step').forEach((item, i) => {
+    item.querySelector('.time').textContent = flow.steps[i].time;
+    item.querySelector('.say').textContent = `說：${flow.steps[i].say}`;
+  });
+  tips.forEach((tip, i) => {
+    tip.textContent = routeWording(originalTimings.tips[i], flow);
+  });
+}
 
 function savedDistrict() {
   const fromUrl = new URLSearchParams(location.search).get('d');
@@ -157,6 +182,7 @@ function setUpDistrictPicker() {
     }
     summary.replaceChildren(...routeSummary(route));
     summary.hidden = false;
+    showRouteTimes(flowFor(name));
     showStopStoryThumbs(routeSteps(activity.steps, route));
     startButton.disabled = false;
     startButton.textContent = startLabel;
@@ -542,7 +568,7 @@ async function loadThenShowStep(index, startedAtMs) {
 
 function showPreflight() {
   stopTimer();
-  const items = preflightItems(activity).map((item) =>
+  const items = preflightItems(activity, routeReminders()).map((item) =>
     el('li', {}, [el('label', {}, [el('input', { type: 'checkbox' }), el('span', { textContent: item })])]),
   );
   showScreen([

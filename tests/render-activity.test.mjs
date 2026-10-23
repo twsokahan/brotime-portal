@@ -282,3 +282,10 @@ test('a preparing activity only says it is on the way and links back home', () =
   assert.ok(html.includes('<a href="../../">← 看其他兄弟時光</a>'));
   assert.ok(!html.includes('id="start-live"'));
 });
+
+test('the duration fact and the first-time list carry hooks for route timings', () => {
+  const html = render();
+  const { duration } = readyActivity().facts;
+  assert.ok(html.includes(`<li class="duration">${duration}</li>`), html.slice(0, 600));
+  assert.ok(html.includes('<ol class="first-time">'));
+});

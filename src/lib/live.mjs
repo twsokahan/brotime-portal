@@ -19,8 +19,8 @@ export function progressText(index, total) {
   return `第 ${index + 1} 步，共 ${total} 步`;
 }
 
-export function preflightItems(activity) {
-  return [...activity.preflight];
+export function preflightItems(activity, extra = []) {
+  return [...activity.preflight, ...extra];
 }
 
 const sessionKey = (activityId) => `brotime:live:${activityId}`;

@@ -324,3 +324,9 @@ test('a group with one card keeps drawing that card', () => {
     assert.deepEqual(result.drawnIds, ['t05', 't02']);
   }
 });
+
+test('preflight items can end with route-specific reminders', () => {
+  const activity = readyActivity();
+  assert.deepEqual(preflightItems(activity, ['這條路線比較長']), ['確認咖啡廳訂位', '手機有電，先連上網路', '這條路線比較長']);
+  assert.deepEqual(preflightItems(activity), ['確認咖啡廳訂位', '手機有電，先連上網路']);
+});
