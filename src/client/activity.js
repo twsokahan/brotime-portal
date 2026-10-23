@@ -1,4 +1,6 @@
 import { districtLabel, routeSteps } from './lib/city-walk.mjs';
+import { el, externalLink } from './dom.js';
+import { renderRouteBook } from './route-book.js';
 import {
   clearSession,
   drawCard,
@@ -39,16 +41,7 @@ function browserStorage() {
   }
 }
 
-function el(tag, props = {}, children = []) {
-  const node = Object.assign(document.createElement(tag), props);
-  node.append(...children.filter(Boolean));
-  return node;
-}
-
 const button = (textContent, onclick, className = '') => el('button', { type: 'button', textContent, onclick, className });
-
-const externalLink = (textContent, href, className = '') =>
-  el('a', { textContent, href, className, target: '_blank', rel: 'noopener' });
 
 const cloneTemplate = (id) => document.getElementById(id).content.cloneNode(true);
 
@@ -120,30 +113,6 @@ function districtOptions() {
   );
 }
 
-function routeSummary(route) {
-  const walkMinutes = route.legMinutes.reduce((sum, minutes) => sum + minutes, 0);
-  const facts = [
-    ['集合點', route.meetingPoint],
-    ['停車', route.parking],
-    ['全長', `${(route.totalM / 1000).toFixed(1)} 公里，走路約 ${walkMinutes} 分鐘`],
-    ['停留點一', route.stop1.place],
-    ['終點', route.end.place],
-    ['廁所', route.toilets],
-    ['雨天備案', route.rainPlan],
-    ['選配', route.optional],
-  ];
-  return [
-    el('h3', { textContent: route.title }),
-    el(
-      'dl',
-      { className: 'route-facts' },
-      facts.flatMap(([label, value]) => [el('dt', { textContent: label }), el('dd', { textContent: value })]),
-    ),
-    externalLink('第一段在 Google 地圖開啟', route.legNavUrls[0], 'button-link'),
-    externalLink('第二段在 Google 地圖開啟', route.legNavUrls[1], 'button-link'),
-  ];
-}
-
 const storyThumb = (card) =>
   el('a', { href: `cards/${card.id}/` }, [
     el('img', { src: `${REL}cards/${activity.id}/${card.id}-thumb.webp`, alt: card.title, loading: 'lazy' }),
@@ -180,9 +149,10 @@ function setUpDistrictPicker() {
     } catch {
       // Without storage the district is still kept in the address bar.
     }
-    summary.replaceChildren(...routeSummary(route));
+    const flow = flowFor(name);
+    renderRouteBook(summary, route, flow, { rel: REL });
     summary.hidden = false;
-    showRouteTimes(flowFor(name));
+    showRouteTimes(flow);
     showStopStoryThumbs(routeSteps(activity.steps, route));
     startButton.disabled = false;
     startButton.textContent = startLabel;

@@ -784,6 +784,143 @@ p.rain,
   margin: 0;
 }
 
+.route-length,
+.route-overtime,
+.route-adjust {
+  margin: 4px 0 8px;
+}
+
+.route-overtime {
+  padding: 8px 12px;
+  border-left: 4px solid var(--step3);
+  background: var(--paper);
+}
+
+.route-adjust {
+  color: var(--muted);
+}
+
+.route-map {
+  height: 240px;
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.route-leg {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 0.2s;
+}
+
+.route-leg-0 {
+  stroke: var(--step4);
+}
+
+.route-leg-1 {
+  stroke: var(--step1);
+}
+
+.route-leg.is-faded {
+  opacity: 0.2;
+}
+
+.route-pin {
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--box);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.route-dot {
+  fill: var(--step3);
+  fill-opacity: 1;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.route-slider-wrap {
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.route-slider {
+  width: 100%;
+  margin: 8px 0 0;
+}
+
+.route-sixty {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.route-sixty::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  height: 6px;
+  border-left: 1px solid var(--muted);
+}
+
+.route-now {
+  min-height: 3em;
+  margin: 4px 0 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.route-book {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.route-book .route-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.route-row-leg,
+.route-row-wrap {
+  margin-left: 12px;
+  border-left: 4px solid var(--line);
+  color: var(--muted);
+}
+
+.route-row-leg-0 {
+  border-left-color: var(--step4);
+}
+
+.route-row-leg-1 {
+  border-left-color: var(--step1);
+}
+
+.route-row.is-now {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.route-row-link {
+  align-self: flex-start;
+  font-size: 14px;
+}
+
 .resume {
   margin: 16px 0 0;
   padding: 16px;

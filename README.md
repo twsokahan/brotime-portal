@@ -7,6 +7,7 @@
 ## 要先裝什麼
 
 - **Node 24.2 以上**。不用 `npm install`，這個專案沒有任何套件。
+- 城市散步的地圖用 Leaflet 1.9.4，檔案直接放在 `public/vendor/leaflet/`，不用 npm。底圖是國土測繪中心的臺灣通用電子地圖，不用金鑰。
 - 只有要從 PDF 切卡片圖時，才需要 Python 3、Pillow（`pip install pillow`）和 `pdftoppm`（`brew install poppler`）。
 
 ## 常用指令
