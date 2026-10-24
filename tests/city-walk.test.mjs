@@ -2,10 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
+  districtGroups,
   districtLabel,
   legNavUrl,
+  lineName,
   normalizeRoute,
-  routeOptionLabel,
+  routePicker,
   routeSteps,
   splitLegTexts,
   streetViewUrl,
@@ -139,26 +141,69 @@ test('normalizing a route keeps the review site id so a district can hold two ro
   assert.equal(normalizeRoute({ ...rawRoute(), id: '台北西區-2' }, '北一圈').id, '台北西區-2');
 });
 
-test('a route option reads as its district while the district has one route', () => {
-  const routes = [
-    { id: '台北西區', district: '台北西區', title: '台北西區：植物園小南門線' },
-    { id: '南二圈_澎湖', district: '南二圈_澎湖', title: '澎湖：中央老街線' },
-  ];
-  assert.deepEqual(
-    routes.map((route) => routeOptionLabel(route, routes)),
-    ['台北西區', '澎湖'],
-  );
+const twoRouteDistrict = () => [
+  { id: '基隆北區', district: '基隆北區', circle: '基隆圈', title: '基隆北區：梓桑古厝線' },
+  { id: '基隆北區-2', district: '基隆北區', circle: '基隆圈', title: '基隆北區：三連棟線' },
+  { id: '基隆南區', district: '基隆南區', circle: '基隆圈', title: '基隆南區：港口線' },
+  { id: '南二圈_澎湖', district: '南二圈_澎湖', circle: '南二圈', title: '澎湖：中央老街線' },
+];
+
+test('a line reads as the part of the route title after its district', () => {
+  assert.equal(lineName({ title: '基隆北區：三連棟線' }), '三連棟線');
 });
 
-test('a route option adds its line name when the district has two routes', () => {
-  const routes = [
-    { id: '基隆北區', district: '基隆北區', title: '基隆北區：梓桑古厝線' },
-    { id: '基隆北區-2', district: '基隆北區', title: '基隆北區：三連棟線' },
-  ];
-  assert.deepEqual(
-    routes.map((route) => routeOptionLabel(route, routes)),
-    ['基隆北區・梓桑古厝線', '基隆北區・三連棟線'],
-  );
+test('the district menu lists each district once, grouped by circle in route order', () => {
+  const groups = districtGroups(twoRouteDistrict()).map(({ circle, districts }) => ({
+    circle,
+    districts: districts.map(({ district, label, routes }) => ({ district, label, ids: routes.map((route) => route.id) })),
+  }));
+  assert.deepEqual(groups, [
+    {
+      circle: '基隆圈',
+      districts: [
+        { district: '基隆北區', label: '基隆北區', ids: ['基隆北區', '基隆北區-2'] },
+        { district: '基隆南區', label: '基隆南區', ids: ['基隆南區'] },
+      ],
+    },
+    { circle: '南二圈', districts: [{ district: '南二圈_澎湖', label: '澎湖', ids: ['南二圈_澎湖'] }] },
+  ]);
+});
+
+test('choosing a district with one route offers no line to pick', () => {
+  assert.deepEqual(routePicker(twoRouteDistrict(), '基隆南區'), { district: '基隆南區', title: null, lines: [] });
+});
+
+test('choosing a district with two routes offers both lines, the first one picked', () => {
+  assert.deepEqual(routePicker(twoRouteDistrict(), '基隆北區'), {
+    district: '基隆北區',
+    title: '這區有兩條路線',
+    lines: [
+      { id: '基隆北區', name: '梓桑古厝線', chosen: true },
+      { id: '基隆北區-2', name: '三連棟線', chosen: false },
+    ],
+  });
+});
+
+test('an old link to a second route opens its district with that line picked', () => {
+  assert.deepEqual(routePicker(twoRouteDistrict(), '基隆北區-2'), {
+    district: '基隆北區',
+    title: '這區有兩條路線',
+    lines: [
+      { id: '基隆北區', name: '梓桑古厝線', chosen: false },
+      { id: '基隆北區-2', name: '三連棟線', chosen: true },
+    ],
+  });
+});
+
+test('a route id that is not in the list picks nothing', () => {
+  assert.equal(routePicker(twoRouteDistrict(), '基隆北區-3'), null);
+});
+
+test('every real district\'s first route has the district name as its id, so links made before the second routes still open it', () => {
+  const routes = JSON.parse(readFileSync(new URL('../content/city-walk/routes.json', import.meta.url), 'utf8'));
+  for (const { districts } of districtGroups(routes)) {
+    for (const { district, routes: lines } of districts) assert.equal(lines[0].id, district);
+  }
 });
 
 test('route text splits into two legs with spaced arrows', () => {

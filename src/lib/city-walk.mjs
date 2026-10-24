@@ -78,10 +78,37 @@ export function districtLabel(id) {
   return id.split('_').at(-1);
 }
 
-export function routeOptionLabel(route, routes) {
-  const place = districtLabel(route.district);
-  const sharesDistrict = routes.filter((other) => other.district === route.district).length > 1;
-  return sharesDistrict ? `${place}・${route.title.split('：')[1]}` : place;
+export const lineName = (route) => route.title.split('：')[1];
+
+export function districtGroups(routes) {
+  const circles = new Map();
+  for (const route of routes) {
+    const districts = circles.get(route.circle) ?? new Map();
+    districts.set(route.district, [...(districts.get(route.district) ?? []), route]);
+    circles.set(route.circle, districts);
+  }
+  return [...circles].map(([circle, districts]) => ({
+    circle,
+    districts: [...districts].map(([district, districtRoutes]) => ({
+      district,
+      label: districtLabel(district),
+      routes: districtRoutes,
+    })),
+  }));
+}
+
+const COUNT_WORDS = { 2: '兩', 3: '三', 4: '四', 5: '五' };
+
+export function routePicker(routes, id) {
+  const route = routes.find((candidate) => candidate.id === id);
+  if (!route) return null;
+  const siblings = routes.filter((other) => other.district === route.district);
+  if (siblings.length < 2) return { district: route.district, title: null, lines: [] };
+  return {
+    district: route.district,
+    title: `這區有${COUNT_WORDS[siblings.length] ?? siblings.length}條路線`,
+    lines: siblings.map((sibling) => ({ id: sibling.id, name: lineName(sibling), chosen: sibling === route })),
+  };
 }
 
 export function walkingLink({ lat, lon }) {

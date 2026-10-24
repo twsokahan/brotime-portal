@@ -1,4 +1,4 @@
-import { routeOptionLabel, routeSteps } from './lib/city-walk.mjs';
+import { districtGroups, routePicker, routeSteps } from './lib/city-walk.mjs';
 import { el, externalLink } from './dom.js';
 import { renderRouteBook } from './route-book.js';
 import {
@@ -63,8 +63,9 @@ function cardImage(card, className, file = card.id) {
 }
 
 let district = null;
-// A district can hold more than one route, so the picker, address bar and saved session keep the route id.
-// A district's first route has the district name as its id, so links saved before that still open it.
+// A district can hold more than one route: the menu lists districts and the line buttons under it pick the route,
+// while the address bar and saved session keep the route id. A district's first route has the district name as
+// its id, so links saved before that still open it.
 const routeFor = (id) => routes?.find((route) => route.id === id) ?? null;
 const flowFor = (name) => routeFlow(activity.steps, routeFor(name));
 const liveStepsFor = (name) => (routes ? flowFor(name).steps : activity.steps);
@@ -103,16 +104,34 @@ function savedDistrict() {
   }
 }
 
-function districtOptions() {
-  const circles = new Map();
-  for (const route of routes) circles.set(route.circle, [...(circles.get(route.circle) ?? []), route]);
-  return [...circles].map(([circle, circleRoutes]) =>
+const firstRouteOf = (name) => routes.find((route) => route.district === name).id;
+
+const districtOptions = () =>
+  districtGroups(routes).map(({ circle, districts: circleDistricts }) =>
     el(
       'optgroup',
       { label: circle },
-      circleRoutes.map((route) => el('option', { value: route.id, textContent: routeOptionLabel(route, routes) })),
+      circleDistricts.map(({ district: name, label }) => el('option', { value: name, textContent: label })),
     ),
   );
+
+function routeLineChoice(onPick) {
+  const title = el('p', { id: 'route-line-title', className: 'route-lines-title' });
+  const lineButtons = el('div', { className: 'route-lines' });
+  lineButtons.setAttribute('role', 'group');
+  lineButtons.setAttribute('aria-labelledby', title.id);
+  const box = el('div', { className: 'route-line-choice', hidden: true }, [title, lineButtons]);
+  let shownDistrict = null;
+  const show = (picker) => {
+    box.hidden = picker.lines.length === 0;
+    if (picker.district !== shownDistrict) {
+      shownDistrict = picker.district;
+      title.textContent = picker.title ?? '';
+      lineButtons.replaceChildren(...picker.lines.map((line) => button(line.name, () => line.id !== district && onPick(line.id))));
+    }
+    picker.lines.forEach((line, i) => lineButtons.children[i].setAttribute('aria-pressed', String(line.chosen)));
+  };
+  return { box, show };
 }
 
 const storyThumb = (card) =>
@@ -137,12 +156,15 @@ function setUpDistrictPicker() {
   ]);
   select.setAttribute('aria-label', '選區');
   const summary = el('div', { className: 'route-summary box', hidden: true });
-  document.querySelector('.flow').before(el('section', { className: 'district' }, [select, summary]));
+  const lineChoice = routeLineChoice((id) => choose(id));
+  document.querySelector('.flow').before(el('section', { className: 'district' }, [select, lineChoice.box, summary]));
 
   const choose = (name) => {
     const route = routeFor(name);
+    const picker = routePicker(routes, name);
     district = name;
-    select.value = name;
+    select.value = picker.district;
+    lineChoice.show(picker);
     const url = new URL(location.href);
     url.searchParams.set('d', name);
     history.replaceState(history.state, '', url);
@@ -160,7 +182,7 @@ function setUpDistrictPicker() {
     startButton.textContent = startLabel;
   };
 
-  select.addEventListener('change', () => choose(select.value));
+  select.addEventListener('change', () => choose(firstRouteOf(select.value)));
   startButton.disabled = true;
   startButton.textContent = '先選區，再開始';
   const initial = savedDistrict();

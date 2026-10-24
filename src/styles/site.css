@@ -777,6 +777,22 @@ p.availability,
   font-weight: 700;
 }
 
+.route-line-choice {
+  margin: 12px 0 0;
+}
+
+.route-lines-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.route-lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .route-summary {
   margin: 12px 0 0;
 }

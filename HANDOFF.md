@@ -75,7 +75,8 @@
 - **籤紙的尺寸**：籤紙正反面的造型規則（`.peel-front`、`.peel-back`、`.peel-teeth`、`.peel-band` 等）寫成 `calc(N * var(--u))`，大籤紙的 `--u` 是 1px，列表上的小籤紙跟著格子寬度縮放；改這些規則時不要直接寫 px，不然小籤紙會跑掉。
 - **電子一番賞給別的活動用**：加 `ichiban` 設定和某一步的 `tool: "ichiban"` 就有，但登機證上的字（冬 ✈ 春、唱題會）是為新春唱題會寫的，要先改。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。匯入時會多算 `legPaths`（兩段座標，小數 5 位）、`legMeters`、`legTexts`（從路線文字拆，拆不出兩段會擋）、`legNavUrls`（兩段的 Google 導航網址）；檢閱網站的 `todo`、`flags`、`notes` 不帶。
-- **一區可以有多條路線（2026-10-23 起）**：首例基隆北區（梓桑古厝線 `基隆北區`、三連棟線 `基隆北區-2`）。選單、`?d=` 網址參數、當天模式存檔都用路線 `id`（等於檢閱網站的 id，也就是研究檔檔名），不是區名；同一區有兩條時選項顯示「基隆北區・三連棟線」（`routeOptionLabel`）。主路線的 id 就是區名，所以舊網址與舊存檔照樣能用。存檔欄位名仍叫 `district`，裡面放的是路線 id。
+- **一區可以有多條路線（2026-10-23 起）**：首例基隆北區（梓桑古厝線 `基隆北區`、三連棟線 `基隆北區-2`）。`?d=` 網址參數、`brotime:district`、當天模式存檔都用路線 `id`（等於檢閱網站的 id，也就是研究檔檔名），不是區名。主路線的 id 就是區名，所以舊網址與舊存檔照樣能用（`tests/city-walk.test.mjs` 會擋）。存檔欄位名仍叫 `district`，裡面放的是路線 id。
+  - **選單只列區（2026-10-24 使用者決定）**：攤開兩條會讓別區覺得「為什麼他們有兩條」，所以選單每區只出現一次、只寫區名（`districtGroups`）；選了有兩條的區，選單下面才出現一行小字「這區有兩條路線」和兩個路線名按鈕，預設第一條（`routePicker`）。打開帶 `-2` 的網址或存檔時，選單選到那一區、按鈕選到那一條。現在有兩條的是花蓮、基隆北、中和、台南南、岡山、高雄西（67 條路線、61 區）。
 - **城市散步地圖**：Leaflet 1.9.4 直接放在 `public/vendor/leaflet/`，選了區才載入；載不到時地圖收起來、路書照常。圖磚掛掉時地圖照樣顯示（灰底上仍有路線和標記），這是刻意的。手機上單指捲頁面、兩指縮放地圖。路書的樣式選擇器要寫 `.route-book .route-row`，不然會被 `.box li` 的 grid 蓋掉。
 - **活動回報表的跳轉**：`建立問卷表單.gs` 的 `replaceActivityChoices` 會洗掉「舉辦的活動」的跳轉設定，跑完要再跑一次 `addCityWalkRouteSection`（區段已存在時只重設跳轉）。
 - **網域**：twsokahan.org 在 Google Cloud Domains（gcloud 專案 sokahan）自動續約，2027-01-13 到期，可用 `gcloud domains registrations list --project sokahan` 查。GitHub 組織已驗證這個網域（TXT `_github-pages-challenge-twsokahan`，不要刪）。正式網域寫在 `content/site.json` 的 `baseUrl` 和 `public/CNAME`，另外 Pages 設定裡也要設同一個網域。
