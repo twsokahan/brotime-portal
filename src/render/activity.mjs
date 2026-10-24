@@ -1,6 +1,7 @@
 import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
+import { renderVenues } from './venues.mjs';
 
 const DEFAULT_FLOW_TITLE = '60 分鐘這樣過';
 const DEFAULT_EXTRA_TITLE = '想多留 30 分鐘（選配）';
@@ -87,8 +88,9 @@ function renderFlow(activity, rel) {
 <p class="say">說：${escapeHtml(step.say)}</p>${renderThumbs(activity, step, rel)}
 </li>`,
   );
+  const note = activity.flowNote ? `\n<p class="flow-note">${escapeHtml(activity.flowNote)}</p>` : '';
   return `<section class="flow">
-<h2>${escapeHtml(activity.flowTitle ?? DEFAULT_FLOW_TITLE)}</h2>
+<h2>${escapeHtml(activity.flowTitle ?? DEFAULT_FLOW_TITLE)}</h2>${note}
 <ol class="timeline">${steps}</ol>
 </section>`;
 }
@@ -172,6 +174,7 @@ export function renderActivityMain({ activity, site, rel }) {
     `<p class="home-link"><a href="${rel}">${HOME_LINK_TEXT}</a></p>`,
     renderHead(activity),
     renderPrepare(activity, site),
+    renderVenues(activity.venues, rel),
     renderFlow(activity, rel),
     renderStart(),
     renderRain(activity),

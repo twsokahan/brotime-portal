@@ -11,6 +11,8 @@ import {
   preload,
   groupsOf,
   groupsNeedFullRow,
+  topicChoices,
+  KIDS_CHOICE,
   drawCard,
   storyCardBefore,
   readAloudParts,
@@ -323,6 +325,32 @@ test('a group with one card keeps drawing that card', () => {
     assert.equal(result.card.id, 't02');
     assert.deepEqual(result.drawnIds, ['t05', 't02']);
   }
+});
+
+const kidsCards = () => [
+  { id: 'k1', title: 'K1', group: '從作品聊起', forKids: true },
+  { id: 'k2', title: 'K2', group: '從作品聊起' },
+  { id: 'k3', title: 'K3', group: '聊到生活', forKids: true },
+];
+
+test('cards marked for kids add a 小朋友也能答 choice after the groups', () => {
+  assert.equal(KIDS_CHOICE, '小朋友也能答');
+  assert.deepEqual(topicChoices(kidsCards()), [null, '從作品聊起', '聊到生活', KIDS_CHOICE]);
+  assert.deepEqual(topicChoices(topicCards()), [null, '前菜', '主餐', '飯後咖啡']);
+});
+
+test('drawing 小朋友也能答 only picks cards marked for kids, across groups', () => {
+  for (const value of RANDOM_VALUES) {
+    const { card } = drawCard(kidsCards(), [], KIDS_CHOICE, () => value);
+    assert.ok(card.forKids, `random ${value} drew ${card.id}`);
+  }
+  assert.equal(drawCard(kidsCards(), ['k1'], KIDS_CHOICE, () => 0).card.id, 'k3');
+});
+
+test('drawing 小朋友也能答 starts over once every kids card has been drawn, keeping other draws', () => {
+  const result = drawCard(kidsCards(), ['k2', 'k1', 'k3'], KIDS_CHOICE, () => 0);
+  assert.equal(result.card.id, 'k1');
+  assert.deepEqual(result.drawnIds, ['k2', 'k1']);
 });
 
 test('preflight items can end with route-specific reminders', () => {

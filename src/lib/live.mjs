@@ -115,8 +115,22 @@ export function groupsNeedFullRow(groups) {
   return groups.some((group) => [...group].length > MAX_GROUP_CHARS_FOR_HALF_ROW);
 }
 
+export const KIDS_CHOICE = '小朋友也能答';
+
+export const topicChoices = (cards) => [
+  null,
+  ...groupsOf(cards),
+  ...(cards.some((card) => card.forKids) ? [KIDS_CHOICE] : []),
+];
+
+export function topicDeck(cards, choice) {
+  if (choice === null) return cards;
+  if (choice === KIDS_CHOICE) return cards.filter((card) => card.forKids);
+  return cards.filter((card) => card.group === choice);
+}
+
 export function drawCard(cards, drawnIds, group, random = Math.random) {
-  const deck = group === null ? cards : cards.filter((card) => card.group === group);
+  const deck = topicDeck(cards, group);
   const undrawn = deck.filter((card) => !drawnIds.includes(card.id));
   const deckIds = deck.map((card) => card.id);
   const startOver = undrawn.length === 0;

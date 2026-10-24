@@ -5,7 +5,6 @@ import {
   clearSession,
   drawCard,
   groupsNeedFullRow,
-  groupsOf,
   imageUrlsFor,
   loadSession,
   preflightItems,
@@ -15,12 +14,16 @@ import {
   saveSession,
   storyCardBefore,
   timerText,
+  topicChoices,
+  topicDeck,
 } from './lib/live.mjs';
 import { routeFlow, routeWording } from './lib/route-flow.mjs';
 import { cardPageUrl, shareFallbacks } from './lib/share.mjs';
+import { venueSteps } from './lib/venues.mjs';
 
 const REL = '../../';
 const DISTRICT_KEY = 'brotime:district';
+const VENUE_KEY = 'brotime:venue';
 const STEP_COLOURS = 5;
 
 const activity = JSON.parse(document.getElementById('activity-data').textContent);
@@ -68,7 +71,7 @@ let district = null;
 // its id, so links saved before that still open it.
 const routeFor = (id) => routes?.find((route) => route.id === id) ?? null;
 const flowFor = (name) => routeFlow(activity.steps, routeFor(name));
-const liveStepsFor = (name) => (routes ? flowFor(name).steps : activity.steps);
+const liveStepsFor = (name) => (routes ? flowFor(name).steps : venueSteps(activity.steps, place));
 const routeReminders = () => (routes && live.district ? [flowFor(live.district).overtimeNote].filter(Boolean) : []);
 
 let originalTimings = null;
@@ -93,16 +96,29 @@ function showRouteTimes(flow) {
   });
 }
 
-function savedDistrict() {
-  const fromUrl = new URLSearchParams(location.search).get('d');
-  if (routeFor(fromUrl)) return fromUrl;
+function savedChoice(param, key, isKnown) {
+  const fromUrl = new URLSearchParams(location.search).get(param);
+  if (isKnown(fromUrl)) return fromUrl;
   try {
-    const remembered = storage.getItem(DISTRICT_KEY);
-    return routeFor(remembered) ? remembered : null;
+    const remembered = storage.getItem(key);
+    return isKnown(remembered) ? remembered : null;
   } catch {
     return null;
   }
 }
+
+function rememberChoice(param, key, value) {
+  const url = new URL(location.href);
+  url.searchParams.set(param, value);
+  history.replaceState(history.state, '', url);
+  try {
+    storage.setItem(key, value);
+  } catch {
+    // Without storage the choice is still kept in the address bar.
+  }
+}
+
+const savedDistrict = () => savedChoice('d', DISTRICT_KEY, routeFor);
 
 const firstRouteOf = (name) => routes.find((route) => route.district === name).id;
 
@@ -165,14 +181,7 @@ function setUpDistrictPicker() {
     district = name;
     select.value = picker.district;
     lineChoice.show(picker);
-    const url = new URL(location.href);
-    url.searchParams.set('d', name);
-    history.replaceState(history.state, '', url);
-    try {
-      storage.setItem(DISTRICT_KEY, name);
-    } catch {
-      // Without storage the district is still kept in the address bar.
-    }
+    rememberChoice('d', DISTRICT_KEY, name);
     const flow = flowFor(name);
     renderRouteBook(summary, route, flow, { rel: REL });
     summary.hidden = false;
@@ -188,6 +197,25 @@ function setUpDistrictPicker() {
   const initial = savedDistrict();
   if (initial) choose(initial);
   return choose;
+}
+
+let place = null;
+const placeFor = (id) => activity.venues?.places.find((candidate) => candidate.id === id) ?? null;
+
+function setUpVenuePicker() {
+  const select = document.getElementById('venue');
+  const panels = document.querySelectorAll('.venue');
+  const choose = (id) => {
+    place = placeFor(id);
+    select.value = id;
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.venue !== id;
+    });
+    rememberChoice('v', VENUE_KEY, id);
+  };
+  select.addEventListener('change', () => choose(select.value));
+  const initial = savedChoice('v', VENUE_KEY, placeFor);
+  if (initial) choose(initial);
 }
 
 const liveBody = el('div', { className: 'live-body' });
@@ -351,8 +379,7 @@ function storyCardView(card) {
 
 function topicDraw(cards, pickKey) {
   if (!cards.length) return null;
-  const groups = groupsOf(cards);
-  const choices = [null, ...groups];
+  const choices = topicChoices(cards);
   const pick = topicPicks.get(pickKey) ?? { group: null, card: null };
   topicPicks.set(pickKey, pick);
 
@@ -367,7 +394,7 @@ function topicDraw(cards, pickKey) {
   };
 
   const groupButtons = choices.map((group) => {
-    const count = group === null ? cards.length : cards.filter((card) => card.group === group).length;
+    const count = topicDeck(cards, group).length;
     const option = button(
       group ?? '全部',
       () => {
@@ -388,7 +415,7 @@ function topicDraw(cards, pickKey) {
   if (pick.card) showCard();
   else draw();
   return el('div', { className: 'topic-draw' }, [
-    groups.length > 0 && topicGroupPicker(groupButtons, groupsNeedFullRow(groups)),
+    choices.length > 1 && topicGroupPicker(groupButtons, groupsNeedFullRow(choices.filter(Boolean))),
     cardSlot,
     button('換一張', draw, 'live-draw'),
   ]);
@@ -490,6 +517,21 @@ function participantSurvey() {
   ]);
 }
 
+const nearbySpots = ({ title, spots }) =>
+  el('section', { className: 'live-nearby' }, [
+    el('h3', { textContent: title }),
+    el(
+      'ul',
+      {},
+      spots.map((spot) =>
+        el('li', {}, [
+          externalLink(spot.name, spot.mapsUrl),
+          el('span', { textContent: `${spot.distance}｜${spot.hours}` }),
+        ]),
+      ),
+    ),
+  ]);
+
 function readAloudBlock(readAloud) {
   const { label, paragraphs, source } = readAloudParts(readAloud);
   return el('section', { className: 'read-aloud' }, [
@@ -529,6 +571,7 @@ function showStep(index, startedAtMs = Date.now()) {
     el('p', { className: 'live-do', textContent: step.do }),
     step.readAloud && readAloudBlock(step.readAloud),
     el('p', { className: 'live-say', textContent: `說：${step.say}` }),
+    step.nearby && nearbySpots(step.nearby),
     step.showStoryQuestions && earlierStoryQuestions(index),
     ...stepCardSets(step).map((set) => cardSetView(set, index)),
     step.tool === 'ichiban' && externalLink('打開電子一番賞', 'ichiban/', 'button-link ichiban-open'),
@@ -638,5 +681,6 @@ document.addEventListener('visibilitychange', () => {
 });
 
 const chooseDistrict = routes ? setUpDistrictPicker() : null;
+if (activity.venues) setUpVenuePicker();
 offerResume(chooseDistrict);
 startButton.addEventListener('click', startLive);

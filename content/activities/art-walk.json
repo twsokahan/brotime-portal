@@ -1,0 +1,1108 @@
+{
+  "id": "art-walk",
+  "name": "去創美走走",
+  "tagline": "就近去創價美術館分館看展，帶新朋友或很久沒見的兄弟，家人孩子也一起；看完在附近坐下來，亮出自己選的作品。一整年都能約，門票免費。",
+  "status": "ready",
+  "edition": "metro",
+  "templates": [
+    "A"
+  ],
+  "order": 18,
+  "tags": {
+    "kids": "great",
+    "place": "indoor",
+    "rain": "ok",
+    "slots": [
+      "weekend-day",
+      "flexible"
+    ],
+    "interests": [
+      "play",
+      "talk"
+    ]
+  },
+  "facts": {
+    "people": "2–8 人一團",
+    "duration": "約 2–2.5 小時",
+    "place": "離你最近的創價美術館"
+  },
+  "provided": [
+    {
+      "item": "故事卡：在網站上，念故事時分享到群組",
+      "qty": "1 張"
+    },
+    {
+      "item": "話題卡：在網站上，主持人用手機帶大家抽",
+      "qty": "12 張"
+    },
+    {
+      "item": "各分館附近推薦：在這頁的「選分館」",
+      "qty": "12 館"
+    }
+  ],
+  "todo": [
+    {
+      "when": "2 週前",
+      "task": "跟同行的成員約好日期和分館",
+      "detail": "先上官網確認開館日和現在的展覽：週二至週日 9:30–17:00 開放、週一休館，換展期間可能閉館，以學會公告為準。挑離大家最近的一館，各館地址和交通在這頁下面的「選分館」。"
+    },
+    {
+      "when": "2 週前",
+      "task": "各自邀朋友或很久沒見的兄弟",
+      "detail": "讓對方安心：進去各看各的，不用懂藝術，不用上台、不必發言。講清楚哪一天、在哪裡集合、大概幾點回到家；門票免費，吃飯、喝咖啡各自負擔，可以帶家人小朋友。很久沒見的兄弟：就是出來走走，不順便約其他聚會。給新朋友、給很久沒見的兄弟的訊息範本在企劃案附件六。"
+    },
+    {
+      "when": "前幾天",
+      "task": "確認人數，有帶小朋友的說一聲",
+      "detail": "確認集合時間。小朋友也算進人數，挑店時才坐得下。"
+    },
+    {
+      "when": "前幾天",
+      "task": "挑好看完要去坐的地方",
+      "detail": "館內有交流區的可以在館內坐（不是每館都有）；沒有的話，「選分館」裡有附近的店。各店公休日不同，挑分館開館那天也有營業的，營業時間以 Google 地圖為準。"
+    },
+    {
+      "when": "前一天",
+      "task": "發提醒訊息，附上分館地址",
+      "detail": "開車的說好停哪裡；看完去哪裡坐、大約幾點結束也說一聲。出發前再上官網看一下當天有開館。訊息範本在企劃案附件六。"
+    }
+  ],
+  "venues": {
+    "title": "選分館",
+    "prompt": "先選離你們最近的分館",
+    "intro": [
+      "全台 12 個分館，挑離大家最近的一館。分館週二至週日 9:30–17:00 開放、週一休館，換展期間可能閉館，以學會公告為準，出發前先上官網看。",
+      "店家營業時間以 Google 地圖為準，出發前先查；各店公休日不同，挑分館開館那天也有營業的。距離是從分館算的直線距離。"
+    ],
+    "link": {
+      "text": "創價美術館官網（各館展覽）",
+      "url": "https://www.sokaculture.org.tw/art-centers"
+    },
+    "places": [
+      {
+        "id": "zhishan",
+        "name": "至善館",
+        "area": "台北士林",
+        "region": "北部",
+        "address": "台北市士林區至善路二段250號",
+        "transit": "捷運士林站轉公車，故宮正面廣場附近",
+        "food": [
+          {
+            "name": "Slope Cafe",
+            "what": "咖啡店（內用、外帶），約 $200–400",
+            "hours": "週二～五 08:30–17:00，週六日 08:00–17:00，週一休",
+            "distance": "直線約 151 公尺",
+            "why": "離館最近，週末早上 8 點就開，看展前後坐一下剛好；最近的評論是幾個月前，出發前確認還在營業",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Slope%20Cafe%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5280%E8%99%9F"
+          },
+          {
+            "name": "Boulevard Cafe 林蔭美式餐酒食",
+            "what": "現代美式餐廳，約 $400–600",
+            "hours": "供餐至 20:00，週末時段出發前先查",
+            "distance": "直線約 691 公尺",
+            "why": "美式正餐，適合一桌人吃飯",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Boulevard%20Cafe%20%E6%9E%97%E8%94%AD%E7%BE%8E%E5%BC%8F%E9%A4%90%E9%85%92%E9%A3%9F%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B533%E8%99%9F"
+          },
+          {
+            "name": "咖朵咖啡 Caldo Cafe",
+            "what": "咖啡店，約 $400–600",
+            "hours": "週三～一 12:00–18:00，週二休",
+            "distance": "直線約 904 公尺",
+            "why": "評論多，適合坐下聊；店家沒有電話，訂位要私訊粉專",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%92%96%E6%9C%B5%E5%92%96%E5%95%A1%20Caldo%20Cafe%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5390%E8%99%9F"
+          },
+          {
+            "name": "三希堂人文空間（故宮內）",
+            "what": "餐廳（茶點、簡餐），約 $400–600",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 307 公尺",
+            "why": "逛完直接坐下，座位多；在故宮正館裡，可能要買故宮門票才進得去",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%89%E5%B8%8C%E5%A0%82%E4%BA%BA%E6%96%87%E7%A9%BA%E9%96%93%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5221%E8%99%9F4%E6%A8%93"
+          }
+        ],
+        "walks": [
+          {
+            "name": "順益台灣原住民博物館",
+            "what": "博物館",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 189 公尺",
+            "why": "就在分館附近，走路就到，展品適合帶小孩",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A0%86%E7%9B%8A%E5%8F%B0%E7%81%A3%E5%8E%9F%E4%BD%8F%E6%B0%91%E5%8D%9A%E7%89%A9%E9%A4%A8%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5282%E8%99%9F"
+          },
+          {
+            "name": "至善園（故宮內）",
+            "what": "庭園",
+            "hours": "09:00–17:00；週六可能沒開，出發前先查",
+            "distance": "直線約 157 公尺",
+            "why": "池塘涼亭，散步 20～30 分鐘，小孩可跑",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%87%B3%E5%96%84%E5%9C%92%20%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A3%AB%E6%9E%97%E5%8D%80%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5221%E8%99%9F"
+          },
+          {
+            "name": "國立故宮博物院兒童學藝中心",
+            "what": "兒童展示空間",
+            "hours": "09:00–17:00；週六、週一有沒有開，出發前先查",
+            "distance": "直線約 314 公尺",
+            "why": "專為親子設計",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%9C%8B%E7%AB%8B%E6%95%85%E5%AE%AE%E5%8D%9A%E7%89%A9%E9%99%A2%E5%85%92%E7%AB%A5%E5%AD%B8%E8%97%9D%E4%B8%AD%E5%BF%83%20%E8%87%B3%E5%96%84%E8%B7%AF%E4%BA%8C%E6%AE%B5221%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "士林區「士林官邸花園線」：捷運士林站2號出口集合，從分館開車約 4 分鐘，全程約 2.3 公里。",
+            "cityWalkRoute": "士林區"
+          },
+          {
+            "text": "內湖區「內湖郭宅紅樓線」：捷運內湖站1號出口集合，從分館開車約 10 分鐘，全程約 2.2 公里。",
+            "cityWalkRoute": "內湖區"
+          },
+          {
+            "text": "台北東區「松山饒河公衛線」：捷運南京三民站3號出口集合，從分館開車約 11 分鐘，全程約 2.8 公里。",
+            "cityWalkRoute": "台北東區"
+          }
+        ]
+      },
+      {
+        "id": "banqiao",
+        "name": "板橋館",
+        "area": "新北板橋",
+        "region": "北部",
+        "address": "新北市板橋區民生路二段232號3樓",
+        "transit": "捷運新埔站3號出口，步行約2分鐘",
+        "food": [
+          {
+            "name": "Coffee HABU 咖啡哈巭",
+            "what": "咖啡店，約 $200–400",
+            "hours": "週一～六 11:00–20:00，週日 11:00–19:00，每天開",
+            "distance": "直線約 221 公尺",
+            "why": "評論超過千則，離館走路 3 分鐘",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Coffee%20HABU%20%E5%92%96%E5%95%A1%E5%93%88%E5%B7%AD%20%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B5270%E5%B7%B73%E5%BC%8424%E8%99%9F"
+          },
+          {
+            "name": "風日洋食",
+            "what": "日式洋食定食，約 $200–400",
+            "hours": "週二～日 11:00–20:00，週一休",
+            "distance": "直線約 265 公尺",
+            "why": "有正餐，和 HABU 同一條巷子，可看展後吃飯再喝咖啡",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A2%A8%E6%97%A5%E6%B4%8B%E9%A3%9F%20%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B5270%E5%B7%B73%E8%99%9F1%E6%A8%93"
+          },
+          {
+            "name": "洋朵義式廚坊 板橋文化店",
+            "what": "義式餐廳，約 $400–600",
+            "hours": "週一～五 11:30–21:30，週六日 11:00–22:00，每天開",
+            "distance": "直線約 850 公尺",
+            "why": "義大利麵、披薩適合多人分食",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B4%8B%E6%9C%B5%E7%BE%A9%E5%BC%8F%E5%BB%9A%E5%9D%8A%20%E6%9D%BF%E6%A9%8B%E6%96%87%E5%8C%96%E5%BA%97%20%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%BA%8C%E6%AE%B5315%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "板橋435藝文特區",
+            "what": "藝文展演空間",
+            "hours": "週一～五 09:00–17:00，週六日 09:00–18:00，每天開",
+            "distance": "直線約 1,664 公尺",
+            "why": "園區大、可散步，常有展覽",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%9D%BF%E6%A9%8B435%E8%97%9D%E6%96%87%E7%89%B9%E5%8D%80%20%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E4%B8%AD%E6%AD%A3%E8%B7%AF435%E8%99%9F"
+          },
+          {
+            "name": "林本源園邸",
+            "what": "歷史建築、古典園林",
+            "hours": "每天 09:00–17:00",
+            "distance": "直線約 1,924 公尺",
+            "why": "台灣少見的園林，適合慢慢走；離館較遠，建議開車或搭車",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%9E%97%E6%9C%AC%E6%BA%90%E5%9C%92%E9%82%B8%20%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E8%A5%BF%E9%96%80%E8%A1%979%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "板橋區「板橋林家老城線」：捷運府中站集合，從分館開車約 4 分鐘，全程約 2.3 公里。",
+            "cityWalkRoute": "板橋區"
+          },
+          {
+            "text": "台北西區「植物園小南門線」：捷運小南門站3號出口集合，從分館開車約 6 分鐘，全程約 2.0 公里。",
+            "cityWalkRoute": "台北西區"
+          },
+          {
+            "text": "新莊區「新莊老街線」：新莊網球場集合，從分館開車約 6 分鐘，全程約 3.0 公里。",
+            "cityWalkRoute": "新莊區"
+          }
+        ]
+      },
+      {
+        "id": "taoyuan",
+        "name": "桃園館",
+        "area": "桃園青埔",
+        "region": "北部",
+        "address": "桃園市大園區高鐵北路二段140號",
+        "transit": "機捷A17領航站步行約8分鐘；高鐵桃園站步行約12分鐘",
+        "food": [
+          {
+            "name": "早方法 青埔店",
+            "what": "早午餐餐廳，約 $400–600",
+            "hours": "週一 10:30–20:30，週二～五 11:00–20:30，週六日 10:30–20:30，每天開",
+            "distance": "直線約 612 公尺",
+            "why": "早午餐、評論多、座位大",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%A9%E6%96%B9%E6%B3%95%20%E9%9D%92%E5%9F%94%E5%BA%97%20%E6%A1%83%E5%9C%92%E5%B8%82%E4%B8%AD%E5%A3%A2%E5%8D%80%E9%9D%92%E5%B3%B0%E8%B7%AF%E4%B8%80%E6%AE%B563%E8%99%9F"
+          },
+          {
+            "name": "Mövenpick Café 莫凡彼桃園青埔店",
+            "what": "咖啡廳兼餐廳，約 $400–600",
+            "hours": "每天 11:00–22:00",
+            "distance": "直線約 821 公尺",
+            "why": "高鐵站旁，簡餐甜點都有，座位寬敞",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=M%C3%B6venpick%20Caf%C3%A9%20%E8%8E%AB%E5%87%A1%E5%BD%BC%E6%A1%83%E5%9C%92%E9%9D%92%E5%9F%94%E5%BA%97%20%E6%A1%83%E5%9C%92%E5%B8%82%E4%B8%AD%E5%A3%A2%E5%8D%80%E9%AB%98%E9%90%B5%E7%AB%99%E5%89%8D%E6%9D%B1%E8%B7%AF%E4%B8%80%E6%AE%B51%E8%99%9F"
+          },
+          {
+            "name": "鹿馬岸南島人文主題餐廳",
+            "what": "主題餐廳，約 $400–1,200",
+            "hours": "每天 11:30–16:00（午市）、17:00～深夜（晚市）",
+            "distance": "直線約 557 公尺",
+            "why": "環境有特色，建議選午市；晚市到午夜，有酒吧氛圍",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E9%A6%AC%E5%B2%B8%E5%8D%97%E5%B3%B6%E4%BA%BA%E6%96%87%E4%B8%BB%E9%A1%8C%E9%A4%90%E5%BB%B3%20%E6%A1%83%E5%9C%92%E5%B8%82%E5%A4%A7%E5%9C%92%E5%8D%80%E5%A4%A7%E6%88%90%E8%B7%AF%E4%BA%8C%E6%AE%B5100%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "橫山書法藝術館",
+            "what": "藝術博物館",
+            "hours": "週三～一 09:30–17:00，週二休",
+            "distance": "直線約 397 公尺",
+            "why": "離館最近，旁邊有書法藝術公園可散步",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A9%AB%E5%B1%B1%E6%9B%B8%E6%B3%95%E8%97%9D%E8%A1%93%E9%A4%A8%20%E6%A1%83%E5%9C%92%E5%B8%82%E5%A4%A7%E5%9C%92%E5%8D%80%E5%A4%A7%E4%BB%81%E8%B7%AF100%E8%99%9F"
+          },
+          {
+            "name": "Xpark 青埔水族館",
+            "what": "水族館",
+            "hours": "週一～五 10:00–18:00，週六日 10:00–20:00",
+            "distance": "直線約 801 公尺",
+            "why": "親子最愛，要買門票，要留半天",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Xpark%20%E6%A1%83%E5%9C%92%E5%B8%82%E4%B8%AD%E5%A3%A2%E5%8D%80%E6%98%A5%E5%BE%B7%E8%B7%AF105%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "桃園西區「中壢老街線」：中壢火車站集合，從分館開車約 15 分鐘，全程約 2.3 公里。",
+            "cityWalkRoute": "桃園西區"
+          }
+        ]
+      },
+      {
+        "id": "hsinchu",
+        "name": "新竹館",
+        "region": "北部",
+        "address": "新竹市國華街68號2樓",
+        "transit": "新竹客運到水田尾站；對面區公所有地下停車場",
+        "food": [
+          {
+            "name": "Daily Ping 平日",
+            "what": "早午餐餐廳，約 $400–600",
+            "hours": "週二 09:30–18:00，週三～六 09:30–21:00，週日 09:30–18:00，週一休",
+            "distance": "直線約 387 公尺",
+            "why": "早午餐，離館步行 5 分鐘",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Daily%20Ping%20%E5%B9%B3%E6%97%A5%20%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%8D%80%E6%B0%91%E6%AC%8A%E8%B7%AF269%E8%99%9F"
+          },
+          {
+            "name": "窯屋洋煨",
+            "what": "早午餐、定食、刺身壽司，約 $400–600",
+            "hours": "週三～一 10:00–20:00，週二休",
+            "distance": "直線約 560 公尺",
+            "why": "和食定食，可以吃正餐",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%AA%AF%E5%B1%8B%E6%B4%8B%E7%85%A8%20%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%8D%80%E5%8C%97%E5%A4%A7%E8%B7%AF21%E8%99%9F"
+          },
+          {
+            "name": "JAI宅 義大利麵 新竹巨城",
+            "what": "義大利麵餐廳，約 $400–600",
+            "hours": "每天 11:00–21:00",
+            "distance": "直線約 829 公尺",
+            "why": "在巨城商場，空間大、停車方便",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=JAI%E5%AE%85%20%E7%BE%A9%E5%A4%A7%E5%88%A9%E9%BA%B5%20%E6%96%B0%E7%AB%B9%E5%B7%A8%E5%9F%8E%20%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%8D%80%E6%B0%91%E6%AC%8A%E8%B7%AF195%E8%99%9F"
+          },
+          {
+            "name": "小稻甜 Cafe",
+            "what": "咖啡店，約 $200–400",
+            "hours": "每天 09:00–16:00",
+            "distance": "直線約 829 公尺",
+            "why": "和眷村博物館同一區，可順路",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%A8%BB%E7%94%9C%20Cafe%20%E6%96%B0%E7%AB%B9%E5%B8%82%E5%8C%97%E5%8D%80%E5%8C%97%E5%A4%A7%E8%B7%AF166%E5%B7%B71%E5%BC%841%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "新竹市眷村博物館",
+            "what": "博物館",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 478 公尺",
+            "why": "園區能走動，小孩也看得懂",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%AB%B9%E5%B8%82%E7%9C%B7%E6%9D%91%E5%8D%9A%E7%89%A9%E9%A4%A8%20%E6%96%B0%E7%AB%B9%E5%B8%82%E5%8C%97%E5%8D%80%E6%9D%B1%E5%A4%A7%E8%B7%AF%E4%BA%8C%E6%AE%B5105%E8%99%9F"
+          },
+          {
+            "name": "黑蝙蝠中隊文物陳列館",
+            "what": "軍事主題展館",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 562 公尺",
+            "why": "小型展館，約 30 分鐘",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%BB%91%E8%9D%99%E8%9D%A0%E4%B8%AD%E9%9A%8A%E6%96%87%E7%89%A9%E9%99%B3%E5%88%97%E9%A4%A8%20%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%8D%80%E6%9D%B1%E5%A4%A7%E8%B7%AF%E4%BA%8C%E6%AE%B516%E8%99%9F"
+          },
+          {
+            "name": "新竹市美術館",
+            "what": "美術館",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 1,179 公尺",
+            "why": "還想再看一個展的話",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%AB%B9%E5%B8%82%E7%BE%8E%E8%A1%93%E9%A4%A8%20%E6%96%B0%E7%AB%B9%E5%B8%82%E6%9D%B1%E5%8D%80%E4%B8%AD%E5%A4%AE%E8%B7%AF116%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "新竹區「開台進士線」：新竹火車站集合，從分館開車約 4 分鐘，全程約 2.7 公里。",
+            "cityWalkRoute": "新竹區"
+          }
+        ]
+      },
+      {
+        "id": "taichung",
+        "name": "台中館",
+        "region": "中部",
+        "address": "台中市西屯區大容東街90號3樓",
+        "transit": "捷運綠線水安宮站步行約9分鐘",
+        "food": [
+          {
+            "name": "目覺咖啡",
+            "what": "咖啡店，咖啡、輕食甜點，約 $200–400",
+            "hours": "週一～週日 08:00–18:00",
+            "distance": "直線約 70 公尺",
+            "why": "離分館最近，天天開，適合看展前先集合",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%9B%AE%E8%A6%BA%E5%92%96%E5%95%A1%20%E5%8F%B0%E4%B8%AD%E5%B8%82%E8%A5%BF%E5%B1%AF%E5%8D%80%E5%A4%A7%E6%81%A9%E8%A1%978%E8%99%9F"
+          },
+          {
+            "name": "森林小徑 大墩店",
+            "what": "西餐廳，簡約西式正餐，約 $200–400",
+            "hours": "週一～週日 11:30–21:30",
+            "distance": "直線約 167 公尺",
+            "why": "正餐首選，天天開、離分館幾步路，座位較多",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A3%AE%E6%9E%97%E5%B0%8F%E5%BE%91%20%E5%A4%A7%E5%A2%A9%E5%BA%97%20%E5%A4%A7%E5%AE%B9%E8%A5%BF%E8%A1%9753%E8%99%9F"
+          },
+          {
+            "name": "Match Café 默契咖啡",
+            "what": "咖啡店，咖啡甜點，約 $200–400",
+            "hours": "週二休，其餘 10:00–19:00",
+            "distance": "直線約 556 公尺",
+            "why": "評論量大、評分高，適合看完展坐下來聊",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Match%20Caf%C3%A9%20%E9%BB%98%E5%A5%91%E5%92%96%E5%95%A1%20%E5%8F%B0%E4%B8%AD%E5%B8%82%E8%A5%BF%E5%B1%AF%E5%8D%80%E8%87%BA%E7%81%A3%E5%A4%A7%E9%81%93%E4%BA%8C%E6%AE%B5902%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "夏綠地公園",
+            "what": "城市公園，草地可散步、小孩跑跳",
+            "hours": "24 小時",
+            "distance": "直線約 794 公尺",
+            "why": "離分館近，帶孩子放電方便",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A4%8F%E7%B6%A0%E5%9C%B0%E5%85%AC%E5%9C%92%20%E5%8F%B0%E4%B8%AD"
+          },
+          {
+            "name": "臺中國家歌劇院",
+            "what": "建築地標，可逛戶外與大廳、館內有餐飲",
+            "hours": "週一可能休館，出發前先查",
+            "distance": "直線約 1,022 公尺",
+            "why": "建築有名、適合拍照，下雨也有得逛",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%87%BA%E4%B8%AD%E5%9C%8B%E5%AE%B6%E6%AD%8C%E5%8A%87%E9%99%A2"
+          },
+          {
+            "name": "文心森林公園",
+            "what": "大型綠地公園，適合散步、親子",
+            "hours": "公園，通常全天開放",
+            "distance": "直線約 1,450 公尺",
+            "why": "面積大，吃飽後走一圈",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%96%87%E5%BF%83%E6%A3%AE%E6%9E%97%E5%85%AC%E5%9C%92%20%E5%8F%B0%E4%B8%AD"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "台中西區「南屯犁頭店線」：捷運南屯站集合，從分館開車約 4 分鐘，全程約 2.8 公里。",
+            "cityWalkRoute": "台中西區"
+          },
+          {
+            "text": "台中中區「書香舊城線」：臺中車站集合，從分館開車約 9 分鐘，全程約 1.9 公里。",
+            "cityWalkRoute": "台中中區"
+          }
+        ],
+        "notes": [
+          "這三家店的停車資訊沒查到，開車的出發前先看一下。"
+        ]
+      },
+      {
+        "id": "xiushui",
+        "name": "秀水館",
+        "area": "彰化",
+        "region": "中部",
+        "address": "彰化縣秀水鄉安溪村平安五街61號2樓",
+        "transit": "只有員林客運（半路響站），建議開車或騎車",
+        "food": [
+          {
+            "name": "宮本武丼 彰化中山",
+            "what": "日式丼飯、定食",
+            "hours": "週一～週日 11:00–22:00",
+            "distance": "直線約 2,941 公尺（開車約 10 分鐘內）",
+            "why": "天天開、營業時間長，適合家庭聚餐",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%AE%AE%E6%9C%AC%E6%AD%A6%E4%B8%BC%20%E5%BD%B0%E5%8C%96%E5%B8%82%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B5561%E8%99%9F"
+          },
+          {
+            "name": "你好義式",
+            "what": "義式餐廳，麵、燉飯、披薩類",
+            "hours": "週一～週日 11:30–14:30、17:00–21:00",
+            "distance": "直線約 4,205 公尺",
+            "why": "義式小孩接受度高，天天開",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%BD%A0%E5%A5%BD%E7%BE%A9%E5%BC%8F%20%E5%BD%B0%E5%8C%96%E5%B8%82%E5%8D%97%E9%83%AD%E8%B7%AF%E4%B8%80%E6%AE%B580%E8%99%9F"
+          },
+          {
+            "name": "FUFU HYGGE coffee & pop shop",
+            "what": "咖啡店，咖啡甜點",
+            "hours": "週二休，其餘約 09:00–18:00（週五六到 18:30）",
+            "distance": "直線約 3,514 公尺",
+            "why": "甜點咖啡店，下午坐下來聊",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=FUFU%20HYGGE%20coffee%20%26%20pop%20shop%20%E5%BD%B0%E5%8C%96%E5%B8%82%E5%8D%97%E7%91%A4%E8%B7%AF255%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "龍騰公園",
+            "what": "公園，散步、小孩放電",
+            "hours": "24 小時",
+            "distance": "直線約 2,334 公尺",
+            "why": "離分館最近的公園",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%BE%8D%E9%A8%B0%E5%85%AC%E5%9C%92%20%E7%A7%80%E6%B0%B4"
+          },
+          {
+            "name": "彰化縣立美術館",
+            "what": "美術館",
+            "hours": "週一休，週二～週日 09:00–17:00",
+            "distance": "直線約 4,400 公尺",
+            "why": "還想再看一個展的話",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%BD%B0%E5%8C%96%E7%B8%A3%E7%AB%8B%E7%BE%8E%E8%A1%93%E9%A4%A8"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "彰化一區「彰化賴和線」：臺鐵彰化車站集合，從分館開車約 7 分鐘，全程約 2.0 公里。",
+            "cityWalkRoute": "彰化一區"
+          }
+        ],
+        "notes": [
+          "附近的店都在 2 公里外，要開車或騎車；停車資訊沒查到，出發前先看一下。"
+        ]
+      },
+      {
+        "id": "jingyang",
+        "name": "景陽館",
+        "area": "雲林斗六",
+        "region": "中部",
+        "address": "雲林縣斗六市北平路46巷11號",
+        "transit": "台鐵斗六站後站步行約5分鐘",
+        "food": [
+          {
+            "name": "Immense 恬恬",
+            "what": "餐廳，餐點與飲品，約 $200–400",
+            "hours": "週一休，其餘 11:30–19:30",
+            "distance": "直線約 667 公尺",
+            "why": "太平路老街區，評論量大",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Immense%20%E6%81%AC%E6%81%AC%20%E9%9B%B2%E6%9E%97%E7%B8%A3%E6%96%97%E5%85%AD%E5%B8%82%E5%A4%AA%E5%B9%B3%E8%B7%AF52%E8%99%9F"
+          },
+          {
+            "name": "Sunny·桑尼 咖喱&義式料理&丼飯&烏冬&沙拉",
+            "what": "咖哩、義式、丼飯、烏冬，選擇多",
+            "hours": "週一～週日 11:00–13:45（週六到 13:50）、16:30–19:45",
+            "distance": "直線約 582 公尺",
+            "why": "菜色多，一桌人都能點到",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Sunny%C2%B7%E6%A1%91%E5%B0%BC%20%E9%9B%B2%E6%9E%97%E7%B8%A3%E6%96%97%E5%85%AD%E5%B8%82%E9%8E%AE%E5%8C%97%E8%B7%AF43%E8%99%9F"
+          },
+          {
+            "name": "雲林100碗-耕雲軒港式餐廳",
+            "what": "港式茶餐廳",
+            "hours": "週一～週日 11:30–14:00、17:30–21:00",
+            "distance": "直線約 499 公尺",
+            "why": "港式餐點適合多人分食，酒店一樓座位寬敞",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%9B%B2%E6%9E%97100%E7%A2%97%20%E8%80%95%E9%9B%B2%E8%BB%92%E6%B8%AF%E5%BC%8F%E9%A4%90%E5%BB%B3%20%E6%96%97%E5%85%AD%E4%BA%94%E8%B7%AF35%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "聖玫瑰天主堂",
+            "what": "教堂，可安靜走走看看建築",
+            "hours": "週一～週日 07:00–21:30",
+            "distance": "直線約 844 公尺",
+            "why": "離分館步行約 10 分鐘",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%81%96%E7%8E%AB%E7%91%B0%E5%A4%A9%E4%B8%BB%E5%A0%82%20%E6%96%97%E5%85%AD"
+          },
+          {
+            "name": "紙農書院~染織紙手創聚落",
+            "what": "文創聚落，染織紙手作與展示",
+            "hours": "週一休，週二～週日 11:00–17:00",
+            "distance": "直線約 619 公尺",
+            "why": "可以順便手作體驗，要不要收費出發前先查",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%B4%99%E8%BE%B2%E6%9B%B8%E9%99%A2%20%E6%9F%93%E7%B9%94%E7%B4%99%E6%89%8B%E5%89%B5%E8%81%9A%E8%90%BD%20%E9%9B%B2%E6%9E%97%E7%B8%A3%E6%96%97%E5%85%AD%E5%B8%82%E9%9B%B2%E4%B8%AD%E8%A1%9712%E8%99%9F"
+          },
+          {
+            "name": "太平老街",
+            "what": "老街，走走看建築與小吃",
+            "hours": "老街，各店時間不同",
+            "distance": "直線約 704 公尺",
+            "why": "離分館近，可串紙農書院、Immense 恬恬",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97%20%E6%96%97%E5%85%AD"
+          }
+        ],
+        "cityWalks": [],
+        "notes": [
+          "斗六咖啡店很多，分館走路 10 分鐘內就有十多家，想找咖啡店可以自己再挑。",
+          "連鎖保底：多那之斗六棒球場門市（斗六六路 116 號，每天 07:30–23:00）。"
+        ]
+      },
+      {
+        "id": "annan",
+        "name": "安南館",
+        "area": "台南",
+        "region": "南部",
+        "address": "台南市安南區郡安路四段66號",
+        "transit": "台南火車站轉公車（9、18號到南安順站）",
+        "food": [
+          {
+            "name": "藝樹早午餐",
+            "what": "早午餐，約 $200–400",
+            "hours": "週三休，其餘 08:00–16:30",
+            "distance": "直線約 237 公尺",
+            "why": "離分館最近的正餐，早午餐很適合看展前後",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%97%9D%E6%A8%B9%E6%97%A9%E5%8D%88%E9%A4%90%20%E5%8F%B0%E5%8D%97%E5%B8%82%E5%AE%89%E5%8D%97%E5%8D%80%E5%AE%89%E9%80%9A%E8%B7%AF%E5%9B%9B%E6%AE%B586%E8%99%9F"
+          },
+          {
+            "name": "二煮廚牛排館",
+            "what": "美式牛排館",
+            "hours": "週一休，週二～週六 11:00–13:50、17:00–21:20；週日 11:00–13:50、17:00–20:30",
+            "distance": "直線約 391 公尺",
+            "why": "牛排、簡餐，適合家庭聚餐",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%BA%8C%E7%85%AE%E5%BB%9A%E7%89%9B%E6%8E%92%E9%A4%A8%20%E5%8F%B0%E5%8D%97%E5%B8%82%E5%AE%89%E5%8D%97%E5%8D%80%E5%AE%89%E5%92%8C%E8%B7%AF%E4%B8%80%E6%AE%B541%E8%99%9F"
+          },
+          {
+            "name": "木漢堡 四社城市聚落",
+            "what": "漢堡餐廳",
+            "hours": "沒查到，出發前先查",
+            "distance": "直線約 1,064 公尺",
+            "why": "漢堡小孩接受度高",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%9C%A8%E6%BC%A2%E5%A0%A1%20%E5%9B%9B%E7%A4%BE%E5%9F%8E%E5%B8%82%E8%81%9A%E8%90%BD%20%E5%AE%89%E5%AF%8C%E8%A1%9721%E5%B7%B798%E8%99%9F"
+          },
+          {
+            "name": "餵食三刻",
+            "what": "甜品店，甜點",
+            "hours": "沒查到，出發前先查",
+            "distance": "直線約 1,048 公尺",
+            "why": "甜點聊天用",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A4%B5%E9%A3%9F%E4%B8%89%E5%88%BB%20%E5%8F%B0%E5%8D%97%E5%B8%82%E5%8C%97%E5%8D%80%E5%8C%97%E6%88%90%E8%B7%AF27%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "凱德公園",
+            "what": "公園，散步、小孩放電",
+            "hours": "24 小時",
+            "distance": "直線約 1,485 公尺",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%87%B1%E5%BE%B7%E5%85%AC%E5%9C%92%20%E5%8F%B0%E5%8D%97"
+          },
+          {
+            "name": "大新美術館",
+            "what": "美術館",
+            "hours": "每天 09:00–17:30，票價出發前先查",
+            "distance": "直線約 2,238 公尺",
+            "why": "還想再看一個展的話",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E6%96%B0%E7%BE%8E%E8%A1%93%E9%A4%A8%20%E5%8F%B0%E5%8D%97"
+          },
+          {
+            "name": "台南花園夜市",
+            "what": "夜市，晚餐順路逛",
+            "hours": "僅週四、五、六、日 17:00–00:00，其他日休",
+            "distance": "直線約 2,185 公尺",
+            "why": "分館 17:00 閉館後可以接著逛；人多，帶孩子要留意",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E8%8A%B1%E5%9C%92%E5%A4%9C%E5%B8%82"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "台南東區「永康經國公園線」：成功里立體停車場集合，從分館開車約 7 分鐘，全程約 2.2 公里。",
+            "cityWalkRoute": "台南東區"
+          },
+          {
+            "text": "台南南區「運河盡頭線」：原臺南運河海關集合，從分館開車約 9 分鐘，全程約 2.0 公里。",
+            "cityWalkRoute": "台南南區-2"
+          },
+          {
+            "text": "台南南區「文學南門線」：府城南門公園集合，從分館開車約 10 分鐘，全程約 2.0 公里。",
+            "cityWalkRoute": "台南南區"
+          }
+        ],
+        "notes": [
+          "附近咖啡店少：Green Cherry Coffee（北區北安路一段 225 號，直線約 1.1 公里）週四到週日開，可以當週末的備案。"
+        ]
+      },
+      {
+        "id": "kaohsiung",
+        "name": "高雄本館",
+        "region": "南部",
+        "address": "高雄市楠梓區金富街1號",
+        "transit": "捷運紅線後勁站2號出口，步行約6分鐘",
+        "food": [
+          {
+            "name": "創價 X 日嚐 SIMPLE+Café",
+            "what": "館內咖啡廳（六樓），咖啡、輕食，約 $200–400",
+            "hours": "跟美術館開館時間一樣，出發前先查",
+            "distance": "在館內",
+            "why": "看完展直接上樓，但常常客滿",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%89%B5%E5%83%B9%20X%20%E6%97%A5%E5%9A%90%20SIMPLE%2BCaf%C3%A9%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80%E9%87%91%E5%AF%8C%E8%A1%971%E8%99%9F6%E6%A8%93"
+          },
+          {
+            "name": "午味雜晨 概念總部",
+            "what": "早午餐，約 $200–400",
+            "hours": "每天 08:45–16:00，週六日到 16:30",
+            "distance": "直線約 784 公尺",
+            "why": "評論多、早上就開，適合先吃再看展",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%8D%88%E5%91%B3%E9%9B%9C%E6%99%A8%20%E6%A6%82%E5%BF%B5%E7%B8%BD%E9%83%A8%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80%E7%91%9E%E5%B1%8F%E8%B7%AF62-1%E8%99%9F"
+          },
+          {
+            "name": "森川丼丼楠梓總店",
+            "what": "日式丼飯，約 $400–600",
+            "hours": "每天 11:00–24:00",
+            "distance": "直線約 531 公尺",
+            "why": "天天開到半夜，用餐時段可能要排隊",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A3%AE%E5%B7%9D%E4%B8%BC%E4%B8%BC%E6%A5%A0%E6%A2%93%E7%B8%BD%E5%BA%97%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80%E6%A5%A0%E6%A2%93%E6%96%B0%E8%B7%AF122%E8%99%9F"
+          },
+          {
+            "name": "9i CAFé 玖艾",
+            "what": "咖啡店，義式麵食、披薩、甜點，有大桌，約 $200–400",
+            "hours": "沒查到（2025 年的網路文章寫週三公休），出發前先查",
+            "distance": "直線約 609 公尺",
+            "why": "六樓客滿時的備案，可以坐下來吃飯",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=9i%20CAF%C3%A9%20%E7%8E%96%E8%89%BE%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80%E6%B5%B7%E5%B0%88%E8%B7%AF205%E5%B7%B78%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "後勁溪沿岸、油廠宿舍與二戰燃料廠遺跡",
+            "what": "走讀路線，免費",
+            "hours": "戶外，隨時可走",
+            "distance": "後勁一帶",
+            "why": "看完展散步走走",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%BE%8C%E5%8B%81%E6%BA%AA%20%E6%B0%B4%E9%BE%8D%E9%A0%AD%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80"
+          },
+          {
+            "name": "後勁夜市",
+            "what": "夜市小吃",
+            "hours": "週五、週六晚上",
+            "distance": "跟美術館同一條加昌路",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%BE%8C%E5%8B%81%E5%A4%9C%E5%B8%82%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A5%A0%E6%A2%93%E5%8D%80%E5%8A%A0%E6%98%8C%E8%B7%AF"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "高雄東區「楠梓古碑線」：楠梓車站集合，從分館開車約 4 分鐘，全程約 2.1 公里。",
+            "cityWalkRoute": "高雄東區"
+          },
+          {
+            "text": "高雄北區「舊城護城河線」：左營舊城車站集合，從分館開車約 11 分鐘，全程約 2.7 公里。",
+            "cityWalkRoute": "高雄北區"
+          },
+          {
+            "text": "岡山區「岡山老街線」：臺鐵岡山車站集合，從分館開車約 12 分鐘，全程約 2.0 公里。",
+            "cityWalkRoute": "岡山區"
+          }
+        ]
+      },
+      {
+        "id": "pingtung",
+        "name": "屏東館",
+        "area": "竹田",
+        "region": "南部",
+        "address": "屏東縣竹田鄉大成路46號",
+        "transit": "潮州轉運站轉屏東客運8208，建議開車或騎車",
+        "food": [
+          {
+            "name": "草吖櫃 手作廚坊",
+            "what": "親子餐廳，手作家常餐點",
+            "hours": "週一休；週二～週五 11:30–14:30、17:00–20:30；週六日 11:30–17:30",
+            "distance": "直線約 3,164 公尺（開車約 5～10 分鐘）",
+            "why": "親子友善、有大草地，停車方便；禁帶寵物",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8D%89%E5%90%96%E6%AB%83%20%E6%89%8B%E4%BD%9C%E5%BB%9A%E5%9D%8A%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E7%AB%B9%E7%94%B0%E9%84%89%E6%B0%B4%E6%BA%90%E8%B7%AF"
+          },
+          {
+            "name": "大禾園",
+            "what": "台灣菜餐廳，合菜熱炒類",
+            "hours": "週二休，其餘 11:00–14:00、17:00–20:00",
+            "distance": "直線約 2,948 公尺",
+            "why": "多人合菜好分食，頁面標示有停車場",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E7%A6%BE%E5%9C%92%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E7%AB%B9%E7%94%B0%E9%84%89%E4%B8%AD%E6%AD%A3%E8%B7%AF52-1%E8%99%9F"
+          },
+          {
+            "name": "驛前大和頓物所",
+            "what": "咖啡店，日式老屋風、咖啡甜點",
+            "hours": "週四休，其餘 10:30–18:00；地圖上的時間有點怪，出發前先查",
+            "distance": "直線約 2,734 公尺",
+            "why": "竹田驛園旁，停車算方便，但假日人潮多",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A9%9B%E5%89%8D%E5%A4%A7%E5%92%8C%E9%A0%93%E7%89%A9%E6%89%80%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E7%AB%B9%E7%94%B0%E9%84%89%E8%B1%90%E6%98%8E%E8%B7%AF26%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "竹田驛園",
+            "what": "日治時代火車站園區，鐵道文化、可散步",
+            "hours": "週一～週日 09:00–17:00",
+            "distance": "直線約 2,702 公尺",
+            "why": "在驛前大和頓物所旁可一起走，標示有停車場",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%AB%B9%E7%94%B0%E9%A9%9B%E5%9C%92"
+          },
+          {
+            "name": "天使花園休閒農場",
+            "what": "休閒農場，有餐點、可帶孩子逛",
+            "hours": "週二休；週六日 10:00–20:00，週一 09:00–17:00，週三～五 10:00–18:00",
+            "distance": "直線約 1,166 公尺",
+            "why": "離分館最近的休閒點",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E4%BD%BF%E8%8A%B1%E5%9C%92%E4%BC%91%E9%96%92%E8%BE%B2%E5%A0%B4%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E7%AB%B9%E7%94%B0%E9%84%89%E7%A6%8F%E5%AE%89%E8%B7%AF120%E5%B7%B7101%E8%99%9F"
+          }
+        ],
+        "cityWalks": []
+      },
+      {
+        "id": "yilan",
+        "name": "宜蘭館",
+        "region": "東部",
+        "address": "宜蘭縣宜蘭市陽明路131巷99號",
+        "transit": "宜蘭火車站轉公車到蘭陽女中站",
+        "food": [
+          {
+            "name": "單賣幸福 Hygge cafe & brunch",
+            "what": "早午餐餐廳，約 $400–600",
+            "hours": "週五～三 10:00–18:00，週四休",
+            "distance": "直線約 662 公尺",
+            "why": "早午餐，離幾米公園近",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%96%AE%E8%B3%A3%E5%B9%B8%E7%A6%8FHygge%20cafe%26brunch%20%E6%97%A9%E5%8D%88%E9%A4%90%E5%BB%B3%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E5%AE%9C%E8%88%88%E8%B7%AF%E4%B8%80%E6%AE%B5119%E8%99%9F"
+          },
+          {
+            "name": "游饗・創意中式定食",
+            "what": "中式定食，約 $400–600",
+            "hours": "週四～一 11:00–14:00、17:00–20:00，週二三休",
+            "distance": "直線約 662 公尺",
+            "why": "正餐，週六日都開",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B8%B8%E9%A5%97%E3%83%BB%E5%89%B5%E6%84%8F%E4%B8%AD%E5%BC%8F%E5%AE%9A%E9%A3%9F%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E9%99%BD%E6%98%8E%E4%B8%80%E8%B7%AF126%E8%99%9F"
+          },
+          {
+            "name": "晴朗餐廳 x Sunny café",
+            "what": "義式麵食，約 $200–400",
+            "hours": "沒查到，出發前先查",
+            "distance": "直線約 790 公尺",
+            "why": "義式簡餐",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%99%B4%E6%9C%97%E9%A4%90%E5%BB%B3x%20Sunny%20caf%C3%A9%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E5%AE%9C%E8%88%88%E8%B7%AF%E4%B8%80%E6%AE%B5159%E8%99%9F"
+          },
+          {
+            "name": "蘭波",
+            "what": "餐廳（簡餐），約 $200–600",
+            "hours": "週三休，週日 10:00–21:00，週一二四五 11:00–20:00；週六可能沒開，出發前先查",
+            "distance": "直線約 105 公尺",
+            "why": "離館最近",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%98%AD%E6%B3%A2%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E5%A5%B3%E4%B8%AD%E8%B7%AF%E4%BA%8C%E6%AE%B5185%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "宜蘭幾米公園",
+            "what": "城市公園",
+            "hours": "24 小時",
+            "distance": "直線約 718 公尺",
+            "why": "繪本雕塑，小孩可跑跳",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9C%E8%98%AD%E5%B9%BE%E7%B1%B3%E5%85%AC%E5%9C%92%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E5%AE%9C%E8%88%88%E8%B7%AF%E4%B8%80%E6%AE%B5240%E8%99%9F"
+          },
+          {
+            "name": "宜蘭美術館",
+            "what": "美術館",
+            "hours": "週二～日 09:00–17:00，週一休",
+            "distance": "直線約 1,158 公尺",
+            "why": "還想再看一個展的話",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9C%E8%98%AD%E7%BE%8E%E8%A1%93%E9%A4%A8%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%89%E6%AE%B51%E8%99%9F"
+          },
+          {
+            "name": "宜蘭設治紀念館",
+            "what": "歷史建築、庭園",
+            "hours": "週二～日 09:00–17:00，週一休；週六可能沒開，出發前先查",
+            "distance": "直線約 1,331 公尺",
+            "why": "日式官舍庭園，適合散步",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9C%E8%98%AD%E8%A8%AD%E6%B2%BB%E7%B4%80%E5%BF%B5%E9%A4%A8%20%E5%AE%9C%E8%98%AD%E7%B8%A3%E5%AE%9C%E8%98%AD%E5%B8%82%E8%88%8A%E5%9F%8E%E5%8D%97%E8%B7%AF%E5%8A%9B%E8%A1%8C3%E5%B7%B73%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "蘭陽北區「蘭城開蘭線」：宜蘭火車站集合，從分館開車約 2 分鐘，全程約 2.4 公里。",
+            "cityWalkRoute": "蘭陽北區"
+          },
+          {
+            "text": "蘭陽南區「羅東林場線」：羅東林業文化園區（中正北路118號）集合，從分館開車約 11 分鐘，全程約 2.7 公里。",
+            "cityWalkRoute": "蘭陽南區"
+          }
+        ]
+      },
+      {
+        "id": "hualien",
+        "name": "花蓮館",
+        "region": "東部",
+        "address": "花蓮市富裕五街71號",
+        "transit": "花蓮火車站步行約4分鐘",
+        "food": [
+          {
+            "name": "荒井家日式豬排",
+            "what": "日式炸豬排，約 $200–400",
+            "hours": "週三～日 11:30–14:30、17:30–20:30，週一二休",
+            "distance": "直線約 370 公尺",
+            "why": "正餐，週六日都開",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8D%92%E4%BA%95%E5%AE%B6%E6%97%A5%E5%BC%8F%E8%B1%AC%E6%8E%92%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E5%AF%8C%E5%AE%89%E8%B7%AF18%E8%99%9F"
+          },
+          {
+            "name": "好正點港式點心 洄瀾廣場",
+            "what": "港式飲茶，約 $200–400",
+            "hours": "每天 10:30–20:30",
+            "distance": "直線約 459 公尺",
+            "why": "圓桌、點心多樣，適合多人分食",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A5%BD%E6%AD%A3%E9%BB%9E%E6%B8%AF%E5%BC%8F%E9%BB%9E%E5%BF%83%20%E6%B4%84%E7%80%BE%E5%BB%A3%E5%A0%B4%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E5%9C%8B%E8%81%AF%E4%B8%80%E8%B7%AF100%E8%99%9F"
+          },
+          {
+            "name": "安娜咖啡",
+            "what": "咖啡店，約 $200–400",
+            "hours": "週五～三 12:00–19:00，週四休",
+            "distance": "直線約 720 公尺",
+            "why": "咖啡甜點",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%AE%89%E5%A8%9C%E5%92%96%E5%95%A1%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E5%9C%8B%E8%81%AF%E4%BA%94%E8%B7%AF137%E8%99%9F"
+          },
+          {
+            "name": "香茅廚房 Lemongrass Kitchen",
+            "what": "泰式料理，約 $200–400",
+            "hours": "週二～日 11:30–14:00、17:30–20:00，週一休",
+            "distance": "直線約 1,034 公尺",
+            "why": "親子友善；也歡迎寵物，有人怕動物的話換一家",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A6%99%E8%8C%85%E5%BB%9A%E6%88%BF%20Lemongrass%20Kitchen%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E5%95%86%E6%A0%A1%E8%A1%97175%E8%99%9F"
+          }
+        ],
+        "walks": [
+          {
+            "name": "花蓮將軍府1936",
+            "what": "日式老宅園區",
+            "hours": "週六～四 10:00–22:00，週五休",
+            "distance": "直線約 2,241 公尺",
+            "why": "老宅與庭園，小孩可跑",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8A%B1%E8%93%AE%E5%B0%87%E8%BB%8D%E5%BA%9C1936%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E4%B8%AD%E6%AD%A3%E8%B7%AF622%E5%B7%B76%E8%99%9F"
+          },
+          {
+            "name": "又一村文創園區",
+            "what": "文創小店聚落",
+            "hours": "各店不同",
+            "distance": "直線約 1,996 公尺",
+            "why": "小吃與手作店，可以邊走邊逛",
+            "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%8F%88%E4%B8%80%E6%9D%91%E6%96%87%E5%89%B5%20%E8%8A%B1%E8%93%AE%E7%B8%A3%E8%8A%B1%E8%93%AE%E5%B8%82%E4%BB%81%E6%84%9B%E8%A1%97104%E5%B7%B76%E8%99%9F"
+          }
+        ],
+        "cityWalks": [
+          {
+            "text": "花蓮區「溝仔尾線」：花蓮鐵道文化園區一館門外（中山路）集合，從分館開車約 6 分鐘，全程約 2.6 公里。",
+            "cityWalkRoute": "花蓮區-2"
+          },
+          {
+            "text": "花蓮區「美崙松園線」：北濱公園停車場（北濱街與海濱街口）集合，從分館開車約 7 分鐘，全程約 2.2 公里。",
+            "cityWalkRoute": "花蓮區"
+          }
+        ]
+      }
+    ]
+  },
+  "steps": [
+    {
+      "time": "0–10 分",
+      "minutes": 10,
+      "title": "會合",
+      "do": "分館門口集合。人到了先互相介紹（○○的朋友○○，和○○的家人），約好看完幾點在哪裡會合。",
+      "say": "今天很簡單：進去各看各的，○點○分在○○會合，再一起找個地方坐坐聊聊。",
+      "venueStop": "meet"
+    },
+    {
+      "time": "10–60 分",
+      "minutes": 50,
+      "title": "看展・找作品",
+      "do": "進展場前說下面這句，小朋友也可以找一件。進去後各看各的，不再集合講話，讓每個人照自己的步調看；展場裡小聲說話，不在作品前聚集討論。拍照依館方規定，不能拍時記下作品名稱。館方有導覽的話，想跟就跟，也可以自己看。帶孩子的：展區不能飲食、不碰作品，小朋友看累了，大人輪流帶到館外走走。",
+      "say": "給大家一個小任務：找一件「你最想帶回家的作品」，拍下來；不能拍就記住作品名稱。"
+    },
+    {
+      "time": "60–80 分",
+      "minutes": 20,
+      "title": "亮出那件作品",
+      "do": "館內有交流區的就在館內坐（不是每館都有），沒有就去附近的店。坐定之後，主持人先說自己選的作品，大家比較好開口；不點名、不輪流。沒找到的人，聊今天印象最深的事也可以，建築、窗外、紀念品都算。",
+      "say": "大家都找到了嗎？我先來：我選的是○○，因為……",
+      "venueStop": "sit"
+    },
+    {
+      "time": "80–90 分",
+      "minutes": 10,
+      "title": "故事分享",
+      "do": "先用下面的開場介紹這段故事，再分享故事卡，大家在自己的手機上看。主持人先念正面的簡介，再念背面的原文，約 3 分鐘；念完請大家看卡片上的兩個分享提問。",
+      "say": "卡片上有兩個問題：第一題大家都可以聊聊，第二題想到的人再說就好。",
+      "cards": [
+        "story"
+      ],
+      "readAloud": {
+        "label": "念故事前可以這樣說",
+        "text": "剛才大家都選了一件想帶回家的作品。六十多年前，池田先生在巴黎也挑中一幅想帶回家的畫，理由跟今天大家說的很像。這段故事出自池田先生寫的小說《新・人間革命》，書裡的山本伸一就是池田先生自己。我念一小段給大家聽，三分鐘就好。"
+      }
+    },
+    {
+      "time": "90–120 分",
+      "minutes": 30,
+      "title": "翻話題卡隨聊",
+      "do": "主持人用一支手機帶大家抽，念出卡上的那句話和問題；想聊就聊，不想聊就換一張，不必照順序，也不必每張都聊。短句念過就好，不必解釋。「從你選的作品聊起」接著剛才看的作品聊，「聊到生活」聊朋友、家人、夢想和工作。有帶小朋友的，先抽「小朋友也能答」。聊開了就不用再抽，主持人不必一直講話。",
+      "say": "我手機裡有一套話題卡，每張有一句書裡的話和一個問題。誰來抽一張？",
+      "cards": [
+        "topic"
+      ]
+    },
+    {
+      "time": "120–125 分",
+      "minutes": 5,
+      "title": "收尾",
+      "do": "先說「最後分享一段伸一回答青年的話」，再念下面的收尾的話；「廣宣流布」是學會的用語，朋友問起再簡單說明就好。念完說下面這句，可以再加一句「下次換一個分館，或等這裡換展再來」。請大家掃 QR code 填問卷，宣布今天的正式程序到這裡；還想走走、吃點東西的一起去，要先回家的路上小心，下次再約。",
+      "say": "今天選的那件作品，可以傳到群組，也可以留在手機裡，當作今天的紀念。",
+      "readAloud": {
+        "label": "收尾的話",
+        "text": "有一次，青年們問道：「廣宣流布是指什麼樣的狀態？」他回答：「以文化為例，也許就像是一般庶民老太太們聚在一起閒聊時，也會談到貝多芬的音樂、談論巴哈。」受到民眾歡迎、喜愛，文化藝術才有其意義，沒有民眾的文化藝術最終只是空殼。而且，人活得充滿人性本色時，會親近音樂、繪畫等，生活自然散發著文化藝術的芳香。",
+        "source": "《新・人間革命》第七卷〈文化之花〉"
+      }
+    }
+  ],
+  "flowTitle": "建議這樣過（約 125 分鐘）",
+  "flowNote": "這是看完展再坐下來聊的走法。先吃飯再看展、只看展也可以，見最下面的「三種走法」。",
+  "cardSets": {
+    "story": {
+      "kind": "story",
+      "label": "故事卡",
+      "cards": [
+        {
+          "id": "A",
+          "title": "蒙瑪特的銅版畫",
+          "text": "廣場四周有很多販賣土產、特產的商店，其中一家小店擺放著繪畫。在一堆作為裝飾的名畫複製品和版畫、銅版畫當中，一幅不起眼的畫吸引了伸一的心。\n\n那是一幅套色銅版畫。畫中，有一位天真爛漫的少女，以及一位朝氣蓬勃的青年在房間的一隅竊竊私語。少女身穿古式的長服，繫著圍裙，旁邊有一架紡織機。\n\n……雨果的《悲慘世界》是伸一約二十歲時不知讀過多少遍的名作。那時他曾在心裡描繪著這個故事發生地點浪漫的花都巴黎。所以，看見巴黎市街石砌的古建築依然如故，內心交織著憧憬、親切與懷念。\n\n也許是這種心情，使他看到畫中的青年和女孩便聯想起馬利和珂賽特。\n\n於是，他買下這幅畫以及其他幾幅銅版畫、版畫。",
+          "source": "《新・人間革命》第五卷〈開道〉",
+          "questions": [
+            "你選的那件作品，讓你想起了什麼人或什麼事？",
+            "有沒有一本書、一部電影或一首歌，你年輕時看了、聽了好多遍？"
+          ]
+        }
+      ]
+    },
+    "topic": {
+      "kind": "topic",
+      "label": "話題卡",
+      "cards": [
+        {
+          "id": "t01",
+          "title": "你選的那件作品，是哪裡打動了你？",
+          "group": "從你選的作品聊起"
+        },
+        {
+          "id": "t02",
+          "title": "如果你選的作品會說話，它會跟大家說什麼？",
+          "group": "從你選的作品聊起",
+          "forKids": true
+        },
+        {
+          "id": "t03",
+          "title": "你做過最得意的作品是什麼？畫、勞作、積木、一道菜都算。",
+          "group": "從你選的作品聊起",
+          "forKids": true
+        },
+        {
+          "id": "t04",
+          "title": "如果讓你辦一個自己的展覽，你會展出什麼？",
+          "group": "從你選的作品聊起",
+          "forKids": true
+        },
+        {
+          "id": "t05",
+          "title": "有沒有一樣別人親手做給你的東西，你一直留著？",
+          "group": "從你選的作品聊起"
+        },
+        {
+          "id": "t06",
+          "title": "如果有機會拜師，你最想學哪一門手藝？",
+          "group": "從你選的作品聊起"
+        },
+        {
+          "id": "t07",
+          "title": "最近一次跟家人一起出門，是去哪裡？",
+          "group": "聊到生活"
+        },
+        {
+          "id": "t08",
+          "title": "你跟今天一起來的人，是怎麼認識的？",
+          "group": "聊到生活"
+        },
+        {
+          "id": "t09",
+          "title": "小時候你想長大做什麼？（小朋友：你長大想做什麼？）",
+          "group": "聊到生活",
+          "forKids": true
+        },
+        {
+          "id": "t10",
+          "title": "你覺得朋友之間，什麼時候最容易說出真心話？",
+          "group": "聊到生活"
+        },
+        {
+          "id": "t11",
+          "title": "累的時候，你最喜歡怎麼讓自己恢復元氣？",
+          "group": "聊到生活"
+        },
+        {
+          "id": "t12",
+          "title": "最近有誰讓你很想跟他說聲謝謝？",
+          "group": "聊到生活"
+        }
+      ],
+      "thumbs": [
+        "t01",
+        "t03",
+        "t08"
+      ]
+    }
+  },
+  "firstTime": [
+    "看展是主角：展場裡不集合講話、不催進度，約好會合的時間和地點就好。",
+    "主持人先示範：亮作品時先說自己選的，大家比較好開口。",
+    "不必跑完：亮作品、故事、話題卡哪一段聊得熱就延長，其他可以縮短或省略；收尾要保留。",
+    "不必每人發言：想說的人先說，不點名、不輪流；安靜地看完一趟展也很好。",
+    "先問家人，再聊工作：第一次見面的朋友，先問家裡好不好、最近忙什麼。",
+    "很久沒見的兄弟：當作老朋友出來走走；不問「怎麼都沒來」，也不順便約其他聚會。",
+    "朋友問起學會或信仰：簡單、誠實地回答就好；對方有興趣，改天再好好聊。",
+    "館內沒有可以坐的地方：去附近的店；或先在門口亮作品、拍合照，到店裡再念故事卡。",
+    "小朋友坐不住：先抽「小朋友也能答」的話題卡；大人輪流帶小朋友走走，故事卡可以省略。",
+    "朋友對作品沒什麼興趣：不必勉強選，問他今天印象最深的是什麼，建築、窗外、紀念品都可以。"
+  ],
+  "extraTitle": "三種走法（選配）",
+  "extra30": [
+    "行程怎麼排由各團自己決定，全部自費。三種走法都可以：看展後去附近吃飯聊天、先吃飯再看展、只看展。",
+    "先吃飯再看展：吃飯時先翻話題卡；看完展在館內交流區或門口亮作品、念故事卡，不在展場裡念。",
+    "只看展：看完在門口亮一下作品、拍張合照就解散。",
+    "展覽不大、很快看完：不用拖時間，早點去吃飯，或順路走走；各館附近的景點和城市散步路線在這頁的「選分館」。"
+  ],
+  "planFile": "files/art-walk-plan.pdf",
+  "preflight": [
+    "會合的時間和分館想好了",
+    "上官網看過，今天有開館",
+    "看完要去哪裡坐想好了",
+    "手機有電，先連上網路"
+  ],
+  "printFiles": [
+    {
+      "label": "故事卡（備用，A4 雙面）",
+      "file": "files/art-walk-cards-story.pdf"
+    },
+    {
+      "label": "話題卡（備用，A4 雙面，一套 12 張）",
+      "file": "files/art-walk-cards-topic.pdf"
+    }
+  ]
+}

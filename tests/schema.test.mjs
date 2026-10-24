@@ -553,7 +553,106 @@ test('validateAll reports an extra30 route that is not a city-walk route', () =>
   assert.deepEqual(errors, ['trip: extra30[1].cityWalkRoute 火星區 不在城市散步路線裡']);
 });
 
-test('order can go up to 17', () => {
-  assert.deepEqual(validateActivity({ ...readyActivity(), order: 17 }, allFilesExist), []);
-  assertReports(validateActivity({ ...readyActivity(), order: 18 }, allFilesExist), 'order');
+test('order can go up to 18', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), order: 18 }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), order: 19 }, allFilesExist), 'order');
+});
+
+const venueSpot = (overrides = {}) => ({
+  name: 'Slope Cafe',
+  what: '咖啡店',
+  hours: '週二～日 09:00–17:00',
+  distance: '直線約 151 公尺',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Slope',
+  ...overrides,
+});
+
+const venuePlace = (overrides = {}) => ({
+  id: 'zhishan',
+  name: '至善館',
+  region: '北部',
+  address: '台北市士林區至善路二段250號',
+  transit: '捷運士林站轉公車',
+  food: [venueSpot()],
+  walks: [],
+  cityWalks: [{ text: '士林官邸花園線。', cityWalkRoute: '台北西區' }],
+  ...overrides,
+});
+
+function venueActivity(places = [venuePlace()]) {
+  const activity = readyActivity();
+  activity.venues = {
+    title: '選分館',
+    prompt: '先選分館',
+    intro: ['週一休館。'],
+    link: { text: '官網', url: 'https://www.sokaculture.org.tw/art-centers' },
+    places,
+  };
+  activity.steps[0].venueStop = 'meet';
+  activity.steps[1].venueStop = 'sit';
+  return activity;
+}
+
+test('venues with places to eat, walks, city walks, notes and an area are valid', () => {
+  assert.deepEqual(validateActivity(venueActivity(), allFilesExist), []);
+  const place = venuePlace({ area: '台北士林', walks: [venueSpot({ why: '近' })], notes: ['停車沒查到。'] });
+  assert.deepEqual(validateActivity(venueActivity([place]), allFilesExist), []);
+});
+
+test('venues need a title, prompt, intro, an https link and at least one place', () => {
+  const activity = venueActivity([]);
+  activity.venues.title = '';
+  activity.venues.link.url = 'http://example.com/';
+  delete activity.venues.intro;
+  const errors = validateActivity(activity, allFilesExist);
+  assertReports(errors, 'venues.title');
+  assertReports(errors, 'venues.intro');
+  assertReports(errors, 'venues.link.url 要是 https:// 開頭的網址');
+  assertReports(errors, 'venues.places 至少要有 1 項');
+});
+
+test('each venue needs its address, transit and complete places to eat', () => {
+  const place = venuePlace({ address: '', food: [venueSpot({ hours: '', mapsUrl: 'maps' })] });
+  delete place.transit;
+  const errors = validateActivity(venueActivity([place]), allFilesExist);
+  assertReports(errors, 'venues.places[0].address');
+  assertReports(errors, 'venues.places[0].transit');
+  assertReports(errors, 'venues.places[0].food[0].hours');
+  assertReports(errors, 'venues.places[0].food[0].mapsUrl 要是 https:// 開頭的網址');
+});
+
+test('venue ids are lowercase and not repeated', () => {
+  const errors = validateActivity(venueActivity([venuePlace(), venuePlace({ id: 'zhishan' }), venuePlace({ id: '至善' })]), allFilesExist);
+  assertReports(errors, 'venues.places[1].id zhishan 跟 venues.places[0] 重複');
+  assertReports(errors, 'venues.places[2].id 只能用小寫英文、數字和 -');
+});
+
+test('a venue stop is meet or sit and needs venues', () => {
+  const activity = venueActivity();
+  activity.steps[0].venueStop = 'park';
+  assertReports(validateActivity(activity, allFilesExist), 'steps[0].venueStop');
+  const withoutVenues = readyActivity();
+  withoutVenues.steps[0].venueStop = 'meet';
+  assertReports(validateActivity(withoutVenues, allFilesExist), 'steps[0].venueStop 要先有 venues');
+});
+
+test('validateAll reports a venue city walk that is not a city-walk route', () => {
+  const activity = { ...venueActivity(), id: 'art', order: 2, planFile: 'files/art-plan.pdf' };
+  activity.venues.places[0].cityWalks.push({ text: '再走一段。', cityWalkRoute: '火星區' });
+  const routes = [cityWalkRoute('台北西區', 'P')];
+  const errors = validateAll({ activities: [cityWalkActivity(), activity], site: fixtureSite(), routes }, allFilesExist);
+  assert.deepEqual(errors, ['art: venues.places[0].cityWalks[1].cityWalkRoute 火星區 不在城市散步路線裡']);
+});
+
+test('a card can be marked for kids with true only', () => {
+  const activity = readyActivity();
+  activity.cardSets.topic.cards[0].forKids = true;
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.cardSets.topic.cards[0].forKids = 'yes';
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].forKids 只能是 true');
+});
+
+test('a flow note must be text', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), flowNote: '先吃飯也可以。' }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), flowNote: '' }, allFilesExist), 'flowNote');
 });

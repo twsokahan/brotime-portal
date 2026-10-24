@@ -1,6 +1,6 @@
 # 兄弟時光
 
-創價班「兄弟時光」的活動網站。17 種活動，每個活動一頁：要準備什麼、當天怎麼帶、故事卡和話題卡都在上面。主持人當天打開手機照著走就好。
+創價班「兄弟時光」的活動網站。18 種活動，每個活動一頁：要準備什麼、當天怎麼帶、故事卡和話題卡都在上面。主持人當天打開手機照著走就好。
 
 正式網址：https://kyodai-tokimitsu.twsokahan.org/
 
@@ -39,7 +39,7 @@
 
 ## 新增或修改一個活動
 
-一個活動一個檔：`content/activities/<id>.json`。17 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 17，要加第 18 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
+一個活動一個檔：`content/activities/<id>.json`。18 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 18，要加第 19 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
 
 - `id` 跟檔名一樣，網址就是 `a/<id>/`。**定了就不要改**，不然已經分享出去的連結會壞掉。
 - `name` 要跟三份問卷「活動」那一題的選項一字不差（網站會自動把活動名稱帶進問卷），測試會擋。要改名字，問卷選項也要一起改。
@@ -53,6 +53,9 @@
 - 卡片可以帶 `reveal: { lead, text, source }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示池田先生的話。
 - 只在某段期間才能約的（名畫小旅行只限 2027 年 10 月展期），加 `availability: { from, to, label, note }`：`from`、`to` 是 `YYYY-MM-DD`，`label` 像 `"2027 年 10 月"`，`note` 可以不寫。活動頁標題下會寫「只限 2027 年 10 月：（note）」，首頁卡片和「幫我挑」的結果標「限 2027 年 10 月」；「幫我挑」從 `from` 的前兩個月到 `to` 當天推薦它（提前幾個月是 `src/lib/recommend.mjs` 的 `DATED_LEAD_MONTHS`）。
 - `extra30`（「想多留 30 分鐘」）每一項通常是一句話；要連到城市散步某一條路線時寫成 `{ "text": ..., "cityWalkRoute": "高雄北區" }`，後面會多一個「看路線」，打開城市散步頁並選好那條路線。`cityWalkRoute` 是路線 id（見下面「城市散步的路線」），寫錯 `npm test` 會擋。標題想換掉「想多留 30 分鐘（選配）」，加 `extraTitle`。
+- 要讓主持人挑地點的（去創美走走的 12 個分館），加 `venues: { title, prompt, intro, link, places }`。活動頁在流程上面多一個選單，選了就展開那一館的地址、交通、吃飯喝咖啡（`food`）、順路走走（`walks`）、城市散步（`cityWalks`，每項 `{ text, cityWalkRoute }`）和出發前留意（`notes`，可以不寫）。`food`、`walks` 每項是 `{ name, what, hours, distance, why, mapsUrl }`（`why` 可以不寫）。選了哪一館記在網址 `?v=` 和手機裡。步驟加 `venueStop: "meet"` 時，當天模式那步會帶出那一館的地址和地圖按鈕；`venueStop: "sit"` 會列出附近吃飯喝咖啡的店。
+- 話題卡加 `forKids: true`，當天模式抽卡會多一個「小朋友也能答」分類，只抽這些卡。
+- `flowNote` 是流程標題下面的一行小字（去創美走走用來說「先吃飯再看展也可以」），可以不寫。
 - 首頁的封面用第一組故事卡的第一張；沒有故事卡的活動（桌遊之夜）用 `cardSets` 第一組的第一張，所以盒子那組要排在最前面。
 
 完整的欄位規則寫在 `src/lib/schema.mjs`，填錯的話 `npm test` 會告訴你哪個欄位要怎麼改。

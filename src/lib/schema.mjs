@@ -8,6 +8,7 @@ const TEMPLATES = ['A', 'B', 'C', 'D', 'E'];
 const CARD_SET_KINDS = ['story', 'topic', 'other'];
 const ROUTE_STOPS = ['start', 'stop1', 'end'];
 const ROUTE_LEGS = [0, 1];
+const VENUE_STOPS = ['meet', 'sit'];
 const READ_ALOUD_KEYS = ['label', 'text', 'source'];
 const STEP_TOOLS = ['ichiban'];
 const ICHIBAN_COUNT_PROBLEMS = {
@@ -20,7 +21,7 @@ const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
 const FORM_ENTRY = /^entry\.\d+$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const MAX_ORDER = 17;
+const MAX_ORDER = 18;
 const MAX_SAY_CHARS = 45;
 const MAX_TODO_TASK_CHARS = 20;
 const MAX_THUMBS = 3;
@@ -127,11 +128,53 @@ function checkExtras(check, extras) {
   });
 }
 
+function checkHttpsUrl(check, url, path) {
+  if (check.text(url, path) && !HTTPS_URL.test(url)) check.fail(path, '要是 https:// 開頭的網址');
+}
+
+function checkSpot(check, spot, path) {
+  if (!check.object(spot, path)) return;
+  ['name', 'what', 'hours', 'distance'].forEach((key) => check.text(spot[key], `${path}.${key}`));
+  if (spot.why !== undefined) check.text(spot.why, `${path}.why`);
+  checkHttpsUrl(check, spot.mapsUrl, `${path}.mapsUrl`);
+}
+
+function checkSpots(check, spots, path, min) {
+  if (check.list(spots, path, min)) spots.forEach((spot, i) => checkSpot(check, spot, `${path}[${i}]`));
+}
+
+function checkPlace(check, place, path, firstPathOfId) {
+  if (!check.object(place, path)) return;
+  if (check.text(place.id, `${path}.id`)) {
+    if (!isActivityId(place.id)) check.fail(`${path}.id`, '只能用小寫英文、數字和 -');
+    else if (!firstPathOfId.has(place.id)) firstPathOfId.set(place.id, path);
+    else check.fail(`${path}.id`, `${place.id} 跟 ${firstPathOfId.get(place.id)} 重複`);
+  }
+  ['name', 'region', 'address', 'transit'].forEach((key) => check.text(place[key], `${path}.${key}`));
+  if (place.area !== undefined) check.text(place.area, `${path}.area`);
+  checkSpots(check, place.food, `${path}.food`, 1);
+  checkSpots(check, place.walks, `${path}.walks`, 0);
+  checkRows(check, place.cityWalks, `${path}.cityWalks`, ['text', 'cityWalkRoute']);
+  if (place.notes !== undefined) checkTextList(check, place.notes, `${path}.notes`, 1);
+}
+
+function checkVenues(check, venues) {
+  if (!check.object(venues, 'venues')) return;
+  check.text(venues.title, 'venues.title');
+  check.text(venues.prompt, 'venues.prompt');
+  checkTextList(check, venues.intro, 'venues.intro', 1);
+  if (check.object(venues.link, 'venues.link')) {
+    check.text(venues.link.text, 'venues.link.text');
+    checkHttpsUrl(check, venues.link.url, 'venues.link.url');
+  }
+  if (!check.list(venues.places, 'venues.places', 1)) return;
+  const firstPathOfId = new Map();
+  venues.places.forEach((place, i) => checkPlace(check, place, `venues.places[${i}]`, firstPathOfId));
+}
+
 function checkSurvey(check, survey, path) {
   if (survey === null || survey === undefined || !check.object(survey, path)) return;
-  if (check.text(survey.url, `${path}.url`) && !HTTPS_URL.test(survey.url)) {
-    check.fail(`${path}.url`, '要是 https:// 開頭的網址');
-  }
+  checkHttpsUrl(check, survey.url, `${path}.url`);
   if (check.text(survey.activityEntry, `${path}.activityEntry`) && !FORM_ENTRY.test(survey.activityEntry)) {
     check.fail(`${path}.activityEntry`, '要像 entry.123 這樣');
   }
@@ -187,6 +230,7 @@ function checkCard(check, card, path, { isStory, needsQuestionsOrNote }, firstPa
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
   if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
   if (card.reveal !== undefined) checkTextFields(check, card.reveal, `${path}.reveal`, ['lead', 'text', 'source']);
+  if (card.forKids !== undefined && card.forKids !== true) check.fail(`${path}.forKids`, '只能是 true');
   const needsQuestions = needsQuestionsOrNote && card.note === undefined;
   if (needsQuestions || card.questions !== undefined) checkTextList(check, card.questions, `${path}.questions`, 1);
 }
@@ -268,7 +312,12 @@ function checkStepTool(check, tool, path, hasIchiban) {
   if (!hasIchiban) check.fail(path, '要先有 ichiban 設定');
 }
 
-function checkStep(check, step, path, { cardSets, hasIchiban, earlierSteps }) {
+function checkVenueStop(check, venueStop, path, hasVenues) {
+  if (venueStop === undefined || !check.oneOf(venueStop, VENUE_STOPS, path)) return;
+  if (!hasVenues) check.fail(path, '要先有 venues');
+}
+
+function checkStep(check, step, path, { cardSets, hasIchiban, hasVenues, earlierSteps }) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
   if (step.minutes !== null && !(Number.isInteger(step.minutes) && step.minutes > 0)) {
@@ -283,11 +332,12 @@ function checkStep(check, step, path, { cardSets, hasIchiban, earlierSteps }) {
   if (step.routeLeg !== undefined) check.oneOf(step.routeLeg, ROUTE_LEGS, `${path}.routeLeg`);
   checkShowStoryQuestions(check, step, path, earlierSteps, cardSets);
   checkStepTool(check, step.tool, `${path}.tool`, hasIchiban);
+  checkVenueStop(check, step.venueStop, `${path}.venueStop`, hasVenues);
 }
 
-function checkSteps(check, steps, { cardSets, hasIchiban }) {
+function checkSteps(check, steps, { cardSets, hasIchiban, hasVenues }) {
   if (!check.list(steps, 'steps', 1)) return;
-  const context = { cardSets: isObject(cardSets) ? cardSets : {}, hasIchiban };
+  const context = { cardSets: isObject(cardSets) ? cardSets : {}, hasIchiban, hasVenues };
   steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, { ...context, earlierSteps: steps.slice(0, i) }));
 }
 
@@ -354,7 +404,11 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('todo')) checkTodo(check, activity.todo);
   if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets, published);
   if (shouldCheck('steps')) {
-    checkSteps(check, activity.steps, { cardSets: activity.cardSets, hasIchiban: activity.ichiban !== undefined });
+    checkSteps(check, activity.steps, {
+      cardSets: activity.cardSets,
+      hasIchiban: activity.ichiban !== undefined,
+      hasVenues: activity.venues !== undefined,
+    });
   }
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
   if (shouldCheck('extra30')) checkExtras(check, activity.extra30);
@@ -364,6 +418,8 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('preflight')) checkTextList(check, activity.preflight, 'preflight', 1);
   if (activity.printFiles !== undefined) checkRows(check, activity.printFiles, 'printFiles', ['label', 'file']);
   if (activity.flowTitle !== undefined) check.text(activity.flowTitle, 'flowTitle');
+  if (activity.flowNote !== undefined) check.text(activity.flowNote, 'flowNote');
+  if (activity.venues !== undefined) checkVenues(check, activity.venues);
   if (activity.surveys !== undefined) checkSurveys(check, activity.surveys);
   if (activity.ichiban !== undefined) checkIchiban(check, activity.ichiban);
   if (published && fileExists) {
@@ -429,13 +485,23 @@ function routeErrors(activities, routes) {
   });
 }
 
+const listOf = (value) => (Array.isArray(value) ? value : []);
+
+function linkedRoutes(activity) {
+  const extras = listOf(activity?.extra30).map((item, i) => [`extra30[${i}]`, item]);
+  const venueWalks = listOf(activity?.venues?.places).flatMap((place, i) =>
+    listOf(place?.cityWalks).map((walk, j) => [`venues.places[${i}].cityWalks[${j}]`, walk]),
+  );
+  return [...extras, ...venueWalks];
+}
+
 function extraRouteErrors(activities, routes) {
   if (!routes) return [];
   const routeIds = new Set(routes.map((route) => route?.id));
   return activities.flatMap((activity) =>
-    (Array.isArray(activity?.extra30) ? activity.extra30 : []).flatMap((item, i) =>
+    linkedRoutes(activity).flatMap(([path, item]) =>
       isText(item?.cityWalkRoute) && !routeIds.has(item.cityWalkRoute)
-        ? [`${ownerOf(activity)}: extra30[${i}].cityWalkRoute ${item.cityWalkRoute} 不在城市散步路線裡`]
+        ? [`${ownerOf(activity)}: ${path}.cityWalkRoute ${item.cityWalkRoute} 不在城市散步路線裡`]
         : [],
     ),
   );
