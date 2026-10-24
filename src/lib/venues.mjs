@@ -1,3 +1,5 @@
+import { distance } from './geo.mjs';
+
 export const venueLabel = ({ name, area }) => (area ? `${name}（${area}）` : name);
 
 export const placeMapsUrl = ({ address }) =>
@@ -21,3 +23,11 @@ export function venueSteps(steps, place) {
     step.venueStop === undefined ? step : { ...step, ...VENUE_STOP_FIELDS[step.venueStop](place, step) },
   );
 }
+
+export function nearestPlace(places, { lat, lon }) {
+  return places
+    .map((place) => ({ place, meters: distance([lat, lon], [place.lat, place.lon]) }))
+    .reduce((nearest, candidate) => (candidate.meters < nearest.meters ? candidate : nearest));
+}
+
+export const distanceText = (meters) => (meters < 500 ? '直線不到 1 公里' : `直線約 ${Math.round(meters / 1000)} 公里`);

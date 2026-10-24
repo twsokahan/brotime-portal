@@ -53,7 +53,7 @@
 - 卡片可以帶 `reveal: { lead, text, source }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示池田先生的話。
 - 只在某段期間才能約的（名畫小旅行只限 2027 年 10 月展期），加 `availability: { from, to, label, note }`：`from`、`to` 是 `YYYY-MM-DD`，`label` 像 `"2027 年 10 月"`，`note` 可以不寫。活動頁標題下會寫「只限 2027 年 10 月：（note）」，首頁卡片和「幫我挑」的結果標「限 2027 年 10 月」；「幫我挑」從 `from` 的前兩個月到 `to` 當天推薦它（提前幾個月是 `src/lib/recommend.mjs` 的 `DATED_LEAD_MONTHS`）。
 - `extra30`（「想多留 30 分鐘」）每一項通常是一句話；要連到城市散步某一條路線時寫成 `{ "text": ..., "cityWalkRoute": "高雄北區" }`，後面會多一個「看路線」，打開城市散步頁並選好那條路線。`cityWalkRoute` 是路線 id（見下面「城市散步的路線」），寫錯 `npm test` 會擋。標題想換掉「想多留 30 分鐘（選配）」，加 `extraTitle`。
-- 要讓主持人挑地點的（去創美走走的 12 個分館），加 `venues: { title, prompt, intro, link, places }`。活動頁在流程上面多一個選單，選了就展開那一館的地址、交通、吃飯喝咖啡（`food`）、順路走走（`walks`）、城市散步（`cityWalks`，每項 `{ text, cityWalkRoute }`）和出發前留意（`notes`，可以不寫）。`food`、`walks` 每項是 `{ name, what, hours, distance, why, mapsUrl }`（`why` 可以不寫）。選了哪一館記在網址 `?v=` 和手機裡。步驟加 `venueStop: "meet"` 時，當天模式那步會帶出那一館的地址和地圖按鈕；`venueStop: "sit"` 會列出附近吃飯喝咖啡的店。
+- 要讓主持人挑地點的（去創美走走的 12 個分館），加 `venues: { title, prompt, intro, link, places }`。活動頁在流程上面多一個選單，選了就展開那一館的地址、交通、吃飯喝咖啡（`food`）、順路走走（`walks`）、城市散步（`cityWalks`，每項 `{ text, cityWalkRoute }`）和出發前留意（`notes`，可以不寫）。`food`、`walks` 每項是 `{ name, what, hours, distance, why, mapsUrl }`（`why` 可以不寫）。每一館要有座標 `lat`、`lon`（國土測繪中心查門牌），選單下面的「用我的位置找最近的分館」用手機定位挑直線最近的一館（只在手機上算，位置不會傳出去；瀏覽器不支援定位就不出現）。選了哪一館記在網址 `?v=` 和手機裡。步驟加 `venueStop: "meet"` 時，當天模式那步會帶出那一館的地址和地圖按鈕；`venueStop: "sit"` 會列出附近吃飯喝咖啡的店。
 - 話題卡加 `forKids: true`，當天模式抽卡會多一個「小朋友也能答」分類，只抽這些卡。
 - `flowNote` 是流程標題下面的一行小字（去創美走走用來說「先吃飯再看展也可以」），可以不寫。
 - 首頁的封面用第一組故事卡的第一張；沒有故事卡的活動（桌遊之夜）用 `cardSets` 第一組的第一張，所以盒子那組要排在最前面。

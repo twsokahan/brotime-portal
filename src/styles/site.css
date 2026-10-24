@@ -2233,6 +2233,21 @@ html[data-zoom="out"]::view-transition-new(root) {
   font-weight: 700;
 }
 
+.venue-locate {
+  width: 100%;
+  margin: 0 0 8px;
+}
+
+.venue-located {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.venue-located:empty {
+  display: none;
+}
+
 .venue h4 {
   margin: 16px 0 4px;
 }

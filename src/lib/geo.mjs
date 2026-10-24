@@ -1,7 +1,7 @@
 const EARTH_RADIUS_M = 6371000;
 const radians = (degrees) => (degrees * Math.PI) / 180;
 
-function distance([lat1, lon1], [lat2, lon2]) {
+export function distance([lat1, lon1], [lat2, lon2]) {
   const meanLat = radians((lat1 + lat2) / 2);
   return EARTH_RADIUS_M * Math.hypot(radians(lon2 - lon1) * Math.cos(meanLat), radians(lat2 - lat1));
 }

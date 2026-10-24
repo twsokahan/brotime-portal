@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { placeMapsUrl, placesByRegion, venueLabel, venueSteps } from '../src/lib/venues.mjs';
+import { distanceText, nearestPlace, placeMapsUrl, placesByRegion, venueLabel, venueSteps } from '../src/lib/venues.mjs';
 
 const spot = (name) => ({
   name,
@@ -75,4 +75,24 @@ test('the sitting-down step lists the places to eat near the venue', () => {
 
 test('steps without a venue stop are left alone', () => {
   assert.deepEqual(venueSteps(steps, place())[1], steps[1]);
+});
+
+const TAICHUNG = { lat: 24.157647, lon: 120.648756 };
+const XIUSHUI = { lat: 24.052925, lon: 120.512151 };
+const KAOHSIUNG = { lat: 22.724156, lon: 120.319243 };
+
+test('the nearest venue is picked by straight-line distance from where you are', () => {
+  const places = [place({ id: 'xiushui', ...XIUSHUI }), place({ id: 'taichung', ...TAICHUNG }), place({ id: 'kaohsiung', ...KAOHSIUNG })];
+  const nearTaichungCityHall = { lat: 24.1618, lon: 120.6469 };
+  const { place: nearest, meters } = nearestPlace(places, nearTaichungCityHall);
+  assert.equal(nearest.id, 'taichung');
+  assert.ok(meters > 400 && meters < 600, `${meters} m`);
+  assert.equal(nearestPlace(places, { lat: 22.63, lon: 120.3 }).place.id, 'kaohsiung');
+});
+
+test('distance reads in whole kilometres, or under 1 km when close', () => {
+  assert.equal(distanceText(480), '直線不到 1 公里');
+  assert.equal(distanceText(999), '直線約 1 公里');
+  assert.equal(distanceText(8400), '直線約 8 公里');
+  assert.equal(distanceText(123600), '直線約 124 公里');
 });

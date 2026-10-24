@@ -151,6 +151,9 @@ function checkPlace(check, place, path, firstPathOfId) {
     else check.fail(`${path}.id`, `${place.id} 跟 ${firstPathOfId.get(place.id)} 重複`);
   }
   ['name', 'region', 'address', 'transit'].forEach((key) => check.text(place[key], `${path}.${key}`));
+  ['lat', 'lon'].forEach((key) => {
+    if (!Number.isFinite(place[key])) check.fail(`${path}.${key}`, '要是數字');
+  });
   if (place.area !== undefined) check.text(place.area, `${path}.area`);
   checkSpots(check, place.food, `${path}.food`, 1);
   checkSpots(check, place.walks, `${path}.walks`, 0);

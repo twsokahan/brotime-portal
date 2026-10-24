@@ -19,11 +19,13 @@ import {
 } from './lib/live.mjs';
 import { routeFlow, routeWording } from './lib/route-flow.mjs';
 import { cardPageUrl, shareFallbacks } from './lib/share.mjs';
-import { venueSteps } from './lib/venues.mjs';
+import { distanceText, nearestPlace, venueLabel, venueSteps } from './lib/venues.mjs';
 
 const REL = '../../';
 const DISTRICT_KEY = 'brotime:district';
 const VENUE_KEY = 'brotime:venue';
+const LOCATE_LABEL = '用我的位置找最近的分館';
+const LOCATE_OPTIONS = { enableHighAccuracy: false, timeout: 15000, maximumAge: 10 * 60 * 1000 };
 const STEP_COLOURS = 5;
 
 const activity = JSON.parse(document.getElementById('activity-data').textContent);
@@ -202,6 +204,37 @@ function setUpDistrictPicker() {
 let place = null;
 const placeFor = (id) => activity.venues?.places.find((candidate) => candidate.id === id) ?? null;
 
+function nearestVenueFinder(onFound) {
+  const status = el('p', { className: 'venue-located' });
+  status.setAttribute('aria-live', 'polite');
+  const locate = button(
+    LOCATE_LABEL,
+    () => {
+      locate.disabled = true;
+      locate.textContent = '找位置中…';
+      status.textContent = '';
+      const done = (text) => {
+        locate.disabled = false;
+        locate.textContent = LOCATE_LABEL;
+        status.textContent = text;
+      };
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const here = { lat: coords.latitude, lon: coords.longitude };
+          const { place: nearest, meters } = nearestPlace(activity.venues.places, here);
+          onFound(nearest.id);
+          done(`離你最近：${venueLabel(nearest)}，${distanceText(meters)}。`);
+        },
+        (error) =>
+          done(error.code === error.PERMISSION_DENIED ? '沒有拿到位置權限，請直接從選單選。' : '這次找不到位置，請直接從選單選。'),
+        LOCATE_OPTIONS,
+      );
+    },
+    'venue-locate',
+  );
+  return [locate, status];
+}
+
 function setUpVenuePicker() {
   const select = document.getElementById('venue');
   const panels = document.querySelectorAll('.venue');
@@ -214,6 +247,7 @@ function setUpVenuePicker() {
     rememberChoice('v', VENUE_KEY, id);
   };
   select.addEventListener('change', () => choose(select.value));
+  if (navigator.geolocation) select.after(...nearestVenueFinder(choose));
   const initial = savedChoice('v', VENUE_KEY, placeFor);
   if (initial) choose(initial);
 }

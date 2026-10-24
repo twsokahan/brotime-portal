@@ -572,6 +572,8 @@ const venuePlace = (overrides = {}) => ({
   name: '至善館',
   region: '北部',
   address: '台北市士林區至善路二段250號',
+  lat: 25.100005,
+  lon: 121.550443,
   transit: '捷運士林站轉公車',
   food: [venueSpot()],
   walks: [],
@@ -619,6 +621,14 @@ test('each venue needs its address, transit and complete places to eat', () => {
   assertReports(errors, 'venues.places[0].transit');
   assertReports(errors, 'venues.places[0].food[0].hours');
   assertReports(errors, 'venues.places[0].food[0].mapsUrl 要是 https:// 開頭的網址');
+});
+
+test('each venue needs its coordinates as numbers for finding the nearest one', () => {
+  const place = venuePlace({ lat: '25.1' });
+  delete place.lon;
+  const errors = validateActivity(venueActivity([place]), allFilesExist);
+  assertReports(errors, 'venues.places[0].lat 要是數字');
+  assertReports(errors, 'venues.places[0].lon 要是數字');
 });
 
 test('venue ids are lowercase and not repeated', () => {
