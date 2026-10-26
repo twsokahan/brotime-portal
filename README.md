@@ -77,7 +77,7 @@
 
 卡片的 `id` 要跟活動 JSON `cardSets` 裡的一樣，`npm test` 會檢查每張圖都在。
 
-正式公開前，`tools/watermark.json` 的 `enabled` 是 `true`：`cards.py` 會在每張圖疊上創價班徽章＋twsokahan 的斜向浮水印（怕內部版本外流後被當成正式版），`npm test` 也會檢查卡片圖和卡片 PDF 都有浮水印。正式公開時把它改成 `false`，所有 `tools/cards/*.json` 重跑一次 `cards.py`，`public/files/` 的卡片 PDF 換回原檔。
+正式公開前，`tools/watermark.json` 的 `enabled` 是 `true`：`cards.py` 會在每張圖的右下角加上創價班徽章＋twsokahan 的浮水印（角落有字時會挪到旁邊的空白處）（怕內部版本外流後被當成正式版），`npm test` 也會檢查卡片圖和卡片 PDF 都有浮水印。正式公開時把它改成 `false`，所有 `tools/cards/*.json` 重跑一次 `cards.py`，`public/files/` 的卡片 PDF 換回原檔。
 
 ## 城市散步的路線
 
