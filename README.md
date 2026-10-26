@@ -49,7 +49,7 @@
   - `detail`：可以不寫。補充說明放這裡，網站上收起來，點開才看得到。
 - `steps` 是當天的每一步。`say`（「說這句就好」）只能一句、最多 45 個字。
 - 故事卡的 `text` 要跟卡片一字不差。《新・人間革命》和御書的引文只用卡片上已經有的文字，不要自己改寫。
-- 企劃案 PDF（`planFile`）和想印實體卡的人下載的 PDF（`printFiles`）放在 `public/files/`。
+- 企劃案 PDF（`planFile`）和想印實體卡的人下載的 PDF（`printFiles`）放在 `public/files/`。正式公開前，卡片 PDF（檔名不是 `-plan.pdf` 結尾的）要加浮水印再放進來：`python3 ~/code/sokahan-propalsal-2026/plan-builder/watermark.py 來源.pdf public/files/<檔名>`，沒加的話 `npm test` 會擋。
 - 卡片可以帶 `reveal: { lead, text, source }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示池田先生的話。
 - 只在某段期間才能約的（名畫小旅行只限 2027 年 10 月展期），加 `availability: { from, to, label, note }`：`from`、`to` 是 `YYYY-MM-DD`，`label` 像 `"2027 年 10 月"`，`note` 可以不寫。活動頁標題下會寫「只限 2027 年 10 月：（note）」，首頁卡片和「幫我挑」的結果標「限 2027 年 10 月」；「幫我挑」從 `from` 的前兩個月到 `to` 當天推薦它（提前幾個月是 `src/lib/recommend.mjs` 的 `DATED_LEAD_MONTHS`）。
 - `extra30`（「想多留 30 分鐘」）每一項通常是一句話；要連到城市散步某一條路線時寫成 `{ "text": ..., "cityWalkRoute": "高雄北區" }`，後面會多一個「看路線」，打開城市散步頁並選好那條路線。`cityWalkRoute` 是路線 id（見下面「城市散步的路線」），寫錯 `npm test` 會擋。標題想換掉「想多留 30 分鐘（選配）」，加 `extraTitle`。
@@ -76,6 +76,8 @@
 3. 它最後會印出一張檢查圖的位置，打開看每張卡有沒有切歪、切到別張。
 
 卡片的 `id` 要跟活動 JSON `cardSets` 裡的一樣，`npm test` 會檢查每張圖都在。
+
+正式公開前，`tools/watermark.json` 的 `enabled` 是 `true`：`cards.py` 會在每張圖疊上創價班徽章＋twsokahan 的斜向浮水印（怕內部版本外流後被當成正式版），`npm test` 也會檢查卡片圖和卡片 PDF 都有浮水印。正式公開時把它改成 `false`，所有 `tools/cards/*.json` 重跑一次 `cards.py`，`public/files/` 的卡片 PDF 換回原檔。
 
 ## 城市散步的路線
 
