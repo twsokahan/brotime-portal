@@ -62,6 +62,7 @@ const SURVEY_FORM_ACTIVITY_NAMES = [
   '巷口泡茶會',
   '名畫小旅行',
   '去創美走走',
+  '來去打球啦',
 ];
 
 test("activity names match the survey forms' activity options character for character", async () => {

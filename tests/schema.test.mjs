@@ -553,9 +553,9 @@ test('validateAll reports an extra30 route that is not a city-walk route', () =>
   assert.deepEqual(errors, ['trip: extra30[1].cityWalkRoute 火星區 不在城市散步路線裡']);
 });
 
-test('order can go up to 18', () => {
-  assert.deepEqual(validateActivity({ ...readyActivity(), order: 18 }, allFilesExist), []);
-  assertReports(validateActivity({ ...readyActivity(), order: 19 }, allFilesExist), 'order');
+test('order can go up to 19', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), order: 19 }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), order: 20 }, allFilesExist), 'order');
 });
 
 const venueSpot = (overrides = {}) => ({
