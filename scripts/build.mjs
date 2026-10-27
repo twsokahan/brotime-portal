@@ -10,6 +10,7 @@ import { cardPageUrl } from '../src/lib/share.mjs';
 import { renderActivityMain, renderPreparingMain } from '../src/render/activity.mjs';
 import { renderCardMain } from '../src/render/card.mjs';
 import { renderEntryMain } from '../src/render/entry.mjs';
+import { renderGuideMain } from '../src/render/guide.mjs';
 import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
 import { page } from '../src/render/layout.mjs';
@@ -25,6 +26,7 @@ const ICHIBAN_DESCRIPTION = '填好 A～D 賞各幾份，手機傳下去，每�
 const ENTRY_REL = '';
 const ACTIVITY_REL = '../../';
 const ICHIBAN_REL = '../../../';
+const GUIDE_REL = '../../../';
 const CARD_REL = '../../../../';
 
 async function readJson(file, { optional = false } = {}) {
@@ -172,6 +174,17 @@ function ichibanPage({ activity, ogUrl }) {
   });
 }
 
+function guidePage({ activity, site, ogUrl }) {
+  return page({
+    title: `${activity.guide.title}｜${activity.name}`,
+    description: activity.guide.intro ?? activity.tagline,
+    rel: GUIDE_REL,
+    main: renderGuideMain({ activity, site, rel: GUIDE_REL }),
+    scripts: [],
+    ogUrl,
+  });
+}
+
 export function renderPages({ site, routes, activityFiles }, preview) {
   const activities = activityFiles.map(({ activity }) => ({
     ...activity,
@@ -204,6 +217,9 @@ export function renderPages({ site, routes, activityFiles }, preview) {
     }
     if (activity.ichiban) {
       pages.push([`${dir}/ichiban/index.html`, ichibanPage({ activity, ogUrl: `${ogUrl}ichiban/` })]);
+    }
+    if (activity.guide) {
+      pages.push([`${dir}/guide/index.html`, guidePage({ activity, site, ogUrl: `${ogUrl}guide/` })]);
     }
   }
   return pages;

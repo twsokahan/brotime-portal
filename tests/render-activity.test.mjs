@@ -274,6 +274,19 @@ test('an activity without an ichiban setting has no ichiban link', () => {
   assert.ok(!render().includes('電子一番賞'));
 });
 
+test('an activity with a guide links to the guide page right after the provided list', () => {
+  const guide = { title: '第一次看球？看這張就夠', sections: [{ heading: '一場怎麼打', items: ['一共九局。'] }] };
+  const html = render({ activity: { ...readyActivity(), guide } });
+  const link = html.indexOf('<a href="guide/">新手小抄：第一次看球？看這張就夠</a>');
+  assert.ok(link >= 0, 'expected the guide link');
+  assert.ok(html.indexOf('企劃室提供') < link);
+  assert.ok(link < html.indexOf('你要做的'));
+});
+
+test('an activity without a guide has no guide link', () => {
+  assert.ok(!render().includes('新手小抄'));
+});
+
 test('a preparing activity only says it is on the way and links back home', () => {
   const html = renderPreparingMain({ activity: preparingActivity(), rel: REL });
   assert.ok(html.includes('<h1>河濱夜跑・單車</h1>'));

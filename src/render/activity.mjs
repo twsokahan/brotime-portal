@@ -8,6 +8,8 @@ const DEFAULT_EXTRA_TITLE = '想多留 30 分鐘（選配）';
 const DEFAULT_THUMB_COUNT = 3;
 const HOME_LINK_TEXT = '← 看其他兄弟時光';
 const ICHIBAN_LINK = '<p class="ichiban-link"><a href="ichiban/">電子一番賞（不用刮刮卡也能抽）</a></p>';
+const guideLink = (guide) =>
+  `<p class="guide-link"><a href="guide/">新手小抄：${escapeHtml(guide.title)}</a></p><p class="hint">可以先傳給第一次來的朋友。</p>`;
 
 const list = (items, renderItem) => items.map(renderItem).join('');
 
@@ -56,7 +58,7 @@ function renderPrepare(activity, site) {
   return `<section class="prepare">
 <h2>要準備</h2>
 <div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
-${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
+${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}${activity.guide ? `${guideLink(activity.guide)}\n` : ''}<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
 <div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，結束前掃 QR code，不用印。</p></div>
 </section>`;
 }

@@ -107,6 +107,19 @@ export async function preload(urls, loadOne, timeoutMs = DEFAULT_PRELOAD_TIMEOUT
   return { failed: urls.filter((_, i) => !loaded[i]) };
 }
 
+export const followsStory = (set) =>
+  set.kind === 'topic' && set.cards.length > 0 && set.cards.every((card) => card.storyCard !== undefined);
+
+export function storyTopics(sets, storyCardId) {
+  if (!sets.length) return null;
+  const cards = sets.flatMap((set) => set.cards).filter((card) => card.storyCard === storyCardId);
+  return {
+    label: sets[0].label,
+    before: cards.filter((card) => card.beforeStory),
+    after: cards.filter((card) => !card.beforeStory),
+  };
+}
+
 export function groupsOf(cards) {
   return [...new Set(cards.map((card) => card.group).filter(Boolean))];
 }

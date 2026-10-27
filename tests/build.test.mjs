@@ -243,6 +243,29 @@ test('a ready activity without an ichiban setting gets no ichiban page', () => {
   assert.ok(!pagesFor(readyActivity(), false).has(ICHIBAN_PAGE));
 });
 
+const GUIDE_PAGE = 'a/brunch/guide/index.html';
+
+const withGuide = (status) => ({
+  ...readyActivity(),
+  status,
+  guide: { title: '第一次看球？看這張就夠', sections: [{ heading: '一場怎麼打', items: ['一共九局。'] }] },
+});
+
+test('a ready activity with a guide gets a guide page that stays in LINE and loads no script', () => {
+  const html = pagesFor(withGuide('ready'), false).get(GUIDE_PAGE);
+  assert.ok(html, `expected ${GUIDE_PAGE}`);
+  assert.ok(html.includes('<title>第一次看球？看這張就夠｜兄弟早午餐會</title>'));
+  assert.ok(html.includes('<meta property="og:url" content="https://cades.github.io/brotime-portal/a/brunch/guide/">'));
+  assert.ok(html.includes('<link rel="stylesheet" href="../../../css/site.css">'));
+  assert.ok(!html.includes('openExternalBrowser') && !html.includes('<script'));
+});
+
+test('a guide page is made only for a ready activity with a guide', () => {
+  assert.ok(pagesFor(withGuide('review'), true).has(GUIDE_PAGE));
+  assert.ok(!pagesFor(withGuide('review'), false).has(GUIDE_PAGE));
+  assert.ok(!pagesFor(readyActivity(), false).has(GUIDE_PAGE));
+});
+
 const PLACES = { repoRoot: '/work/brotime-portal', cwd: '/work/brotime-portal', home: '/Users/me' };
 
 test('the output folder may not be the repo, the home folder, the filesystem root or above the working folder', () => {

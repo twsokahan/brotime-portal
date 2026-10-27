@@ -4,6 +4,7 @@ import { renderRouteBook } from './route-book.js';
 import {
   clearSession,
   drawCard,
+  followsStory,
   groupsNeedFullRow,
   imageUrlsFor,
   loadSession,
@@ -13,6 +14,7 @@ import {
   readAloudParts,
   saveSession,
   storyCardBefore,
+  storyTopics,
   timerText,
   topicChoices,
   topicDeck,
@@ -399,15 +401,25 @@ const storyText = (card) =>
     storyNote(card.note),
   ]);
 
-function storyCardView(card) {
+const storyTopicCards = (cards, title) =>
+  cards.length > 0 &&
+  el('section', { className: 'story-topics' }, [
+    el('h3', { textContent: title }),
+    ...cards.map((card) => cardImage(card, 'live-card-image')),
+  ]);
+
+function storyCardView(card, followers = []) {
   const qr = document.getElementById(`qr-card-${card.id}`);
+  const topics = storyTopics(followers, card.id);
   return el('div', { className: 'story-live' }, [
+    topics && storyTopicCards(topics.before, `${topics.label}：念故事之前先聊`),
     cardImage(card, 'live-card-image'),
     el('div', { className: 'story-share' }, [
       shareControls(card.title, cardPageUrl(site, activity.id, card.id)),
       qr && el('figure', { className: 'live-qr' }, [el('figcaption', { textContent: '新朋友掃這裡' }), qr.content.cloneNode(true)]),
     ]),
     storyText(card),
+    topics && storyTopicCards(topics.after, `${topics.label}：念完再聊`),
   ]);
 }
 
@@ -520,13 +532,13 @@ function storyTile(card, onclick) {
   return tile;
 }
 
-function storyPicker(cards, pickKey) {
+function storyPicker(cards, pickKey, followers) {
   const cardSlot = el('div', { className: 'live-cards' });
   const tiles = cards.map((card) => storyTile(card, () => choose(card)));
   function choose(card) {
     storyPicks.set(pickKey, card.id);
     tiles.forEach((tile, i) => tile.setAttribute('aria-pressed', String(cards[i] === card)));
-    cardSlot.replaceChildren(storyCardView(card));
+    cardSlot.replaceChildren(storyCardView(card, followers));
   }
 
   choose(cards.find((card) => card.id === storyPicks.get(pickKey)) ?? cards[0]);
@@ -536,12 +548,29 @@ function storyPicker(cards, pickKey) {
   return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: '選一張故事卡' }), switcher, cardSlot]);
 }
 
-function cardSetView(set, stepIndex) {
-  if (set.kind === 'story' && set.cards.length > 1) return storyPicker(set.cards, `${stepIndex}:${set.key}`);
-  if (set.kind === 'story') return el('div', { className: 'live-cards' }, set.cards.map(storyCardView));
+function cardSetView(set, stepIndex, followers) {
+  if (set.kind === 'story' && set.cards.length > 1) return storyPicker(set.cards, `${stepIndex}:${set.key}`, followers);
+  if (set.kind === 'story') {
+    return el('div', { className: 'live-cards' }, set.cards.map((card) => storyCardView(card, followers)));
+  }
   if (set.kind === 'topic') return topicDraw(set.cards, `${stepIndex}:${set.key}`);
   return otherCards(set);
 }
+
+function stepCardViews(step, stepIndex) {
+  const sets = stepCardSets(step);
+  const followers = sets.some((set) => set.kind === 'story') ? sets.filter(followsStory) : [];
+  return sets.filter((set) => !followers.includes(set)).map((set) => cardSetView(set, stepIndex, followers));
+}
+
+const beginnerGuide = ({ title, intro, sections }) =>
+  el('details', { className: 'live-guide' }, [
+    el('summary', { textContent: `新手小抄：${title}` }),
+    intro && el('p', { textContent: intro }),
+    ...sections.map(({ heading, items }) =>
+      el('section', {}, [el('h3', { textContent: heading }), el('ul', {}, items.map((item) => el('li', { textContent: item })))]),
+    ),
+  ]);
 
 function participantSurvey() {
   const surveyUrl = document.getElementById('qr-participant').dataset.url;
@@ -607,7 +636,8 @@ function showStep(index, startedAtMs = Date.now()) {
     el('p', { className: 'live-say', textContent: `說：${step.say}` }),
     step.nearby && nearbySpots(step.nearby),
     step.showStoryQuestions && earlierStoryQuestions(index),
-    ...stepCardSets(step).map((set) => cardSetView(set, index)),
+    step.tool === 'guide' && beginnerGuide(activity.guide),
+    ...stepCardViews(step, index),
     step.tool === 'ichiban' && externalLink('打開電子一番賞', 'ichiban/', 'button-link ichiban-open'),
     step.mapsUrl && externalLink(step.mapsLabel, step.mapsUrl, 'button-link live-maps'),
     !next && participantSurvey(),

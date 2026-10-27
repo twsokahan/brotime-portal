@@ -163,7 +163,82 @@ test('a step can use the ichiban tool only when the activity has an ichiban sett
 test('a step tool must be a known tool', () => {
   const activity = withIchiban();
   activity.steps[2].tool = 'quiz';
-  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[2].tool 要是 ichiban 其中之一']);
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[2].tool 要是 ichiban、guide 其中之一']);
+});
+
+function withGuide() {
+  const activity = readyActivity();
+  activity.guide = {
+    title: '第一次看球？看這張就夠',
+    intro: '給沒看過球的朋友。',
+    sections: [{ heading: '一場怎麼打', items: ['一共九局。', '三出局換邊。'] }],
+  };
+  return activity;
+}
+
+test('an activity may have a beginner guide and show it on a step', () => {
+  const activity = withGuide();
+  activity.steps[1].tool = 'guide';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  delete activity.guide.intro;
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+});
+
+test('a step can use the guide tool only when the activity has a guide', () => {
+  const activity = readyActivity();
+  activity.steps[1].tool = 'guide';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: steps[1].tool 要先有 guide 設定']);
+});
+
+test('a guide needs a title and sections that each have a heading and items', () => {
+  const activity = withGuide();
+  activity.guide.title = '';
+  activity.guide.sections.push({ heading: '看什麼', items: [] }, { items: ['好球、壞球'] });
+  assert.deepEqual(validateActivity(activity, allFilesExist), [
+    'brunch: guide.title 要是有內容的文字',
+    'brunch: guide.sections[1].items 至少要有 1 項',
+    'brunch: guide.sections[2].heading 必填',
+  ]);
+  activity.guide = '一共九局';
+  assert.deepEqual(validateActivity(activity, allFilesExist), ['brunch: guide 要是物件']);
+});
+
+function withStoryTopics() {
+  const activity = readyActivity();
+  activity.cardSets.deep = {
+    kind: 'topic',
+    label: '深題',
+    cards: [
+      { id: 's1-1', title: '念故事之前先聊的題目？', storyCard: 's1', beforeStory: true },
+      { id: 's1-2', title: '念完再聊的題目？', storyCard: 's1' },
+    ],
+  };
+  activity.steps[2].cards = ['story', 'deep'];
+  return activity;
+}
+
+test('topic cards may belong to a story card and come before or after it', () => {
+  assert.deepEqual(validateActivity(withStoryTopics(), allFilesExist), []);
+});
+
+test('storyCard must name a story card of the same activity', () => {
+  const activity = withStoryTopics();
+  activity.cardSets.deep.cards[0].storyCard = 't02';
+  activity.cardSets.deep.cards[1].storyCard = '';
+  assert.deepEqual(validateActivity(activity, allFilesExist), [
+    'brunch: cardSets.deep.cards[0].storyCard t02 不在故事卡裡',
+    'brunch: cardSets.deep.cards[1].storyCard 要是有內容的文字',
+  ]);
+});
+
+test('beforeStory can only be true and needs storyCard', () => {
+  const activity = withStoryTopics();
+  activity.cardSets.deep.cards[0].beforeStory = 'yes';
+  activity.cardSets.topic.cards[0].beforeStory = true;
+  assert.deepEqual(validateActivity(activity, allFilesExist), [
+    'brunch: cardSets.topic.cards[0].beforeStory 要跟 storyCard 一起用',
+    'brunch: cardSets.deep.cards[0].beforeStory 只能是 true',
+  ]);
 });
 
 test('a step may give what to read aloud as plain text', () => {
@@ -553,9 +628,9 @@ test('validateAll reports an extra30 route that is not a city-walk route', () =>
   assert.deepEqual(errors, ['trip: extra30[1].cityWalkRoute 火星區 不在城市散步路線裡']);
 });
 
-test('order can go up to 19', () => {
-  assert.deepEqual(validateActivity({ ...readyActivity(), order: 19 }, allFilesExist), []);
-  assertReports(validateActivity({ ...readyActivity(), order: 20 }, allFilesExist), 'order');
+test('order can go up to 20', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), order: 20 }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), order: 21 }, allFilesExist), 'order');
 });
 
 const venueSpot = (overrides = {}) => ({

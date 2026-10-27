@@ -16,6 +16,8 @@ import {
   drawCard,
   storyCardBefore,
   readAloudParts,
+  followsStory,
+  storyTopics,
 } from '../src/lib/live.mjs';
 import { readyActivity } from './fixtures/activities.mjs';
 
@@ -357,4 +359,40 @@ test('preflight items can end with route-specific reminders', () => {
   const activity = readyActivity();
   assert.deepEqual(preflightItems(activity, ['這條路線比較長']), ['確認咖啡廳訂位', '手機有電，先連上網路', '這條路線比較長']);
   assert.deepEqual(preflightItems(activity), ['確認咖啡廳訂位', '手機有電，先連上網路']);
+});
+
+const deepSet = {
+  kind: 'topic',
+  label: '深題',
+  cards: [
+    { id: 'A-1', title: 'A 第一題', storyCard: 'A', beforeStory: true },
+    { id: 'A-2', title: 'A 第二題', storyCard: 'A' },
+    { id: 'A-3', title: 'A 第三題', storyCard: 'A' },
+    { id: 'B-1', title: 'B 第一題', storyCard: 'B', beforeStory: true },
+    { id: 'B-2', title: 'B 第二題', storyCard: 'B' },
+  ],
+};
+
+test('a topic set follows the story card when every card names one', () => {
+  assert.equal(followsStory(deepSet), true);
+  assert.equal(followsStory(readyActivity().cardSets.topic), false);
+  assert.equal(followsStory(readyActivity().cardSets.story), false);
+  assert.equal(followsStory({ ...deepSet, cards: [...deepSet.cards, { id: 't1', title: '沒有故事卡' }] }), false);
+});
+
+test('storyTopics splits the picked story card topics into before and after, in order', () => {
+  assert.deepEqual(storyTopics([deepSet], 'A'), {
+    label: '深題',
+    before: [deepSet.cards[0]],
+    after: [deepSet.cards[1], deepSet.cards[2]],
+  });
+  assert.deepEqual(
+    storyTopics([deepSet], 'B').after.map((card) => card.id),
+    ['B-2'],
+  );
+});
+
+test('storyTopics is empty for a story card without topics or when no set follows the story', () => {
+  assert.deepEqual(storyTopics([deepSet], 'C'), { label: '深題', before: [], after: [] });
+  assert.equal(storyTopics([], 'A'), null);
 });

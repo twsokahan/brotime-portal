@@ -123,7 +123,8 @@ button[aria-pressed="true"],
 }
 
 .button-link,
-.ichiban-link a {
+.ichiban-link a,
+.guide-link a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -170,6 +171,7 @@ main > p > a {
 .tagline,
 .lead,
 .hint,
+.guide-kicker,
 .filter-label,
 .source,
 #match-count {
@@ -1138,6 +1140,62 @@ p.availability,
 .topic-groups-title {
   margin: 20px 0 8px;
   color: var(--dot-text);
+}
+
+.story-topics {
+  margin: 24px 0 0;
+}
+
+.story-topics h3 {
+  color: var(--dot-text);
+}
+
+.guide section,
+.live-guide {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box);
+}
+
+.guide-kicker {
+  margin: 16px 0 0;
+  font-size: 15px;
+}
+
+.guide h1 {
+  margin-top: 4px;
+}
+
+.guide h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.guide ul,
+.live-guide ul {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.8;
+}
+
+.guide li + li,
+.live-guide li + li {
+  margin-top: 6px;
+}
+
+.live-guide summary {
+  padding: 0;
+}
+
+.live-guide h3 {
+  margin: 12px 0 4px;
+  color: var(--dot-text);
+}
+
+.live-guide p {
+  margin: 4px 0 0;
 }
 
 .topic-groups {

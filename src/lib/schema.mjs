@@ -10,7 +10,7 @@ const ROUTE_STOPS = ['start', 'stop1', 'end'];
 const ROUTE_LEGS = [0, 1];
 const VENUE_STOPS = ['meet', 'sit'];
 const READ_ALOUD_KEYS = ['label', 'text', 'source'];
-const STEP_TOOLS = ['ichiban'];
+const STEP_TOOLS = ['ichiban', 'guide'];
 const ICHIBAN_COUNT_PROBLEMS = {
   'bad-count': `每一賞要是 0–${MAX_PER_GRADE} 的整數`,
   empty: '加起來至少要有 1 張',
@@ -21,7 +21,7 @@ const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
 const FORM_ENTRY = /^entry\.\d+$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const MAX_ORDER = 19;
+const MAX_ORDER = 20;
 const MAX_SAY_CHARS = 45;
 const MAX_TODO_TASK_CHARS = 20;
 const MAX_THUMBS = 3;
@@ -220,7 +220,16 @@ function checkRainNote(check, activity) {
   else if (rain !== undefined && rain !== 'ok') check.fail('rainNote', `必填（tags.rain 是 ${rain}）`);
 }
 
-function checkCard(check, card, path, { isStory, needsQuestionsOrNote }, firstPathOfCardId) {
+function checkStoryLink(check, card, path, storyCardIds) {
+  if (card.storyCard !== undefined && check.text(card.storyCard, `${path}.storyCard`)) {
+    if (!storyCardIds.has(card.storyCard)) check.fail(`${path}.storyCard`, `${card.storyCard} 不在故事卡裡`);
+  }
+  if (card.beforeStory === undefined) return;
+  if (card.beforeStory !== true) check.fail(`${path}.beforeStory`, '只能是 true');
+  else if (card.storyCard === undefined) check.fail(`${path}.beforeStory`, '要跟 storyCard 一起用');
+}
+
+function checkCard(check, card, path, { isStory, needsQuestionsOrNote, storyCardIds }, firstPathOfCardId) {
   if (!check.object(card, path)) return;
   if (check.text(card.id, `${path}.id`)) {
     if (!isCardId(card.id)) check.fail(`${path}.id`, '只能用英文、數字和 -');
@@ -234,6 +243,7 @@ function checkCard(check, card, path, { isStory, needsQuestionsOrNote }, firstPa
   if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
   if (card.reveal !== undefined) checkTextFields(check, card.reveal, `${path}.reveal`, ['lead', 'text', 'source']);
   if (card.forKids !== undefined && card.forKids !== true) check.fail(`${path}.forKids`, '只能是 true');
+  checkStoryLink(check, card, path, storyCardIds);
   const needsQuestions = needsQuestionsOrNote && card.note === undefined;
   if (needsQuestions || card.questions !== undefined) checkTextList(check, card.questions, `${path}.questions`, 1);
 }
@@ -250,6 +260,11 @@ function checkThumbs(check, set, path) {
 function checkCardSets(check, cardSets, published) {
   if (!check.object(cardSets, 'cardSets')) return;
   const firstPathOfCardId = new Map();
+  const storyCardIds = new Set(
+    Object.values(cardSets)
+      .filter((set) => set?.kind === 'story')
+      .flatMap((set) => [...cardIdsOf(set)]),
+  );
   for (const [key, set] of Object.entries(cardSets)) {
     const path = `cardSets.${key}`;
     if (!check.object(set, path)) continue;
@@ -257,7 +272,7 @@ function checkCardSets(check, cardSets, published) {
     check.text(set.label, `${path}.label`);
     if (check.list(set.cards, `${path}.cards`, 1)) {
       const isStory = set.kind === 'story';
-      const rules = { isStory, needsQuestionsOrNote: isStory && published };
+      const rules = { isStory, needsQuestionsOrNote: isStory && published, storyCardIds };
       set.cards.forEach((card, i) => checkCard(check, card, `${path}.cards[${i}]`, rules, firstPathOfCardId));
     }
     if (set.thumbs !== undefined) checkThumbs(check, set, path);
@@ -310,9 +325,9 @@ function checkReadAloud(check, readAloud, path) {
   if (readAloud.source !== undefined) check.text(readAloud.source, `${path}.source`);
 }
 
-function checkStepTool(check, tool, path, hasIchiban) {
+function checkStepTool(check, tool, path, settings) {
   if (tool === undefined || !check.oneOf(tool, STEP_TOOLS, path)) return;
-  if (!hasIchiban) check.fail(path, '要先有 ichiban 設定');
+  if (!settings[tool]) check.fail(path, `要先有 ${tool} 設定`);
 }
 
 function checkVenueStop(check, venueStop, path, hasVenues) {
@@ -320,7 +335,7 @@ function checkVenueStop(check, venueStop, path, hasVenues) {
   if (!hasVenues) check.fail(path, '要先有 venues');
 }
 
-function checkStep(check, step, path, { cardSets, hasIchiban, hasVenues, earlierSteps }) {
+function checkStep(check, step, path, { cardSets, toolSettings, hasVenues, earlierSteps }) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
   if (step.minutes !== null && !(Number.isInteger(step.minutes) && step.minutes > 0)) {
@@ -334,13 +349,13 @@ function checkStep(check, step, path, { cardSets, hasIchiban, hasVenues, earlier
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
   if (step.routeLeg !== undefined) check.oneOf(step.routeLeg, ROUTE_LEGS, `${path}.routeLeg`);
   checkShowStoryQuestions(check, step, path, earlierSteps, cardSets);
-  checkStepTool(check, step.tool, `${path}.tool`, hasIchiban);
+  checkStepTool(check, step.tool, `${path}.tool`, toolSettings);
   checkVenueStop(check, step.venueStop, `${path}.venueStop`, hasVenues);
 }
 
-function checkSteps(check, steps, { cardSets, hasIchiban, hasVenues }) {
+function checkSteps(check, steps, { cardSets, toolSettings, hasVenues }) {
   if (!check.list(steps, 'steps', 1)) return;
-  const context = { cardSets: isObject(cardSets) ? cardSets : {}, hasIchiban, hasVenues };
+  const context = { cardSets: isObject(cardSets) ? cardSets : {}, toolSettings, hasVenues };
   steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, { ...context, earlierSteps: steps.slice(0, i) }));
 }
 
@@ -355,6 +370,19 @@ function checkIchiban(check, ichiban) {
   }
   const problem = countsProblem(grades);
   if (problem !== null) check.fail('ichiban.grades', ICHIBAN_COUNT_PROBLEMS[problem]);
+}
+
+function checkGuide(check, guide) {
+  if (!check.object(guide, 'guide')) return;
+  check.text(guide.title, 'guide.title');
+  if (guide.intro !== undefined) check.text(guide.intro, 'guide.intro');
+  if (!check.list(guide.sections, 'guide.sections', 1)) return;
+  guide.sections.forEach((section, i) => {
+    const path = `guide.sections[${i}]`;
+    if (!check.object(section, path)) return;
+    check.text(section.heading, `${path}.heading`);
+    checkTextList(check, section.items, `${path}.items`, 1);
+  });
 }
 
 function checkPlanFile(check, planFile, id) {
@@ -409,7 +437,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('steps')) {
     checkSteps(check, activity.steps, {
       cardSets: activity.cardSets,
-      hasIchiban: activity.ichiban !== undefined,
+      toolSettings: { ichiban: activity.ichiban !== undefined, guide: activity.guide !== undefined },
       hasVenues: activity.venues !== undefined,
     });
   }
@@ -425,6 +453,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (activity.venues !== undefined) checkVenues(check, activity.venues);
   if (activity.surveys !== undefined) checkSurveys(check, activity.surveys);
   if (activity.ichiban !== undefined) checkIchiban(check, activity.ichiban);
+  if (activity.guide !== undefined) checkGuide(check, activity.guide);
   if (published && fileExists) {
     checkCardImages(check, activity, fileExists);
     checkPdfFiles(check, activity, fileExists);
