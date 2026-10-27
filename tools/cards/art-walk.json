@@ -2,7 +2,7 @@
   "activity": "art-walk",
   "sets": {
     "story": {
-      "pdf": "~/code/sokahan-propalsal-2026/去創美走走/2027年創價班「去創美走走」故事卡_v1_剪紙拼貼.pdf",
+      "pdf": "~/code/sokahan-propalsal-2026/去創美走走/2027年創價班「去創美走走」故事卡_v2_剪紙拼貼.pdf",
       "dpi": 200,
       "og": true,
       "cards": [
@@ -10,7 +10,7 @@
       ]
     },
     "topic": {
-      "pdf": "~/code/sokahan-propalsal-2026/去創美走走/2027年創價班「去創美走走」話題卡_v1_剪紙拼貼_雙面.pdf",
+      "pdf": "~/code/sokahan-propalsal-2026/去創美走走/2027年創價班「去創美走走」話題卡_v2_剪紙拼貼_雙面.pdf",
       "dpi": 400,
       "og": false,
       "cards": [
