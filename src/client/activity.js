@@ -14,6 +14,7 @@ import {
   readAloudParts,
   saveSession,
   storyCardBefore,
+  storyTopicHeadings,
   storyTopics,
   timerText,
   topicChoices,
@@ -411,19 +412,25 @@ const storyTopicCards = (cards, title) =>
 function storyCardView(card, followers = []) {
   const qr = document.getElementById(`qr-card-${card.id}`);
   const topics = storyTopics(followers, card.id);
+  const headings = topics && storyTopicHeadings(topics);
   return el('div', { className: 'story-live' }, [
-    topics && storyTopicCards(topics.before, `${topics.label}：念故事之前先聊`),
+    topics && storyTopicCards(topics.before, headings.before),
     cardImage(card, 'live-card-image'),
     el('div', { className: 'story-share' }, [
       shareControls(card.title, cardPageUrl(site, activity.id, card.id)),
       qr && el('figure', { className: 'live-qr' }, [el('figcaption', { textContent: '新朋友掃這裡' }), qr.content.cloneNode(true)]),
     ]),
     storyText(card),
-    topics && storyTopicCards(topics.after, `${topics.label}：念完再聊`),
+    topics && storyTopicCards(topics.after, headings.after),
   ]);
 }
 
-function topicDraw(cards, pickKey) {
+function earlierStoryTopics(set, card) {
+  const { label, before, after } = storyTopics([set], card.id);
+  return storyTopicCards([...before, ...after], `${label}：〈${card.title}〉`);
+}
+
+function topicDraw(cards, pickKey, title) {
   if (!cards.length) return null;
   const choices = topicChoices(cards);
   const pick = topicPicks.get(pickKey) ?? { group: null, card: null };
@@ -460,11 +467,12 @@ function topicDraw(cards, pickKey) {
   markPressed();
   if (pick.card) showCard();
   else draw();
-  return el('div', { className: 'topic-draw' }, [
+  const drawView = el('div', { className: 'topic-draw' }, [
     choices.length > 1 && topicGroupPicker(groupButtons, groupsNeedFullRow(choices.filter(Boolean))),
     cardSlot,
     button('換一張', draw, 'live-draw'),
   ]);
+  return title ? el('section', { className: 'topic-set' }, [el('h3', { textContent: title }), drawView]) : drawView;
 }
 
 function topicGroupPicker(groupButtons, fullRows) {
@@ -548,19 +556,27 @@ function storyPicker(cards, pickKey, followers) {
   return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: '選一張故事卡' }), switcher, cardSlot]);
 }
 
-function cardSetView(set, stepIndex, followers) {
+function cardSetView(set, stepIndex, followers, topicTitle) {
   if (set.kind === 'story' && set.cards.length > 1) return storyPicker(set.cards, `${stepIndex}:${set.key}`, followers);
   if (set.kind === 'story') {
     return el('div', { className: 'live-cards' }, set.cards.map((card) => storyCardView(card, followers)));
   }
-  if (set.kind === 'topic') return topicDraw(set.cards, `${stepIndex}:${set.key}`);
+  if (set.kind === 'topic') return topicDraw(set.cards, `${stepIndex}:${set.key}`, topicTitle);
   return otherCards(set);
 }
 
 function stepCardViews(step, stepIndex) {
   const sets = stepCardSets(step);
-  const followers = sets.some((set) => set.kind === 'story') ? sets.filter(followsStory) : [];
-  return sets.filter((set) => !followers.includes(set)).map((set) => cardSetView(set, stepIndex, followers));
+  const storyHere = sets.some((set) => set.kind === 'story');
+  const followers = sets.filter(followsStory);
+  const earlierCard = !storyHere && followers.length > 0 ? storyCardBefore(activity, live.steps, stepIndex, storyPicks) : null;
+  const titled = sets.length > 1;
+  return sets.map((set) => {
+    if (!followers.includes(set)) return cardSetView(set, stepIndex, storyHere ? followers : [], titled && set.label);
+    if (storyHere) return null;
+    if (earlierCard) return earlierStoryTopics(set, earlierCard);
+    return cardSetView(set, stepIndex, [], titled && set.label);
+  });
 }
 
 const beginnerGuide = ({ title, intro, sections }) =>

@@ -1142,11 +1142,13 @@ p.availability,
   color: var(--dot-text);
 }
 
-.story-topics {
+.story-topics,
+.topic-set {
   margin: 24px 0 0;
 }
 
-.story-topics h3 {
+.story-topics h3,
+.topic-set > h3 {
   color: var(--dot-text);
 }
 

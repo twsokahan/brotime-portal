@@ -18,6 +18,7 @@ import {
   readAloudParts,
   followsStory,
   storyTopics,
+  storyTopicHeadings,
 } from '../src/lib/live.mjs';
 import { readyActivity } from './fixtures/activities.mjs';
 
@@ -395,4 +396,16 @@ test('storyTopics splits the picked story card topics into before and after, in 
 test('storyTopics is empty for a story card without topics or when no set follows the story', () => {
   assert.deepEqual(storyTopics([deepSet], 'C'), { label: '深題', before: [], after: [] });
   assert.equal(storyTopics([], 'A'), null);
+});
+
+test('story topic headings say before or after only when the set has questions for before the story', () => {
+  assert.deepEqual(storyTopicHeadings(storyTopics([deepSet], 'A')), {
+    before: '深題：念故事之前先聊',
+    after: '深題：念完再聊',
+  });
+  const afterOnly = { kind: 'topic', label: '故事念完、沒人接話時', cards: [{ id: 'A-1', title: 'A 第一題', storyCard: 'A' }] };
+  assert.deepEqual(storyTopicHeadings(storyTopics([afterOnly], 'A')), {
+    before: '故事念完、沒人接話時',
+    after: '故事念完、沒人接話時',
+  });
 });

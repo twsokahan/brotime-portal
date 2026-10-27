@@ -120,6 +120,9 @@ export function storyTopics(sets, storyCardId) {
   };
 }
 
+export const storyTopicHeadings = ({ label, before }) =>
+  before.length > 0 ? { before: `${label}：念故事之前先聊`, after: `${label}：念完再聊` } : { before: label, after: label };
+
 export function groupsOf(cards) {
   return [...new Set(cards.map((card) => card.group).filter(Boolean))];
 }
