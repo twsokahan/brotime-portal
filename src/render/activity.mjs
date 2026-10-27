@@ -1,3 +1,4 @@
+import { bringVolume } from '../lib/book-guide.mjs';
 import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
@@ -75,7 +76,8 @@ function renderThumbs(activity, step, rel) {
     const set = activity.cardSets[key];
     return thumbCards(set, step).map((card) => {
       const img = `<img src="${rel}cards/${escapeHtml(activity.id)}/${escapeHtml(card.id)}-thumb.webp" alt="${escapeHtml(card.title)}" loading="lazy">`;
-      return set.kind === 'story' ? `<a href="cards/${escapeHtml(card.id)}/">${img}</a>` : img;
+      if (set.kind !== 'story') return img;
+      return `<a class="story-thumb" href="cards/${escapeHtml(card.id)}/">${img}<span>${escapeHtml(bringVolume(card.guide))}</span></a>`;
     });
   });
   return thumbs.length ? `<div class="thumbs">${thumbs.join('')}</div>` : '';

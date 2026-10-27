@@ -48,7 +48,8 @@
   - `task`：做什麼，**最多 20 個字**（標點也算）。
   - `detail`：可以不寫。補充說明放這裡，網站上收起來，點開才看得到。
 - `steps` 是當天的每一步。`say`（「說這句就好」）只能一句、最多 45 個字。
-- 故事卡的 `text` 要跟卡片一字不差。《新・人間革命》和御書的引文只用卡片上已經有的文字，不要自己改寫。
+- 故事卡**不放原文**（2026-10-27 起因為版權，《新・人間革命》的原文段落不能出現在網站上；放了 `text`，`npm test` 會擋）。每張故事卡改放翻書指引 `guide: { volume, chapter, page, steps: [{ label, text, note }], duration, tips }`，由 `~/code/sokahan-propalsal-2026/plan-builder/book_guide_back.py` 的 `portal_guide(guide(活動 id, 卡片 id))` 產生，不要手寫。網站照紙本背面的樣子顯示：第幾卷〈章〉、約第幾頁、從哪句念到哪句、跳讀、念多久；挑卡的縮圖下面寫「要帶第幾卷」，城市散步選好區後寫要帶哪兩本。卡名、出處、分享提問、`note` 照卡片正面一字不差。
+- 改完內容要確認沒有原文：`python3 ~/code/sokahan-propalsal-2026/plan-builder/check_no_passages.py content/activities/*.json`，每個檔都要印出 clean。
 - 企劃案 PDF（`planFile`）和想印實體卡的人下載的 PDF（`printFiles`）放在 `public/files/`。正式公開前，卡片 PDF（檔名不是 `-plan.pdf` 結尾的）要加浮水印再放進來：`python3 ~/code/sokahan-propalsal-2026/plan-builder/watermark.py 來源.pdf public/files/<檔名>`，沒加的話 `npm test` 會擋。
 - 卡片可以帶 `reveal: { lead, text, source }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示池田先生的話。
 - 只在某段期間才能約的（名畫小旅行只限 2027 年 10 月展期），加 `availability: { from, to, label, note }`：`from`、`to` 是 `YYYY-MM-DD`，`label` 像 `"2027 年 10 月"`，`note` 可以不寫。活動頁標題下會寫「只限 2027 年 10 月：（note）」，首頁卡片和「幫我挑」的結果標「限 2027 年 10 月」；「幫我挑」從 `from` 的前兩個月到 `to` 當天推薦它（提前幾個月是 `src/lib/recommend.mjs` 的 `DATED_LEAD_MONTHS`）。

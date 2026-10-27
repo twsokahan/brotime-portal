@@ -614,6 +614,20 @@ main > p > a {
   background: var(--box);
 }
 
+.story-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 88px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+}
+
 .start {
   margin: 32px 0 16px;
 }
@@ -665,6 +679,99 @@ p.availability,
   font-size: 15px;
 }
 
+.book-guide {
+  --guide-accent: var(--dot-text, var(--step1-text));
+  margin: 24px 0 0;
+  padding: 20px 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box);
+}
+
+.book-guide > h2,
+.book-guide > h3 {
+  margin: 0;
+  color: var(--guide-accent);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.book-guide p {
+  margin: 0;
+}
+
+.book-guide-series {
+  margin-top: 8px;
+  line-height: 1.5;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.book-guide .book-guide-book {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.book-guide .book-guide-page {
+  margin-top: 4px;
+  color: var(--guide-accent);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.book-guide-page small {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.book-guide-rows {
+  margin: 16px 0 0;
+  border-top: 2px solid var(--guide-accent);
+}
+
+.book-guide-rows > div {
+  display: grid;
+  grid-template-columns: 3.4em 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--guide-accent) 30%, transparent);
+}
+
+.book-guide-rows dt {
+  padding-top: 3px;
+  color: var(--guide-accent);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.book-guide-rows dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.book-guide-rows small {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.book-guide-tips {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
 .story-questions {
   margin: 24px 0 0;
 }
@@ -683,7 +790,7 @@ p.availability,
   font-weight: 900;
 }
 
-.story-text .story-questions li::marker {
+.story-reading .story-questions li::marker {
   color: var(--dot-text);
 }
 
@@ -815,9 +922,17 @@ p.availability,
 }
 
 .route-length,
+.route-books,
 .route-overtime,
 .route-adjust {
   margin: 4px 0 8px;
+}
+
+.route-books {
+  padding: 8px 12px;
+  border-left: 4px solid var(--step1);
+  background: var(--paper);
+  font-weight: 700;
 }
 
 .route-overtime {
@@ -831,6 +946,7 @@ p.availability,
 }
 
 .route-map {
+  isolation: isolate;
   height: 240px;
   margin: 8px 0;
   border: 1px solid var(--line);
@@ -1051,24 +1167,8 @@ p.availability,
   margin-top: 12px;
 }
 
-.story-text {
+.story-reading {
   margin: 24px 0 0;
-  padding: 16px 0 0;
-  border-top: 1px solid var(--line);
-  font-size: 18px;
-  line-height: 1.9;
-}
-
-.story-text h3 {
-  color: var(--dot-text);
-}
-
-.story-text p {
-  white-space: pre-line;
-}
-
-.story-text .hint {
-  margin: 0 0 12px;
 }
 
 .live-card-image {
@@ -1267,6 +1367,11 @@ p.availability,
   object-position: top;
   border-radius: 8px;
   opacity: 0.55;
+}
+
+.story-tile-volume {
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .story-tile .card-missing {

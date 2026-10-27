@@ -48,6 +48,7 @@
   - 新手小抄（新欄位 `guide`）：獨立頁 `a/ball-watching/guide/` 可以分享到 LINE，活動頁「企劃室提供」下面有連結；「看球」那步 `tool: "guide"` 有收起來的全文（不用網路）。
   - 活動資料由 `~/code/sokahan-propalsal-2026/plan-builder/build_watchball_portal_json_v1.py` 產生，卡片文字、新手小抄、說這句就好跟定稿、企劃案 v2、卡片 PDF 逐字比對。
   - 三份問卷的「看球就一起」選項：`建立問卷表單.gs` 的 `ACTIVITIES` 已加上，**還要使用者用企劃室帳號在 Apps Script 全選覆蓋貼上、跑 `appendNewActivityChoices`**（會連同來去打球啦一起補上，並重設活動回報表城市散步的跳轉）。
+- **故事卡改翻書指引（2026-10-27）**：因為版權，原文段落不能出現在網站上（BRIEF：`~/code/sokahan-propalsal-2026/plan-builder/book_guide_v1/BRIEF_翻書指引改版.md`）。74 張故事卡拿掉 `text`、改放 `guide`（`book_guide_back.portal_guide` 產生，資料凍結在 `book_guide_v1/guides_v1.json`）；故事卡頁和當天模式照紙本背面顯示「翻書念故事」，挑卡縮圖寫「要帶第幾卷」，城市散步選好區後路書和「帶齊了嗎？」寫要帶的兩本。流程文字照 BRIEF 的標準文字改：事先挑卡、1～2 週前「挑好故事卡、借好書」、拿書的人照背面念、把卡片正面分享到群組；「帶齊了嗎？」加帶書。來去打球啦、看球就一起改由 `build_ballgame_portal_json_v2.py`、`build_watchball_portal_json_v2.py` 產生（v1 不要再跑，會把原文寫回去）。`public/files/` 的故事卡 PDF 和企劃案 PDF 還是舊版（含原文），等新版做好再換。
 - **城市散步路書：2026-10-23 上線**。設計 `docs/superpowers/specs/2026-10-23-city-walk-route-book-design.md`、計畫 `docs/superpowers/plans/2026-10-23-city-walk-route-book.md`。選好區之後，活動頁的路線區塊是：國土測繪中心底圖上畫兩段路線（Leaflet）＋拉桿（拖到第幾分鐘，紅點走到哪）＋由上往下的路書（每段幾分、幾公里、經過哪些路），每個點「看街景」、每段「在 Google 地圖看這一段」。使用者 2026-10-23 的決定：
   - 走路時用 Google 地圖導航，到點通知就用 Google 地圖自己的「已抵達」；導航拆成兩段（集合點→停留點一、停留點一→終點），每段帶起點、終點、3 個中途點（手機瀏覽器最多吃 3 個）。當天模式的「走到下一站」也改用這兩個網址。
   - 免費底圖、不嵌 Google 地圖、不用金鑰；街景用連結跳到 Google 地圖。
@@ -96,7 +97,7 @@
 - **GitHub 推送**：本機 SSH 金鑰是公司帳號。這個 repo 的 remote 是 HTTPS，本地設定 `credential.helper` 用 `gh auth git-credential`（同 `~/code/city-walk-review`）。gh token 要有 `workflow` 權限才推得動 `.github/workflows/`。
 - **整個 repo 是公開的**：不要寫個人信箱、電話、金鑰、token，也不要放表單的編輯網址或回覆試算表網址。
 - **實體卡**：巷口泡茶會、職場人生對話、兄弟早午餐會、爸爸帶娃日的話題卡（題目卡）由創價班企劃室印好寄給各區（網站不要叫主持人自己印，印刷檔只當備用；卡片還沒寄到或忘了帶，主持人用手機抽）；新春唱題會照企劃案 v4，素材由各區列印、刮開區各區自己做。
-- **內容規則**：故事全文、卡名、出處照故事卡一字不改；企劃案裡要主持人念的段落（收尾的話、主持稿）照企劃案原文放進該步驟的 `readAloud`，不要叫主持人去翻企劃案（使用者 2026-10-22 決定）。內容來源在 `~/code/sokahan-propalsal-2026/`。
+- **內容規則**：故事卡不放原文，改放翻書指引 `guide`（見下面「故事卡改翻書指引」）；卡名、出處、分享提問照故事卡正面一字不改；企劃案裡要主持人念的段落（收尾的話、主持稿）照企劃案原文放進該步驟的 `readAloud`，不要叫主持人去翻企劃案（使用者 2026-10-22 決定）。內容來源在 `~/code/sokahan-propalsal-2026/`。
 - **籤紙的尺寸**：籤紙正反面的造型規則（`.peel-front`、`.peel-back`、`.peel-teeth`、`.peel-band` 等）寫成 `calc(N * var(--u))`，大籤紙的 `--u` 是 1px，列表上的小籤紙跟著格子寬度縮放；改這些規則時不要直接寫 px，不然小籤紙會跑掉。
 - **電子一番賞給別的活動用**：加 `ichiban` 設定和某一步的 `tool: "ichiban"` 就有，但登機證上的字（冬 ✈ 春、唱題會）是為新春唱題會寫的，要先改。
 - **城市散步路線**：一律從 `~/code/city-walk-review/data/routes.json` 匯入（`node tools/import-city-walk.mjs`），不要手抄。匯入時會多算 `legPaths`（兩段座標，小數 5 位）、`legMeters`、`legTexts`（從路線文字拆，拆不出兩段會擋）、`legNavUrls`（兩段的 Google 導航網址）；檢閱網站的 `todo`、`flags`、`notes` 不帶。
@@ -116,6 +117,8 @@
 ## 延後清單
 
 review 找到、但照三道閘門不修的 low／minor。
+
+- 故事卡改翻書指引（2026-10-27）：翻書指引的起訖句用網站的黑體加粗，沒有照紙本用明體（網站只載 Noto Sans TC，沒訊號時也要能顯示）；城市散步「帶齊了嗎？」的帶書那項排在「手機有電」後面（路線相關的提醒一律接在最後）。
 
 - 露營星空夜、田園烤肉會、清晨登山的話題卡（2026-10-27）：清晨登山第 5 步「故事念完」那疊跟著第 3 步選的故事卡，選擇只存在記憶體，中途重新整理頁面就退回第一張（A），跟原本 `showStoryQuestions` 的退路一樣；跟著故事卡的話題卡直接列兩張，沒有「小朋友也能答」分類，靠卡片圖上印的標籤。
 

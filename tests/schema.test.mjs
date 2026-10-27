@@ -364,10 +364,43 @@ test('PDFs are not checked without fileExists or before review', () => {
   assert.deepEqual(validateActivity(preparing, { fileExists: () => false }), []);
 });
 
-test('story cards need their text', () => {
+test('story cards need their book guide', () => {
   const activity = readyActivity();
-  delete activity.cardSets.story.cards[0].text;
-  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].text');
+  delete activity.cardSets.story.cards[0].guide;
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].guide 必填');
+});
+
+test('story cards may not carry the original passage', () => {
+  const activity = readyActivity();
+  activity.cardSets.story.cards[0].text = '這是測試用的原文。';
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.story.cards[0].text 故事卡不放原文');
+});
+
+test('a book guide needs its volume, chapter, a whole page number, reading steps, how long and tips', () => {
+  const activity = readyActivity();
+  const guide = activity.cardSets.story.cards[0].guide;
+  guide.volume = ' ';
+  guide.page = 12.5;
+  guide.steps = [{ label: '從', text: '', note: null }];
+  delete guide.duration;
+  guide.tips = [];
+  const errors = validateActivity(activity, allFilesExist);
+  for (const fragment of [
+    'guide.volume 要是有內容的文字',
+    'guide.page 要是正整數',
+    'guide.steps[0].text 要是有內容的文字',
+    'guide.steps[0].note 要是文字',
+    'guide.duration 必填',
+    'guide.tips 至少要有 1 項',
+  ]) {
+    assertReports(errors, fragment);
+  }
+});
+
+test('a book guide step may leave its page note empty', () => {
+  const activity = readyActivity();
+  activity.cardSets.story.cards[0].guide.steps = [{ label: '從', text: '「開頭」', note: '' }];
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
 test('story cards of a ready or review activity need their sharing questions', () => {

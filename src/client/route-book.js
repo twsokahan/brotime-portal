@@ -48,7 +48,7 @@ function sliderView(total) {
   return { slider, wrap: el('div', { className: 'route-slider-wrap' }, [slider, sixty]) };
 }
 
-export function renderRouteBook(container, route, flow, { rel }) {
+export function renderRouteBook(container, route, flow, { rel, books }) {
   currentMap?.remove();
   currentMap = null;
   const thisRender = ++renderCount;
@@ -79,6 +79,7 @@ export function renderRouteBook(container, route, flow, { rel }) {
   const children = [
     el('h3', { textContent: route.title }),
     el('p', { className: 'route-length', textContent: lengthLine(route, flow) }),
+    books && el('p', { className: 'route-books', textContent: books }),
     flow.overtimeNote && el('p', { className: 'route-overtime', textContent: flow.overtimeNote }),
     mapBox,
     wrap,

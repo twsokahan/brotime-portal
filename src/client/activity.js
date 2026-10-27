@@ -1,3 +1,4 @@
+import { GUIDE_HEADING, SERIES, bookTitle, booksPacked, booksToBring, bringVolume, guideRows } from './lib/book-guide.mjs';
 import { districtGroups, routePicker, routeSteps } from './lib/city-walk.mjs';
 import { el, externalLink } from './dom.js';
 import { renderRouteBook } from './route-book.js';
@@ -77,7 +78,13 @@ let district = null;
 const routeFor = (id) => routes?.find((route) => route.id === id) ?? null;
 const flowFor = (name) => routeFlow(activity.steps, routeFor(name));
 const liveStepsFor = (name) => (routes ? flowFor(name).steps : venueSteps(activity.steps, place));
-const routeReminders = () => (routes && live.district ? [flowFor(live.district).overtimeNote].filter(Boolean) : []);
+const routeStoryCards = (steps) =>
+  steps.flatMap((step) => stepCardSets(step).filter((set) => set.kind === 'story').flatMap((set) => set.cards));
+const routeReminders = () => {
+  if (!routes || !live.district) return [];
+  const flow = flowFor(live.district);
+  return [booksPacked(routeStoryCards(flow.steps)), flow.overtimeNote].filter(Boolean);
+};
 
 let originalTimings = null;
 
@@ -156,8 +163,9 @@ function routeLineChoice(onPick) {
 }
 
 const storyThumb = (card) =>
-  el('a', { href: `cards/${card.id}/` }, [
+  el('a', { className: 'story-thumb', href: `cards/${card.id}/` }, [
     el('img', { src: `${REL}cards/${activity.id}/${card.id}-thumb.webp`, alt: card.title, loading: 'lazy' }),
+    el('span', { textContent: bringVolume(card.guide) }),
   ]);
 
 function showStopStoryThumbs(steps) {
@@ -188,7 +196,7 @@ function setUpDistrictPicker() {
     lineChoice.show(picker);
     rememberChoice('d', DISTRICT_KEY, name);
     const flow = flowFor(name);
-    renderRouteBook(summary, route, flow, { rel: REL });
+    renderRouteBook(summary, route, flow, { rel: REL, books: booksToBring(routeStoryCards(flow.steps)) });
     summary.hidden = false;
     showRouteTimes(flow);
     showStopStoryThumbs(routeSteps(activity.steps, route));
@@ -392,12 +400,29 @@ const storyNote = (note) =>
     el('p', { textContent: note.text }),
   ]);
 
-const storyText = (card) =>
-  el('section', { className: 'story-text' }, [
-    el('h3', { textContent: '故事全文' }),
-    el('p', { className: 'hint', textContent: '沒有訊號的話，主持人直接念給大家聽。' }),
-    ...card.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
-    el('p', { className: 'source', textContent: `出處：${card.source}` }),
+const guideRow = ({ label, text, note }) =>
+  el('div', {}, [
+    el('dt', { textContent: label }),
+    el('dd', {}, [text, note && ' ', note && el('small', { textContent: `（${note}）` })]),
+  ]);
+
+const bookGuide = (guide) =>
+  el('section', { className: 'book-guide' }, [
+    el('h3', { textContent: GUIDE_HEADING }),
+    el('p', { className: 'book-guide-series', textContent: SERIES }),
+    el('p', { className: 'book-guide-book', textContent: bookTitle(guide) }),
+    el('p', { className: 'book-guide-page' }, [
+      el('small', { textContent: '約第 ' }),
+      String(guide.page),
+      el('small', { textContent: ' 頁' }),
+    ]),
+    el('dl', { className: 'book-guide-rows' }, guideRows(guide).map(guideRow)),
+    el('ul', { className: 'book-guide-tips' }, guide.tips.map((tip) => el('li', { textContent: tip }))),
+  ]);
+
+const storyReading = (card) =>
+  el('div', { className: 'story-reading' }, [
+    bookGuide(card.guide),
     storyQuestions(card.questions),
     storyNote(card.note),
   ]);
@@ -420,7 +445,7 @@ function storyCardView(card, followers = []) {
       shareControls(card.title, cardPageUrl(site, activity.id, card.id)),
       qr && el('figure', { className: 'live-qr' }, [el('figcaption', { textContent: '新朋友掃這裡' }), qr.content.cloneNode(true)]),
     ]),
-    storyText(card),
+    storyReading(card),
     topics && storyTopicCards(topics.after, headings.after),
   ]);
 }
@@ -536,7 +561,11 @@ function storyTile(card, onclick) {
   const thumb = cardImage(card, 'story-tile-image', `${card.id}-thumb`);
   thumb.alt = '';
   const tile = button('', onclick, 'story-tile');
-  tile.append(thumb, el('span', { textContent: card.title }));
+  tile.append(
+    thumb,
+    el('span', { textContent: card.title }),
+    el('span', { className: 'story-tile-volume', textContent: bringVolume(card.guide) }),
+  );
   return tile;
 }
 
@@ -552,8 +581,8 @@ function storyPicker(cards, pickKey, followers) {
   choose(cards.find((card) => card.id === storyPicks.get(pickKey)) ?? cards[0]);
   const switcher = el('div', { className: 'story-switch' }, tiles);
   switcher.setAttribute('role', 'group');
-  switcher.setAttribute('aria-label', '選一張故事卡');
-  return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: '選一張故事卡' }), switcher, cardSlot]);
+  switcher.setAttribute('aria-label', '選事先挑好的故事卡');
+  return el('div', {}, [el('h3', { className: 'story-switch-title', textContent: '選事先挑好的故事卡' }), switcher, cardSlot]);
 }
 
 function cardSetView(set, stepIndex, followers, topicTitle) {

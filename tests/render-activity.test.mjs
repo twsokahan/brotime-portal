@@ -135,8 +135,13 @@ test('a step shows only the first three topic cards', () => {
 test('a story card thumbnail links to its own card page and has a QR template', () => {
   const html = render();
   const step = stepItem(html, '一起讀故事');
-  assert.match(step, /<a href="cards\/s1\/"><img src="\.\.\/\.\.\/cards\/brunch\/s1-thumb\.webp"/);
+  assert.match(step, /<a class="story-thumb" href="cards\/s1\/"><img src="\.\.\/\.\.\/cards\/brunch\/s1-thumb\.webp"/);
   assert.ok(templateContent(html, 'qr-card-s1').includes('<svg'));
+});
+
+test('a story card thumbnail says which volume of the book to bring', () => {
+  const step = stepItem(render(), '一起讀故事');
+  assert.ok(step.includes('<span>要帶第16卷</span></a>'), step);
 });
 
 test('without a participant survey link the QR slot says the link is coming', () => {

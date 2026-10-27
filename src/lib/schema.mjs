@@ -55,6 +55,7 @@ function createChecker(owner) {
   return {
     errors,
     fail,
+    present,
     text: (value, path) => present(value, path) && passes(isText(value), path, '要是有內容的文字'),
     object: (value, path) => present(value, path) && passes(isObject(value), path, '要是物件'),
     oneOf: (value, allowed, path) =>
@@ -229,6 +230,26 @@ function checkStoryLink(check, card, path, storyCardIds) {
   else if (card.storyCard === undefined) check.fail(`${path}.beforeStory`, '要跟 storyCard 一起用');
 }
 
+function checkBookGuide(check, guide, path) {
+  if (!check.object(guide, path)) return;
+  check.text(guide.volume, `${path}.volume`);
+  check.text(guide.chapter, `${path}.chapter`);
+  if (check.present(guide.page, `${path}.page`) && !(Number.isInteger(guide.page) && guide.page > 0)) {
+    check.fail(`${path}.page`, '要是正整數');
+  }
+  if (check.list(guide.steps, `${path}.steps`, 1)) {
+    guide.steps.forEach((step, i) => {
+      const stepPath = `${path}.steps[${i}]`;
+      if (!check.object(step, stepPath)) return;
+      check.text(step.label, `${stepPath}.label`);
+      check.text(step.text, `${stepPath}.text`);
+      if (typeof step.note !== 'string') check.fail(`${stepPath}.note`, '要是文字（沒有就寫空字串）');
+    });
+  }
+  check.text(guide.duration, `${path}.duration`);
+  checkTextList(check, guide.tips, `${path}.tips`, 1);
+}
+
 function checkCard(check, card, path, { isStory, needsQuestionsOrNote, storyCardIds }, firstPathOfCardId) {
   if (!check.object(card, path)) return;
   if (check.text(card.id, `${path}.id`)) {
@@ -238,7 +259,10 @@ function checkCard(check, card, path, { isStory, needsQuestionsOrNote, storyCard
   }
   check.text(card.title, `${path}.title`);
   if (card.group !== undefined) check.text(card.group, `${path}.group`);
-  if (isStory || card.text !== undefined) check.text(card.text, `${path}.text`);
+  if (isStory) {
+    if (card.text !== undefined) check.fail(`${path}.text`, '故事卡不放原文（版權），改用 guide 寫翻書指引');
+    checkBookGuide(check, card.guide, `${path}.guide`);
+  } else if (card.text !== undefined) check.text(card.text, `${path}.text`);
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
   if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
   if (card.reveal !== undefined) checkTextFields(check, card.reveal, `${path}.reveal`, ['lead', 'text', 'source']);
