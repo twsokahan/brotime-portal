@@ -1,5 +1,6 @@
 import { bringVolume } from '../lib/book-guide.mjs';
 import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
+import { renderBooks } from './book-guide.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
 import { renderVenues } from './venues.mjs';
@@ -177,6 +178,7 @@ export function renderActivityMain({ activity, site, rel }) {
   return [
     `<p class="home-link"><a href="${rel}">${HOME_LINK_TEXT}</a></p>`,
     renderHead(activity),
+    renderBooks(activity),
     renderPrepare(activity, site),
     renderVenues(activity.venues, rel),
     renderFlow(activity, rel),

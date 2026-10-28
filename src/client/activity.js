@@ -1,4 +1,14 @@
-import { GUIDE_HEADING, SERIES, bookTitle, booksPacked, booksToBring, bringVolume, guideRows } from './lib/book-guide.mjs';
+import {
+  GUIDE_HEADING,
+  SERIES,
+  bookTitle,
+  booksPacked,
+  booksPlan,
+  booksToBring,
+  bringVolume,
+  guideRows,
+  storySlots,
+} from './lib/book-guide.mjs';
 import { districtGroups, routePicker, routeSteps } from './lib/city-walk.mjs';
 import { el, externalLink } from './dom.js';
 import { renderRouteBook } from './route-book.js';
@@ -178,6 +188,34 @@ function showStopStoryThumbs(steps) {
   });
 }
 
+const bookRow = ({ cards, volume, chapters, role }) =>
+  el('li', {}, [
+    el('b', { textContent: cards }),
+    ' 在',
+    el('strong', { textContent: volume }),
+    chapters,
+    role && el('em', { textContent: role }),
+  ]);
+
+const textLine = (className, textContent) => textContent && el('p', { className, textContent });
+
+function showBooks(steps) {
+  const section = document.getElementById('books');
+  const plan = booksPlan(storySlots(steps, activity.cardSets));
+  if (!section || !plan) return;
+  const children = [
+    section.querySelector('h2'),
+    section.querySelector('.books-series'),
+    textLine('books-lead', plan.lead),
+    ...plan.heads.map((head) => textLine('books-head', head)),
+    textLine('books-intro', plan.intro),
+    plan.rows.length && el('ul', { className: 'books-rows' }, plan.rows.map(bookRow)),
+    textLine('books-pending', plan.pending),
+    textLine('books-note', plan.note),
+  ];
+  section.replaceChildren(...children.filter(Boolean));
+}
+
 function setUpDistrictPicker() {
   const select = el('select', { id: 'district' }, [
     el('option', { value: '', textContent: '先選你們區', disabled: true, defaultSelected: true }),
@@ -199,6 +237,7 @@ function setUpDistrictPicker() {
     renderRouteBook(summary, route, flow, { rel: REL, books: booksToBring(routeStoryCards(flow.steps)) });
     summary.hidden = false;
     showRouteTimes(flow);
+    showBooks(flow.steps);
     showStopStoryThumbs(routeSteps(activity.steps, route));
     startButton.disabled = false;
     startButton.textContent = startLabel;

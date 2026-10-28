@@ -1,4 +1,4 @@
-import { GUIDE_HEADING, SERIES, bookTitle, guideRows } from '../lib/book-guide.mjs';
+import { BOOKS_HEADING, GUIDE_HEADING, SERIES, bookTitle, booksPlan, guideRows, storySlots } from '../lib/book-guide.mjs';
 import { escapeHtml } from './html.mjs';
 
 const renderRow = ({ label, text, note }) =>
@@ -16,4 +16,20 @@ ${guideRows(guide).map(renderRow).join('\n')}
 <ul class="book-guide-tips">${guide.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join('')}</ul>
 </section>
 `;
+}
+
+const renderBookRow = ({ cards, volume, chapters, role }) =>
+  `<li><b>${escapeHtml(cards)}</b> 在<strong>${escapeHtml(volume)}</strong>${escapeHtml(chapters)}${role ? `<em>${escapeHtml(role)}</em>` : ''}</li>`;
+
+const paragraph = (className, text) => (text ? `\n<p class="${className}">${escapeHtml(text)}</p>` : '');
+
+export function renderBooks(activity) {
+  const plan = booksPlan(storySlots(activity.steps, activity.cardSets));
+  if (!plan) return '';
+  const rows = plan.rows.length ? `\n<ul class="books-rows">${plan.rows.map(renderBookRow).join('')}</ul>` : '';
+  return `<section class="books" id="books" aria-labelledby="books-title">
+<h2 id="books-title">${BOOKS_HEADING}</h2>
+<p class="books-series">${SERIES}</p>${paragraph('books-lead', plan.lead)}
+${plan.heads.map((head) => `<p class="books-head">${escapeHtml(head)}</p>`).join('\n')}${paragraph('books-intro', plan.intro)}${rows}${paragraph('books-pending', plan.pending)}${paragraph('books-note', plan.note)}
+</section>`;
 }

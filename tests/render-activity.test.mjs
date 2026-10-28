@@ -144,6 +144,33 @@ test('a story card thumbnail says which volume of the book to bring', () => {
   assert.ok(step.includes('<span>要帶第16卷</span></a>'), step);
 });
 
+test('the books to prepare come right after the head, before the prep lists', () => {
+  const html = render();
+  const books = html.indexOf('<section class="books"');
+  assert.ok(html.indexOf('</header>') < books && books < html.indexOf('<section class="prepare">'));
+  const section = html.slice(books, html.indexOf('</section>', books));
+  for (const text of ['要準備的書', '《新・人間革命》', '要帶第16卷〈羽翼〉', '故事卡在這一卷，當天帶這一本；手邊沒有就跟區裡借。']) {
+    assert.ok(section.includes(text), `expected ${text}`);
+  }
+});
+
+test('the books section lists each volume with the cards in it', () => {
+  const activity = readyActivity();
+  const [first] = activity.cardSets.story.cards;
+  const another = (id, volume, chapter) => ({ ...first, id, guide: { ...first.guide, volume, chapter } });
+  activity.cardSets.story.cards = [first, another('s2', '第16卷', '羽翼'), another('s3', '第30卷（下）', '勝利歡呼')];
+  const html = render({ activity });
+  assert.ok(html.includes('<p class="books-head">當天只要帶一本</p>'));
+  assert.ok(html.includes('<li><b>s1、s2</b> 在<strong>第16卷</strong>〈羽翼〉</li><li><b>s3</b> 在<strong>第30卷（下）</strong>〈勝利歡呼〉</li>'));
+});
+
+test('an activity without story cards has no books section', () => {
+  const activity = readyActivity();
+  delete activity.cardSets.story;
+  activity.steps = activity.steps.map(({ cards, ...step }) => (cards?.includes('story') ? step : { ...step, cards }));
+  assert.ok(!render({ activity }).includes('class="books"'));
+});
+
 test('without a participant survey link the QR slot says the link is coming', () => {
   const slot = templateContent(render(), 'qr-participant');
   assert.ok(slot.includes('問卷連結準備中'));

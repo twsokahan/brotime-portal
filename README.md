@@ -49,6 +49,8 @@
   - `detail`：可以不寫。補充說明放這裡，網站上收起來，點開才看得到。
 - `steps` 是當天的每一步。`say`（「說這句就好」）只能一句、最多 45 個字。
 - 故事卡**不放原文**（2026-10-27 起因為版權，《新・人間革命》的原文段落不能出現在網站上；放了 `text`，`npm test` 會擋）。每張故事卡改放翻書指引 `guide: { volume, chapter, page, steps: [{ label, text, note }], duration, tips }`，由 `~/code/sokahan-propalsal-2026/plan-builder/book_guide_back.py` 的 `portal_guide(guide(活動 id, 卡片 id))` 產生，不要手寫。網站照紙本背面的樣子顯示：第幾卷〈章〉、約第幾頁、從哪句念到哪句、跳讀、念多久；挑卡的縮圖下面寫「要帶第幾卷」，城市散步選好區後寫要帶哪兩本。卡名、出處、分享提問、`note` 照卡片正面一字不差。
+- 活動頁開頭（基本資訊之後、「要準備」之前）有「要準備的書」區塊，照各卡 `guide` 自動產生，不用另外填：只有一張卡或全在同一卷就寫「要帶第N卷〈章〉」；要挑一張就列出每一卷有哪幾張卡（同卷合併，例如「A、B 在第18卷」）；一天念兩張、其中一張要挑的（新春拜年團）寫「選 A：只帶…」「選 B：帶…」；城市散步寫要帶兩本，停留點一那本選好區才出現。沒有故事卡的（桌遊之夜）不顯示。規則在 `src/lib/book-guide.mjs` 的 `booksPlan`。
+- 「你要做的」裡借書那項（task 含「借好」）的 `detail` 和「帶齊了嗎」的帶書項目，照 `~/code/sokahan-propalsal-2026/plan-builder/book_guide_v1/books_needed_v1.json` 的 `plan_sentence`、`item_row`（跟企劃案、一分鐘看懂同一套句子）；`npm test` 會檢查借書那項有寫到每一卷，也會擋「看背面寫的是」。
 - 改完內容要確認沒有原文：`python3 ~/code/sokahan-propalsal-2026/plan-builder/check_no_passages.py content/activities/*.json`，每個檔都要印出 clean。
 - 企劃案 PDF（`planFile`）和想印實體卡的人下載的 PDF（`printFiles`）放在 `public/files/`。正式公開前，卡片 PDF（檔名不是 `-plan.pdf` 結尾的）要加浮水印再放進來：`python3 ~/code/sokahan-propalsal-2026/plan-builder/watermark.py 來源.pdf public/files/<檔名>`，沒加的話 `npm test` 會擋。
 - 卡片可以帶 `reveal: { lead, text, source }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示池田先生的話。
