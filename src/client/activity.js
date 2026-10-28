@@ -205,7 +205,6 @@ function showBooks(steps) {
   if (!section || !plan) return;
   const children = [
     section.querySelector('h2'),
-    section.querySelector('.books-series'),
     textLine('books-lead', plan.lead),
     ...plan.heads.map((head) => textLine('books-head', head)),
     textLine('books-intro', plan.intro),

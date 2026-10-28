@@ -149,7 +149,7 @@ test('the books to prepare come right after the head, before the prep lists', ()
   const books = html.indexOf('<section class="books"');
   assert.ok(html.indexOf('</header>') < books && books < html.indexOf('<section class="prepare">'));
   const section = html.slice(books, html.indexOf('</section>', books));
-  for (const text of ['要準備的書', '《新・人間革命》', '要帶第16卷〈羽翼〉', '故事卡在這一卷，當天帶這一本；手邊沒有就跟區裡借。']) {
+  for (const text of ['<h2 id="books-title">要準備的《新・人間革命》</h2>', '要帶第16卷〈羽翼〉', '故事卡在這一卷，當天帶這一本；手邊沒有就跟區裡借。']) {
     assert.ok(section.includes(text), `expected ${text}`);
   }
 });

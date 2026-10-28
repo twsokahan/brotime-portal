@@ -773,32 +773,24 @@ p.availability,
 }
 
 .books {
-  --books-accent: var(--step1-text);
   margin: 20px 0 0;
   padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--step1);
+  border: 1px solid color-mix(in srgb, var(--book-line) 30%, white);
+  border-left: 6px solid var(--book-line);
   border-radius: 12px;
-  background: var(--box);
+  background: linear-gradient(var(--book-sky-top), var(--book-sky-middle) 45%, var(--book-sky-bottom));
+  color: var(--book-ink);
 }
 
 .books > h2 {
   margin: 0;
-  color: var(--books-accent);
+  color: var(--book-accent);
   font-size: 15px;
   letter-spacing: 0.08em;
 }
 
 .books p {
   margin: 0;
-}
-
-.books .books-series {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
 }
 
 .books .books-lead {
@@ -821,22 +813,22 @@ p.availability,
   margin: 4px 0 0;
   padding: 0;
   list-style: none;
-  border-top: 2px solid var(--books-accent);
+  border-top: 2px solid var(--book-accent);
 }
 
 .books-rows li {
   padding: 6px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--books-accent) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--book-accent) 30%, transparent);
 }
 
 .books-rows b {
-  color: var(--books-accent);
+  color: var(--book-accent);
   font-weight: 900;
 }
 
 .books-rows em {
   margin-left: 8px;
-  color: var(--muted);
+  color: var(--book-muted);
   font-size: 14px;
   font-style: normal;
   white-space: nowrap;
@@ -845,14 +837,14 @@ p.availability,
 .books .books-pending {
   margin-top: 8px;
   padding: 8px 12px;
-  border: 1px dashed var(--books-accent);
+  border: 1px dashed var(--book-accent);
   border-radius: 8px;
   font-size: 15px;
 }
 
 .books .books-note {
   margin-top: 10px;
-  color: var(--muted);
+  color: var(--book-muted);
   font-size: 15px;
 }
 

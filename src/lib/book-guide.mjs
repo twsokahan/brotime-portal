@@ -1,5 +1,5 @@
 export const GUIDE_HEADING = '翻書念故事';
-export const BOOKS_HEADING = '要準備的書';
+export const BOOKS_HEADING = '要準備的《新・人間革命》';
 export const SERIES = '《新・人間革命》';
 
 const COUNT_WORDS = { 2: '兩', 3: '三', 4: '四', 5: '五' };

@@ -28,8 +28,7 @@ export function renderBooks(activity) {
   if (!plan) return '';
   const rows = plan.rows.length ? `\n<ul class="books-rows">${plan.rows.map(renderBookRow).join('')}</ul>` : '';
   return `<section class="books" id="books" aria-labelledby="books-title">
-<h2 id="books-title">${BOOKS_HEADING}</h2>
-<p class="books-series">${SERIES}</p>${paragraph('books-lead', plan.lead)}
+<h2 id="books-title">${BOOKS_HEADING}</h2>${paragraph('books-lead', plan.lead)}
 ${plan.heads.map((head) => `<p class="books-head">${escapeHtml(head)}</p>`).join('\n')}${paragraph('books-intro', plan.intro)}${rows}${paragraph('books-pending', plan.pending)}${paragraph('books-note', plan.note)}
 </section>`;
 }

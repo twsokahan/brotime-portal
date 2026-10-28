@@ -4,6 +4,15 @@ export const PALETTE = Object.freeze({
   ink: '#3a2e24',
   muted: '#7a6a58',
   line: '#e2d5bf',
+  book: Object.freeze({
+    skyTop: '#cbeaf9',
+    skyMiddle: '#e9f6fc',
+    skyBottom: '#f5fbfe',
+    line: '#0f9fd8',
+    accent: '#0c6591',
+    ink: '#183a5e',
+    muted: '#466983',
+  }),
   steps: Object.freeze([
     Object.freeze({ dot: '#c98a2b', text: '#79531a' }),
     Object.freeze({ dot: '#5f8a3a', text: '#44632a' }),
@@ -33,13 +42,20 @@ export function contrastRatio(hexA, hexB) {
 }
 
 export function paletteCss() {
-  const { paper, box, ink, muted, line, steps } = PALETTE;
+  const { paper, box, ink, muted, line, book, steps } = PALETTE;
   const declarations = [
     `--paper:${paper}`,
     `--box:${box}`,
     `--ink:${ink}`,
     `--muted:${muted}`,
     `--line:${line}`,
+    `--book-sky-top:${book.skyTop}`,
+    `--book-sky-middle:${book.skyMiddle}`,
+    `--book-sky-bottom:${book.skyBottom}`,
+    `--book-line:${book.line}`,
+    `--book-accent:${book.accent}`,
+    `--book-ink:${book.ink}`,
+    `--book-muted:${book.muted}`,
     ...steps.flatMap(({ dot, text }, i) => [`--step${i + 1}:${dot}`, `--step${i + 1}-text:${text}`]),
   ];
   return `:root{${declarations.join(';')}}`;

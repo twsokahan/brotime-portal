@@ -39,8 +39,18 @@ test('each step text colour is readable on paper and box, and white text is read
   });
 });
 
+test('the book colours are readable on every shade of the sky-blue background', () => {
+  const { skyTop, skyMiddle, skyBottom, accent, ink, muted } = PALETTE.book;
+  for (const sky of [skyTop, skyMiddle, skyBottom]) {
+    assertReadable(accent, sky, 'book accent');
+    assertReadable(ink, sky, 'book ink');
+    assertReadable(muted, sky, 'book muted');
+  }
+});
+
 test('paletteCss exposes the palette as CSS custom properties', () => {
   const css = paletteCss();
   assert.ok(css.includes('--paper:'), css);
   assert.ok(css.includes('--step3-text:'), css);
+  assert.ok(css.includes('--book-accent:'), css);
 });
