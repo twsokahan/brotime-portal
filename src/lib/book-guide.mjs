@@ -90,8 +90,7 @@ export function booksPlan(slots) {
   const plan = { lead: null, heads: [], intro: null, rows: bookRows(groups, slots), pending: null, note: BORROW };
 
   if (slots.length === 1 && groups.length === 1) {
-    const where =
-      cards.length === 1 ? '故事卡在這一卷，當天帶這一本' : `故事卡 ${idList(cards)} 都在這一卷，帶這一本就夠`;
+    const where = cards.length === 1 ? '當天帶這一本就好' : `故事卡 ${idList(cards)} 都出自這一卷，帶這一本就夠`;
     return { ...plan, heads: [`要帶${groupTitle(groups[0])}`], rows: [], note: `${where}；${BORROW}` };
   }
   if (slots.length === 1) {

@@ -79,7 +79,7 @@ test('a single story card names its book outright', () => {
     intro: null,
     rows: [],
     pending: null,
-    note: '故事卡在這一卷，當天帶這一本；手邊沒有就跟區裡借。',
+    note: '當天帶這一本就好；手邊沒有就跟區裡借。',
   });
 });
 
@@ -87,7 +87,7 @@ test('cards that all sit in one volume need just that book', () => {
   const plan = booksPlan([slot(card('第7卷', '早春', 'A'), card('第7卷', '早春', 'B'))]);
   assert.deepEqual(plan.heads, ['要帶第7卷〈早春〉']);
   assert.deepEqual(plan.rows, []);
-  assert.equal(plan.note, '故事卡 A、B 都在這一卷，帶這一本就夠；手邊沒有就跟區裡借。');
+  assert.equal(plan.note, '故事卡 A、B 都出自這一卷，帶這一本就夠；手邊沒有就跟區裡借。');
 });
 
 test('picking one of several cards lists every volume with its cards merged', () => {
