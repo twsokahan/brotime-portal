@@ -1,4 +1,4 @@
-import { BOOKS_HEADING, GUIDE_HEADING, SERIES, bookTitle, booksPlan, guideRows, storySlots } from '../lib/book-guide.mjs';
+import { BOOKS_HEADING, GUIDE_HEADING, SERIES, bookTitle, booksPlan, guideRows, readingSlots } from '../lib/book-guide.mjs';
 import { escapeHtml } from './html.mjs';
 
 const renderRow = ({ label, text, note }) =>
@@ -18,13 +18,13 @@ ${guideRows(guide).map(renderRow).join('\n')}
 `;
 }
 
-const renderBookRow = ({ cards, volume, chapters, role }) =>
-  `<li><b>${escapeHtml(cards)}</b> 在<strong>${escapeHtml(volume)}</strong>${escapeHtml(chapters)}${role ? `<em>${escapeHtml(role)}</em>` : ''}</li>`;
+const renderBookRow = ({ cards, link, volume, chapters, role }) =>
+  `<li><b>${escapeHtml(cards)}</b> ${link}<strong>${escapeHtml(volume)}</strong>${escapeHtml(chapters)}${role ? `<em>${escapeHtml(role)}</em>` : ''}</li>`;
 
 const paragraph = (className, text) => (text ? `\n<p class="${className}">${escapeHtml(text)}</p>` : '');
 
 export function renderBooks(activity) {
-  const plan = booksPlan(storySlots(activity.steps, activity.cardSets));
+  const plan = booksPlan(readingSlots(activity.steps, activity.cardSets));
   if (!plan) return '';
   const rows = plan.rows.length ? `\n<ul class="books-rows">${plan.rows.map(renderBookRow).join('')}</ul>` : '';
   return `<section class="books" id="books" aria-labelledby="books-title">

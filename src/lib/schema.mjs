@@ -250,6 +250,13 @@ function checkBookGuide(check, guide, path) {
   checkTextList(check, guide.tips, `${path}.tips`, 1);
 }
 
+function checkReveal(check, reveal, path) {
+  if (!check.object(reveal, path)) return;
+  check.text(reveal.lead, `${path}.lead`);
+  if (reveal.text !== undefined) check.fail(`${path}.text`, '揭曉不放原文（版權），改用 guide 寫翻書指引');
+  checkBookGuide(check, reveal.guide, `${path}.guide`);
+}
+
 function checkCard(check, card, path, { isStory, needsQuestionsOrNote, storyCardIds }, firstPathOfCardId) {
   if (!check.object(card, path)) return;
   if (check.text(card.id, `${path}.id`)) {
@@ -265,7 +272,7 @@ function checkCard(check, card, path, { isStory, needsQuestionsOrNote, storyCard
   } else if (card.text !== undefined) check.text(card.text, `${path}.text`);
   if (isStory || card.source !== undefined) check.text(card.source, `${path}.source`);
   if (card.note !== undefined) checkTextFields(check, card.note, `${path}.note`, ['label', 'text']);
-  if (card.reveal !== undefined) checkTextFields(check, card.reveal, `${path}.reveal`, ['lead', 'text', 'source']);
+  if (card.reveal !== undefined) checkReveal(check, card.reveal, `${path}.reveal`);
   if (card.forKids !== undefined && card.forKids !== true) check.fail(`${path}.forKids`, '只能是 true');
   checkStoryLink(check, card, path, storyCardIds);
   const needsQuestions = needsQuestionsOrNote && card.note === undefined;

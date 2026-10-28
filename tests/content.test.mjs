@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { contentErrors, readContent, renderPages } from '../scripts/build.mjs';
-import { storySlots } from '../src/lib/book-guide.mjs';
+import { readingSlots } from '../src/lib/book-guide.mjs';
 
 const CONTENT_DIR = fileURLToPath(new URL('../content/', import.meta.url));
 const PUBLIC_DIR = fileURLToPath(new URL('../public/', import.meta.url));
@@ -78,7 +78,7 @@ test('the book todo names every volume the story cards need, so nobody has to lo
   const { activityFiles } = await readContent(CONTENT_DIR);
   for (const { activity } of activityFiles) {
     assert.ok(!JSON.stringify(activity).includes('看背面寫的是'), `${activity.id} still sends people to the card back for the volume`);
-    const cards = storySlots(activity.steps, activity.cardSets).flatMap((slot) => slot.cards);
+    const cards = readingSlots(activity.steps, activity.cardSets).flatMap((slot) => slot.cards);
     if (!cards.length) continue;
     const todo = activity.todo.find((row) => row.task.includes('借好'));
     assert.ok(todo, `${activity.id} has no todo for borrowing the book`);

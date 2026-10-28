@@ -56,18 +56,30 @@ function slotCards(step, cardSets) {
   });
 }
 
-export function storySlots(steps, cardSets) {
-  return steps.flatMap((step) => {
+const revealLabel = (card) => card.title.split('：')[0];
+
+function revealSlots(cardSets) {
+  const cards = Object.values(cardSets)
+    .flatMap((set) => set.cards)
+    .filter((card) => card.reveal?.guide)
+    .map((card) => ({ id: revealLabel(card), guide: card.reveal.guide }));
+  return cards.length ? [{ stop: 'reveal', all: true, cards }] : [];
+}
+
+export function readingSlots(steps, cardSets) {
+  const storyReadings = steps.flatMap((step) => {
     if (step.routeStop === 'stop1' && !step.cards) return [{ stop: 'stop1', cards: [] }];
     const cards = slotCards(step, cardSets);
     return cards.length ? [{ stop: step.routeStop, cards }] : [];
   });
+  return [...storyReadings, ...revealSlots(cardSets)];
 }
 
 function bookRows(groups, slots) {
   const roleOf = (cardId) => STOP_ROLES[slots.find((slot) => slot.cards.some((card) => card.id === cardId))?.stop];
   return groups.map((group) => ({
     cards: group.cardIds.join('、'),
+    link: slots.every((slot) => slot.all) ? '' : '在',
     volume: group.volume,
     chapters: chapterText(group.chapters),
     role: [...new Set(group.cardIds.map(roleOf).filter(Boolean))].join('、'),
@@ -89,6 +101,13 @@ export function booksPlan(slots) {
   const groups = volumeGroups(cards);
   const plan = { lead: null, heads: [], intro: null, rows: bookRows(groups, slots), pending: null, note: BORROW };
 
+  if (slots.every((slot) => slot.all)) {
+    return {
+      ...plan,
+      heads: [groups.length === 1 ? `要帶${groupTitle(groups[0])}` : `要帶${countWord(groups.length)}本`],
+      note: `桌長帶這 ${groups.length} 卷書，投完票翻到那一段念給大家聽；${BORROW}`,
+    };
+  }
   if (slots.length === 1 && groups.length === 1) {
     const where = cards.length === 1 ? '當天帶這一本就好' : `故事卡 ${idList(cards)} 都出自這一卷，帶這一本就夠`;
     return { ...plan, heads: [`要帶${groupTitle(groups[0])}`], rows: [], note: `${where}；${BORROW}` };

@@ -7,7 +7,7 @@ import {
   booksToBring,
   bringVolume,
   guideRows,
-  storySlots,
+  readingSlots,
 } from './lib/book-guide.mjs';
 import { districtGroups, routePicker, routeSteps } from './lib/city-walk.mjs';
 import { el, externalLink } from './dom.js';
@@ -41,6 +41,7 @@ const VENUE_KEY = 'brotime:venue';
 const LOCATE_LABEL = '用我的位置找最近的分館';
 const LOCATE_OPTIONS = { enableHighAccuracy: false, timeout: 15000, maximumAge: 10 * 60 * 1000 };
 const STEP_COLOURS = 5;
+const REVEAL_GUIDE_HEADING = '翻書念這一段';
 
 const activity = JSON.parse(document.getElementById('activity-data').textContent);
 const site = { baseUrl: activity.baseUrl };
@@ -188,10 +189,10 @@ function showStopStoryThumbs(steps) {
   });
 }
 
-const bookRow = ({ cards, volume, chapters, role }) =>
+const bookRow = ({ cards, link, volume, chapters, role }) =>
   el('li', {}, [
     el('b', { textContent: cards }),
-    ' 在',
+    ` ${link}`,
     el('strong', { textContent: volume }),
     chapters,
     role && el('em', { textContent: role }),
@@ -201,7 +202,7 @@ const textLine = (className, textContent) => textContent && el('p', { className,
 
 function showBooks(steps) {
   const section = document.getElementById('books');
-  const plan = booksPlan(storySlots(steps, activity.cardSets));
+  const plan = booksPlan(readingSlots(steps, activity.cardSets));
   if (!section || !plan) return;
   const children = [
     section.querySelector('h2'),
@@ -444,9 +445,9 @@ const guideRow = ({ label, text, note }) =>
     el('dd', {}, [text, note && ' ', note && el('small', { textContent: `（${note}）` })]),
   ]);
 
-const bookGuide = (guide) =>
+const bookGuide = (guide, heading = GUIDE_HEADING) =>
   el('section', { className: 'book-guide' }, [
-    el('h3', { textContent: GUIDE_HEADING }),
+    el('h3', { textContent: heading }),
     el('p', { className: 'book-guide-series', textContent: SERIES }),
     el('p', { className: 'book-guide-book', textContent: bookTitle(guide) }),
     el('p', { className: 'book-guide-page' }, [
@@ -549,10 +550,9 @@ function topicGroupPicker(groupButtons, fullRows) {
 
 const revealAnswer = (reveal) =>
   el('details', { className: 'reveal' }, [
-    el('summary', { textContent: '投完票再揭曉：池田先生的話' }),
+    el('summary', { textContent: '投完票再揭曉：翻書念池田先生的話' }),
     el('p', { className: 'reveal-lead', textContent: reveal.lead }),
-    ...reveal.text.split('\n\n').map((paragraph) => el('p', { textContent: paragraph })),
-    el('p', { className: 'source', textContent: `出處：${reveal.source}` }),
+    bookGuide(reveal.guide, REVEAL_GUIDE_HEADING),
   ]);
 
 const viewerSlide = (card) =>

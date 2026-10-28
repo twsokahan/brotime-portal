@@ -1604,7 +1604,7 @@ p.availability,
   text-align: center;
 }
 
-.reveal p {
+.reveal > p {
   margin: 12px 0 0;
 }
 

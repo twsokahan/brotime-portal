@@ -445,24 +445,29 @@ test('a story card may carry both sharing questions and a note', () => {
   assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
-test('a card may carry the answer that is revealed after the vote', () => {
+test('a card may carry where in the book to read after the vote', () => {
   const activity = readyActivity();
   activity.cardSets.topic.kind = 'other';
   activity.cardSets.topic.cards[0].reveal = {
     lead: '這是測試用的揭曉引言——',
-    text: '這是測試用的揭曉原文第一段。\n\n這是第二段。',
-    source: '《新・人間革命》第 7 卷〈早春〉p.228-229',
+    guide: structuredClone(activity.cardSets.story.cards[0].guide),
   };
   assert.deepEqual(validateActivity(activity, allFilesExist), []);
 });
 
-test('a revealed answer needs its lead, its text and its source', () => {
+test('a revealed answer needs its lead and its book guide, and never the passage itself', () => {
   const activity = readyActivity();
   const card = activity.cardSets.topic.cards[0];
-  card.reveal = { lead: '這是測試用的揭曉引言——', text: '這是測試用的揭曉原文。' };
-  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal.source 必填');
-  card.reveal = { text: '這是測試用的揭曉原文。', source: '《新・人間革命》第 7 卷〈早春〉' };
+  const guide = structuredClone(activity.cardSets.story.cards[0].guide);
+  card.reveal = { lead: '這是測試用的揭曉引言——' };
+  assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal.guide 必填');
+  card.reveal = { guide };
   assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal.lead 必填');
+  card.reveal = { lead: '這是測試用的揭曉引言——', guide, text: '這是測試用的揭曉原文。' };
+  assertReports(
+    validateActivity(activity, allFilesExist),
+    'cardSets.topic.cards[0].reveal.text 揭曉不放原文（版權），改用 guide 寫翻書指引',
+  );
   card.reveal = '這是測試用的揭曉原文。';
   assertReports(validateActivity(activity, allFilesExist), 'cardSets.topic.cards[0].reveal 要是物件');
 });
