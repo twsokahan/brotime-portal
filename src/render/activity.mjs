@@ -1,4 +1,3 @@
-import { bringVolume } from '../lib/book-guide.mjs';
 import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { renderBooks } from './book-guide.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
@@ -53,15 +52,9 @@ function renderTodo(activity, site) {
 }
 
 function renderPrepare(activity, site) {
-  const provided = list(
-    activity.provided,
-    ({ item, qty }) => `<li><span>${escapeHtml(item)}</span><em>${escapeHtml(qty)}</em></li>`,
-  );
   return `<section class="prepare">
-<h2>要準備</h2>
-<div class="box"><h3>企劃室提供</h3><ul>${provided}</ul></div>
-${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}${activity.guide ? `${guideLink(activity.guide)}\n` : ''}<div class="box todo"><h3>你要做的</h3>${renderTodo(activity, site)}</div>
-<div class="box"><h3>問卷 <span class="badge">線上</span></h3><p>線上填，結束前掃 QR code，不用印。</p></div>
+<h2>你要做的</h2>
+${activity.ichiban ? `${ICHIBAN_LINK}\n` : ''}${activity.guide ? `${guideLink(activity.guide)}\n` : ''}<div class="box todo">${renderTodo(activity, site)}</div>
 </section>`;
 }
 
@@ -78,7 +71,7 @@ function renderThumbs(activity, step, rel) {
     return thumbCards(set, step).map((card) => {
       const img = `<img src="${rel}cards/${escapeHtml(activity.id)}/${escapeHtml(card.id)}-thumb.webp" alt="${escapeHtml(card.title)}" loading="lazy">`;
       if (set.kind !== 'story') return img;
-      return `<a class="story-thumb" href="cards/${escapeHtml(card.id)}/">${img}<span>${escapeHtml(bringVolume(card.guide))}</span></a>`;
+      return `<a class="story-thumb" href="cards/${escapeHtml(card.id)}/">${img}</a>`;
     });
   });
   return thumbs.length ? `<div class="thumbs">${thumbs.join('')}</div>` : '';
@@ -100,10 +93,11 @@ function renderFlow(activity, rel) {
 </section>`;
 }
 
-function renderStart() {
+function renderStart(activity) {
+  const offlineHint =
+    activity.tags.place === 'indoor' ? '' : '\n<p class="hint">要去沒訊號的地方，出發前在有訊號處先按『開始』。</p>';
   return `<div class="start">
-<button id="start-live" type="button">開始 ▶</button>
-<p class="hint">要去沒訊號的地方，出發前在有訊號處先按『開始』。</p>
+<button id="start-live" type="button">開始 ▶</button>${offlineHint}
 </div>`;
 }
 
@@ -182,7 +176,7 @@ export function renderActivityMain({ activity, site, rel }) {
     renderPrepare(activity, site),
     renderVenues(activity.venues, rel),
     renderFlow(activity, rel),
-    renderStart(),
+    renderStart(activity),
     renderRain(activity),
     renderMore(activity, rel),
     renderLiveData(activity, site),

@@ -15,11 +15,6 @@ export function readyActivity() {
       interests: ['eat', 'talk'],
     },
     facts: { people: '6–10 人', duration: '60 分鐘', place: '咖啡廳或會館' },
-    provided: [
-      { item: '故事卡（在網站上看）', qty: '1 張' },
-      { item: '話題卡（主持人手機抽）', qty: '3 張' },
-      { item: '線上問卷', qty: '參加者、工作人員各 1 份' },
-    ],
     todo: [
       { when: '3–4 週前', task: '訂咖啡廳（6–10 人、坐 90 分鐘）' },
       { when: '3–4 週前', task: '在群組邀約，私訊久未參加的夥伴' },

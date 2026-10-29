@@ -176,7 +176,6 @@ function routeLineChoice(onPick) {
 const storyThumb = (card) =>
   el('a', { className: 'story-thumb', href: `cards/${card.id}/` }, [
     el('img', { src: `${REL}cards/${activity.id}/${card.id}-thumb.webp`, alt: card.title, loading: 'lazy' }),
-    el('span', { textContent: bringVolume(card.guide) }),
   ]);
 
 function showStopStoryThumbs(steps) {

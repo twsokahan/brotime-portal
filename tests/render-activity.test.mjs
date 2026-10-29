@@ -16,7 +16,7 @@ function templateContent(html, id) {
 }
 
 function todoBox(html) {
-  const at = html.indexOf('<h3>你要做的</h3>');
+  const at = html.indexOf('<div class="box todo">');
   assert.ok(at >= 0, 'expected the 你要做的 box');
   return html.slice(at, html.indexOf('</div>', at));
 }
@@ -39,20 +39,32 @@ const STAFF_SURVEY = { url: 'https://example.com/staff', activityEntry: 'entry.2
 const REPORT_FORM = { url: 'https://example.com/report', activityEntry: 'entry.3' };
 const BRUNCH_NAME = encodeURIComponent('兄弟早午餐會');
 
-test('the activity page shows the prep lists, the flow and the start button', () => {
+test('the activity page shows the todo list, the flow and the start button', () => {
   const html = render();
-  for (const text of ['企劃室提供', '你要做的', '60 分鐘這樣過', '開始 ▶', OFFLINE_HINT]) {
+  for (const text of ['<h2>你要做的</h2>', '60 分鐘這樣過', '開始 ▶']) {
     assert.ok(html.includes(text), `expected ${text}`);
   }
 });
 
-test('the activity page opens with a link back to the entry page', () => {
-  assert.ok(render().startsWith(`<p class="home-link"><a href="${REL}">← 看其他兄弟時光</a></p>`));
+test('the activity page leaves out what the planning office provides and the survey box', () => {
+  const html = render();
+  for (const text of ['企劃室提供', '<h2>要準備</h2>', '<h3>你要做的</h3>', '<h3>問卷']) {
+    assert.ok(!html.includes(text), `expected no ${text}`);
+  }
 });
 
-test('the provided list comes before the flow', () => {
-  const html = render();
-  assert.ok(html.indexOf('企劃室提供') < html.indexOf('60 分鐘這樣過'));
+test('the offline hint under the start button shows only for activities not held indoors', () => {
+  assert.ok(!render().includes(OFFLINE_HINT));
+  const outdoors = readyActivity();
+  outdoors.tags.place = 'outdoor';
+  assert.ok(render({ activity: outdoors }).includes(OFFLINE_HINT));
+  const either = readyActivity();
+  either.tags.place = 'both';
+  assert.ok(render({ activity: either }).includes(OFFLINE_HINT));
+});
+
+test('the activity page opens with a link back to the entry page', () => {
+  assert.ok(render().startsWith(`<p class="home-link"><a href="${REL}">← 看其他兄弟時光</a></p>`));
 });
 
 test('a custom flow title replaces the 60-minute default', () => {
@@ -135,13 +147,8 @@ test('a step shows only the first three topic cards', () => {
 test('a story card thumbnail links to its own card page and has a QR template', () => {
   const html = render();
   const step = stepItem(html, '一起讀故事');
-  assert.match(step, /<a class="story-thumb" href="cards\/s1\/"><img src="\.\.\/\.\.\/cards\/brunch\/s1-thumb\.webp"/);
+  assert.match(step, /<a class="story-thumb" href="cards\/s1\/"><img src="\.\.\/\.\.\/cards\/brunch\/s1-thumb\.webp"[^>]*><\/a>/);
   assert.ok(templateContent(html, 'qr-card-s1').includes('<svg'));
-});
-
-test('a story card thumbnail says which volume of the book to bring', () => {
-  const step = stepItem(render(), '一起讀故事');
-  assert.ok(step.includes('<span>要帶第16卷</span></a>'), step);
 });
 
 test('the books to prepare come right after the head, before the prep lists', () => {
@@ -149,7 +156,7 @@ test('the books to prepare come right after the head, before the prep lists', ()
   const books = html.indexOf('<section class="books"');
   assert.ok(html.indexOf('</header>') < books && books < html.indexOf('<section class="prepare">'));
   const section = html.slice(books, html.indexOf('</section>', books));
-  for (const text of ['<h2 id="books-title">要準備的《新・人間革命》</h2>', '要帶第16卷〈羽翼〉', '當天帶這一本就好；手邊沒有就跟區裡借。']) {
+  for (const text of ['<h2 id="books-title">要準備的《新・人間革命》</h2>', '要帶第16卷〈羽翼〉', '當天帶這一本就好。']) {
     assert.ok(section.includes(text), `expected ${text}`);
   }
 });
@@ -293,26 +300,26 @@ test('inserted text is escaped', () => {
 
 const ICHIBAN_LINK = '<a href="ichiban/">電子一番賞（不用刮刮卡也能抽）</a>';
 
-test('an activity with an ichiban setting links to the electronic ichiban right after the provided list', () => {
+test('an activity with an ichiban setting links to the electronic ichiban under the 你要做的 heading', () => {
   const activity = { ...readyActivity(), ichiban: { grades: { A: 1, B: 2, C: 3, D: 4 } } };
   const html = render({ activity });
   const link = html.indexOf(ICHIBAN_LINK);
   assert.ok(link >= 0, 'expected the ichiban link');
-  assert.ok(html.indexOf('企劃室提供') < link);
-  assert.ok(link < html.indexOf('你要做的'));
+  assert.ok(html.indexOf('<h2>你要做的</h2>') < link);
+  assert.ok(link < html.indexOf('<div class="box todo">'));
 });
 
 test('an activity without an ichiban setting has no ichiban link', () => {
   assert.ok(!render().includes('電子一番賞'));
 });
 
-test('an activity with a guide links to the guide page right after the provided list', () => {
+test('an activity with a guide links to the guide page under the 你要做的 heading', () => {
   const guide = { title: '第一次看球？看這張就夠', sections: [{ heading: '一場怎麼打', items: ['一共九局。'] }] };
   const html = render({ activity: { ...readyActivity(), guide } });
   const link = html.indexOf('<a href="guide/">新手小抄：第一次看球？看這張就夠</a>');
   assert.ok(link >= 0, 'expected the guide link');
-  assert.ok(html.indexOf('企劃室提供') < link);
-  assert.ok(link < html.indexOf('你要做的'));
+  assert.ok(html.indexOf('<h2>你要做的</h2>') < link);
+  assert.ok(link < html.indexOf('<div class="box todo">'));
 });
 
 test('an activity without a guide has no guide link', () => {

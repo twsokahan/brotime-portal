@@ -462,7 +462,6 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('tags')) checkTags(check, activity.tags);
   checkRainNote(check, activity);
   if (shouldCheck('facts')) checkTextFields(check, activity.facts, 'facts', ['people', 'duration', 'place']);
-  if (shouldCheck('provided')) checkRows(check, activity.provided, 'provided', ['item', 'qty'], 1);
   if (shouldCheck('todo')) checkTodo(check, activity.todo);
   if (shouldCheck('cardSets')) checkCardSets(check, activity.cardSets, published);
   if (shouldCheck('steps')) {

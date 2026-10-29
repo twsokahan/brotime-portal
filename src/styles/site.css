@@ -215,24 +215,6 @@ main > p > a {
   padding: 10px 0;
 }
 
-.box li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0 12px;
-}
-
-.box li + li {
-  margin-top: 6px;
-}
-
-.box li em {
-  color: var(--muted);
-  font-style: normal;
-  text-align: right;
-  white-space: nowrap;
-}
-
 .todo h4 {
   margin: 14px 0 0;
   color: var(--muted);
@@ -241,15 +223,7 @@ main > p > a {
   line-height: 1.4;
 }
 
-.todo h3 + h4 {
-  margin-top: 8px;
-}
-
-.todo li {
-  display: block;
-}
-
-.todo li + li {
+.todo h4:first-child {
   margin-top: 0;
 }
 
@@ -612,20 +586,6 @@ main > p > a {
   border-radius: 8px;
   border: 1px solid var(--line);
   background: var(--box);
-}
-
-.story-thumb {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 88px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-  text-align: center;
-  text-decoration: none;
 }
 
 .start {

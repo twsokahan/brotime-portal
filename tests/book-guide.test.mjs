@@ -79,7 +79,7 @@ test('a single story card names its book outright', () => {
     intro: null,
     rows: [],
     pending: null,
-    note: '當天帶這一本就好；手邊沒有就跟區裡借。',
+    note: '當天帶這一本就好。',
   });
 });
 
@@ -87,7 +87,7 @@ test('cards that all sit in one volume need just that book', () => {
   const plan = booksPlan([slot(card('第7卷', '早春', 'A'), card('第7卷', '早春', 'B'))]);
   assert.deepEqual(plan.heads, ['要帶第7卷〈早春〉']);
   assert.deepEqual(plan.rows, []);
-  assert.equal(plan.note, '故事卡 A、B 都出自這一卷，帶這一本就夠；手邊沒有就跟區裡借。');
+  assert.equal(plan.note, '故事卡 A、B 都出自這一卷，帶這一本就夠。');
 });
 
 test('picking one of several cards lists every volume with its cards merged', () => {
@@ -98,7 +98,7 @@ test('picking one of several cards lists every volume with its cards merged', ()
     { cards: 'A、B', link: '在', volume: '第18卷', chapters: '〈師恩〉', role: '' },
     { cards: 'C', link: '在', volume: '第19卷', chapters: '〈長虹之舞〉', role: '' },
   ]);
-  assert.equal(plan.note, '事先挑好一張，就帶那一卷；手邊沒有就跟區裡借。');
+  assert.equal(plan.note, '事先挑好一張，就帶那一卷。');
 });
 
 test('before a district is chosen, city walk names the end book and leaves the other open', () => {
@@ -132,7 +132,7 @@ test('when one reading is picked and another is fixed, each pick says which book
     { cards: 'A、C', link: '在', volume: '第18卷', chapters: '〈前進〉〈飛躍〉', role: '' },
     { cards: 'B', link: '在', volume: '第7卷', chapters: '〈萌芽〉', role: '' },
   ]);
-  assert.equal(plan.note, '手邊沒有就跟區裡借。');
+  assert.equal(plan.note, null);
 });
 
 const revealCard = (no, title, volume, chapter) => ({
@@ -173,5 +173,5 @@ test('when every revealed answer has to be read, the host brings all the volumes
     { cards: '第 2 題', link: '', volume: '第30卷（上）', chapters: '〈大山〉', role: '' },
   ]);
   assert.equal(plan.rows.length, 5);
-  assert.equal(plan.note, '桌長帶這 5 卷書，投完票翻到那一段念給大家聽；手邊沒有就跟區裡借。');
+  assert.equal(plan.note, '桌長帶這 5 卷書，投完票翻到那一段念給大家聽。');
 });
