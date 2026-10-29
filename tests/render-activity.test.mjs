@@ -46,6 +46,14 @@ test('the activity page shows the todo list, the flow and the start button', () 
   }
 });
 
+test('the todo list comes after the flow and the start button, before the extras', () => {
+  const html = render();
+  const todo = html.indexOf('<section class="prepare">');
+  assert.ok(html.indexOf('<section class="flow">') < todo);
+  assert.ok(html.indexOf('<div class="start">') < todo);
+  assert.ok(todo < html.indexOf('<section class="more">'));
+});
+
 test('the activity page leaves out what the planning office provides and the survey box', () => {
   const html = render();
   for (const text of ['企劃室提供', '<h2>要準備</h2>', '<h3>你要做的</h3>', '<h3>問卷']) {

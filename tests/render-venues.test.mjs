@@ -63,10 +63,10 @@ test('an activity without venues has no venue picker', () => {
   assert.ok(!render(readyActivity()).includes('class="venues"'));
 });
 
-test('the venue picker sits between the prep lists and the flow, menu first and the fine print last', () => {
+test('the venue picker sits between the head and the flow, menu first and the fine print last', () => {
   const html = render(withVenues());
   const at = html.indexOf('<section class="venues">');
-  assert.ok(at > html.indexOf('<section class="prepare">'));
+  assert.ok(at > html.indexOf('</header>'));
   assert.ok(at < html.indexOf('<section class="flow">'));
   assert.ok(html.includes('<h2>選分館</h2>\n<select id="venue"'));
   assert.ok(
