@@ -1,3 +1,4 @@
+import { followsStory } from '../lib/live.mjs';
 import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { renderBooks } from './book-guide.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
@@ -65,16 +66,30 @@ function thumbCards(set, step) {
   return set.cards.slice(0, DEFAULT_THUMB_COUNT);
 }
 
-function renderThumbs(activity, step, rel) {
-  const thumbs = (step.cards ?? []).flatMap((key) => {
-    const set = activity.cardSets[key];
-    return thumbCards(set, step).map((card) => {
+const deckLabel = (set) => (set.kind !== 'topic' || set.label.includes('話題卡') ? set.label : `話題卡：${set.label}`);
+
+function deckThumbs(activity, step, set, rel) {
+  return thumbCards(set, step)
+    .map((card) => {
       const img = `<img src="${rel}cards/${escapeHtml(activity.id)}/${escapeHtml(card.id)}-thumb.webp" alt="${escapeHtml(card.title)}" loading="lazy">`;
       if (set.kind !== 'story') return img;
       return `<a class="story-thumb" href="cards/${escapeHtml(card.id)}/">${img}</a>`;
-    });
-  });
-  return thumbs.length ? `<div class="thumbs">${thumbs.join('')}</div>` : '';
+    })
+    .join('');
+}
+
+function renderThumbs(activity, step, rel) {
+  const decks = (step.cards ?? [])
+    .map((key) => activity.cardSets[key])
+    .filter((set) => !followsStory(set))
+    .map((set) => ({ set, thumbs: deckThumbs(activity, step, set, rel) }))
+    .filter((deck) => deck.thumbs);
+  if (!decks.length) return '';
+  const mixesStoryWithOtherDecks = decks.length > 1 && decks.some((deck) => deck.set.kind === 'story');
+  if (!mixesStoryWithOtherDecks) return `<div class="thumbs">${decks.map((deck) => deck.thumbs).join('')}</div>`;
+  return decks
+    .map(({ set, thumbs }) => `<p class="thumb-label">${escapeHtml(deckLabel(set))}</p>\n<div class="thumbs">${thumbs}</div>`)
+    .join('\n');
 }
 
 function renderFlow(activity, rel) {

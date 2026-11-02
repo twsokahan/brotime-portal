@@ -581,6 +581,17 @@ main > p > a {
   margin: 8px 0 0;
 }
 
+.thumb-label {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.thumb-label + .thumbs {
+  margin-top: 4px;
+}
+
 .thumbs img {
   display: block;
   width: 88px;

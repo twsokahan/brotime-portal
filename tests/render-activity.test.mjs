@@ -154,6 +154,42 @@ test('a step shows only the first three topic cards', () => {
   assert.ok(!step.includes('cards/brunch/t12-thumb.webp'));
 });
 
+test('topic cards that follow the chosen story card get no thumbnails on the activity page', () => {
+  const activity = readyActivity();
+  activity.cardSets.afterStory = {
+    kind: 'topic',
+    label: '故事念完、沒人接話時',
+    cards: [{ id: 's1-1', title: '測試用的接話題？', storyCard: 's1' }],
+  };
+  activity.steps.find((step) => step.title === '一起讀故事').cards = ['story', 'afterStory'];
+  const step = stepItem(render({ activity }), '一起讀故事');
+  assert.ok(!step.includes('s1-1-thumb.webp'), step);
+  assert.ok(!step.includes('thumb-label'), step);
+  assert.ok(step.includes('cards/brunch/s1-thumb.webp'));
+});
+
+test('a step that uses a story card and another deck shows each in its own labeled row', () => {
+  const activity = readyActivity();
+  activity.cardSets.topic.label = '山頂休息';
+  activity.steps.find((step) => step.title === '一起讀故事').cards = ['topic', 'story'];
+  const step = stepItem(render({ activity }), '一起讀故事');
+  const topicRow = step.indexOf('<p class="thumb-label">話題卡：山頂休息</p>\n<div class="thumbs"><img src="../../cards/brunch/t02-thumb.webp"');
+  const storyRow = step.indexOf('<p class="thumb-label">故事卡</p>\n<div class="thumbs"><a class="story-thumb"');
+  assert.ok(topicRow >= 0 && storyRow > topicRow, step);
+});
+
+test('a deck already named 話題卡 is not labeled 話題卡 twice', () => {
+  const activity = readyActivity();
+  activity.steps.find((step) => step.title === '一起讀故事').cards = ['topic', 'story'];
+  assert.ok(stepItem(render({ activity }), '一起讀故事').includes('<p class="thumb-label">話題卡</p>'));
+});
+
+test('a step with a single deck shows its thumbnails without a label', () => {
+  const step = stepItem(render(), '邊吃邊聊');
+  assert.ok(step.includes('<div class="thumbs">'));
+  assert.ok(!step.includes('thumb-label'));
+});
+
 test('a story card thumbnail links to its own card page and has a QR template', () => {
   const html = render();
   const step = stepItem(html, '一起讀故事');
