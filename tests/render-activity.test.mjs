@@ -46,11 +46,10 @@ test('the activity page shows the todo list, the flow and the start button', () 
   }
 });
 
-test('the todo list comes after the flow and the start button, before the extras', () => {
+test('the todo list comes after the flow, before the extras', () => {
   const html = render();
   const todo = html.indexOf('<section class="prepare">');
   assert.ok(html.indexOf('<section class="flow">') < todo);
-  assert.ok(html.indexOf('<div class="start">') < todo);
   assert.ok(todo < html.indexOf('<section class="more">'));
 });
 
@@ -61,14 +60,17 @@ test('the activity page leaves out what the planning office provides and the sur
   }
 });
 
-test('the offline hint under the start button shows only for activities not held indoors', () => {
-  assert.ok(!render().includes(OFFLINE_HINT));
+test('the activity page has no generic offline hint; outdoor checklists carry their own', () => {
   const outdoors = readyActivity();
   outdoors.tags.place = 'outdoor';
-  assert.ok(render({ activity: outdoors }).includes(OFFLINE_HINT));
-  const either = readyActivity();
-  either.tags.place = 'both';
-  assert.ok(render({ activity: either }).includes(OFFLINE_HINT));
+  assert.ok(!render({ activity: outdoors }).includes(OFFLINE_HINT));
+});
+
+test('the start button comes after everything else on the page so nothing sits below it', () => {
+  const html = render();
+  const start = html.indexOf('<div class="start">');
+  assert.ok(start > html.indexOf('<section class="more">'));
+  assert.ok(start < html.indexOf('<script type="application/json" id="activity-data">'));
 });
 
 test('the activity page opens with a link back to the entry page', () => {

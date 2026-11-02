@@ -5,10 +5,15 @@ import { readFile } from 'node:fs/promises';
 const css = await readFile(new URL('../src/styles/site.css', import.meta.url), 'utf8');
 
 const rule = (selector) => {
-  const match = css.match(new RegExp(`^${selector.replace(/\./g, '\\.')} \\{([^}]*)\\}`, 'm'));
+  const match = css.match(new RegExp(`^${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\{([^}]*)\\}`, 'm'));
   assert.ok(match, `expected a ${selector} rule`);
   return match[1];
 };
+
+test('the start button stays at the bottom of the screen and the page leaves room for it', () => {
+  assert.match(rule('.start'), /position: fixed;[\s\S]*bottom: 0;/);
+  assert.match(rule('main:has(> .start)'), /padding-bottom:/);
+});
 
 test('flow thumbnails keep their own shape when a short card shares a row with tall ones', () => {
   assert.match(rule('.thumbs'), /align-items: flex-start;/);

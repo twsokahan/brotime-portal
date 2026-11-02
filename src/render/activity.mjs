@@ -93,11 +93,9 @@ function renderFlow(activity, rel) {
 </section>`;
 }
 
-function renderStart(activity) {
-  const offlineHint =
-    activity.tags.place === 'indoor' ? '' : '\n<p class="hint">要去沒訊號的地方，出發前在有訊號處先按『開始』。</p>';
+function renderStart() {
   return `<div class="start">
-<button id="start-live" type="button">開始 ▶</button>${offlineHint}
+<button id="start-live" type="button">開始 ▶</button>
 </div>`;
 }
 
@@ -175,10 +173,10 @@ export function renderActivityMain({ activity, site, rel }) {
     renderBooks(activity),
     renderVenues(activity.venues, rel),
     renderFlow(activity, rel),
-    renderStart(activity),
     renderRain(activity),
     renderPrepare(activity, site),
     renderMore(activity, rel),
+    renderStart(),
     renderLiveData(activity, site),
     renderSurveyTemplates(activity, site),
     renderStoryCardQrTemplates(activity, site),
