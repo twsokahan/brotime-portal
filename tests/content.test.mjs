@@ -42,6 +42,13 @@ test('no page of the preview build or its browser scripts uses the old 活動／
   }
 });
 
+test('pages and browser scripts never name the planning office', async () => {
+  const pages = renderPages(await readContent(CONTENT_DIR), true);
+  for (const [file, text] of [...pages, ...(await browserScripts())]) {
+    assert.ok(!text.includes('企劃室'), `${file} still says 企劃室`);
+  }
+});
+
 const SURVEY_FORM_ACTIVITY_NAMES = [
   '兄弟早午餐會',
   '河濱夜跑・單車',

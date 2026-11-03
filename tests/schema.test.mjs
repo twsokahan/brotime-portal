@@ -786,8 +786,8 @@ function featuredSite(featured) {
     featured: {
       pushes: [{ title: '春節強力建議', lead: '過年期間，推薦約這兩個', from: '2027-02-06', to: '2027-02-20', ids: ['brunch'] }],
       seasons: [
-        { lead: '一到三月，企劃室推薦這幾個', from: '2027-01-01', to: '2027-03-31', ids: ['brunch'] },
-        { lead: '四到六月，企劃室推薦這幾個', from: '2027-04-01', to: '2027-06-30', ids: ['brunch'] },
+        { lead: '一到三月，推薦約這幾個', from: '2027-01-01', to: '2027-03-31', ids: ['brunch'] },
+        { lead: '四到六月，推薦約這幾個', from: '2027-04-01', to: '2027-06-30', ids: ['brunch'] },
       ],
       ...featured,
     },

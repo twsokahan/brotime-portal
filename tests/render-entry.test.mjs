@@ -169,7 +169,7 @@ test('a dated card says when it is on, and the quiz data carries its dates', () 
 function featuredFixture() {
   return {
     pushes: [{ title: '春節強力建議', lead: '過年期間，推薦約這兩個', from: '2027-02-06', to: '2027-02-20', ids: ['brunch-2', 'brunch-3'] }],
-    seasons: [{ lead: '一到三月，企劃室推薦這幾個', from: '2027-01-01', to: '2027-03-31', ids: ['brunch-1'] }],
+    seasons: [{ lead: '一到三月，推薦約這幾個', from: '2027-01-01', to: '2027-03-31', ids: ['brunch-1'] }],
   };
 }
 

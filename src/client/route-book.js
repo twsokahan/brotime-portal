@@ -3,7 +3,7 @@ import { el, externalLink } from './dom.js';
 import { createRouteMap, loadLeaflet } from './route-map.js';
 
 const PLANNED_MINUTES = 60;
-const ADJUST_NOTE = '路線是企劃室的建議，實地走過覺得不順，可以自己調整；事後的回報表會請你寫改了什麼、為什麼。';
+const ADJUST_NOTE = '這是建議的路線，實地走過覺得不順，可以自己調整；事後的回報表會請你寫改了什麼、為什麼。';
 
 let currentMap = null;
 let renderCount = 0;
