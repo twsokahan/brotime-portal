@@ -8,12 +8,14 @@ import { taipeiIsoDate } from '../src/lib/featured.mjs';
 import { paletteCss } from '../src/lib/palette.mjs';
 import { validateAll } from '../src/lib/schema.mjs';
 import { cardPageUrl } from '../src/lib/share.mjs';
+import { SESSION_PATH, STATS_PATH } from '../src/lib/stats-view.mjs';
 import { renderActivityMain, renderPreparingMain } from '../src/render/activity.mjs';
 import { renderCardMain } from '../src/render/card.mjs';
 import { ALL_PATH, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { renderGuideMain } from '../src/render/guide.mjs';
 import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
+import { activityIdsScript, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
 import { page } from '../src/render/layout.mjs';
 
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -30,6 +32,8 @@ const ACTIVITY_REL = '../../';
 const ICHIBAN_REL = '../../../';
 const GUIDE_REL = '../../../';
 const CARD_REL = '../../../../';
+const STATS_REL = '../';
+const SESSION_REL = '../../';
 
 async function readJson(file, { optional = false } = {}) {
   let text;
@@ -190,12 +194,24 @@ function guidePage({ activity, site, ogUrl }) {
   });
 }
 
+function statsPages({ site, activities }) {
+  const ids = activityIdsScript(activities);
+  const statsPage = ({ title, rel, main, script }) =>
+    page({ title: `${title}｜${site.title}`, description: title, rel, main: `${main}\n${ids}`, scripts: [script], leaveLine: true, signIn: site.signIn });
+  return [
+    [`${STATS_PATH}index.html`, statsPage({ title: '每一場的回顧', rel: STATS_REL, main: renderStatsMain({ rel: STATS_REL }), script: 'js/stats.js' })],
+    [`${SESSION_PATH}index.html`, statsPage({ title: '這一場的回顧', rel: SESSION_REL, main: renderSessionMain({ rel: SESSION_REL }), script: 'js/stats-session.js' })],
+  ];
+}
+
 export function renderPages({ site, routes, activityFiles }, preview, today = taipeiIsoDate()) {
   const activities = activityFiles.map(({ activity }) => ({
     ...activity,
     status: shownStatus(activity.status, preview),
   }));
   const canPick = activities.some((activity) => activity.status === 'ready');
+  const signedIn = Boolean(site.signIn);
+  const homeMain = renderHomeMain({ activities, rel: ENTRY_REL, featured: site.featured, today, districtWants: signedIn });
   const pages = [
     [
       'index.html',
@@ -203,8 +219,8 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         title: site.title,
         description: entryDescription(activities.length),
         rel: ENTRY_REL,
-        main: renderHomeMain({ activities, rel: ENTRY_REL, featured: site.featured, today }),
-        scripts: ['js/home.js'],
+        main: signedIn ? `${homeMain}\n${activityIdsScript(activities)}` : homeMain,
+        scripts: signedIn ? ['js/home.js', 'js/district-wants.js'] : ['js/home.js'],
         ogUrl: site.baseUrl,
         leaveLine: true,
         signIn: site.signIn,
@@ -223,6 +239,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         signIn: site.signIn,
       }),
     ],
+    ...(signedIn ? statsPages({ site, activities }) : []),
   ];
   for (const activity of activities) {
     const dir = `a/${activity.id}`;

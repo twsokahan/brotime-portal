@@ -2633,3 +2633,99 @@ html[data-zoom="out"]::view-transition-new(root) {
   color: var(--muted);
   font-size: 14px;
 }
+
+.district-wants {
+  margin: 24px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--box);
+}
+
+.district-wants h2 {
+  margin-top: 0;
+}
+
+.district-wants ol {
+  margin: 8px 0;
+  padding-left: 1.4em;
+}
+
+.district-wants .count,
+.stats-list small,
+.bar-count {
+  color: var(--muted);
+}
+
+.stats-link,
+.hosts-link {
+  margin: 12px 0 0;
+}
+
+.stats-district {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.stats-district[hidden] {
+  display: none;
+}
+
+.stats-district select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box);
+  color: var(--ink);
+  font: inherit;
+}
+
+.stats-list {
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.session .answer {
+  margin: 24px 0;
+}
+
+.bars {
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bars li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin: 8px 0;
+}
+
+.bar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ink);
+}

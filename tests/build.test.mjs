@@ -317,3 +317,20 @@ test('with signIn, entry, all, activity, preparing and ichiban pages carry the s
 test('without signIn no page mentions sign-in', () => {
   for (const [file, html] of pagesWithEverything(fixtureSite())) assert.ok(!html.includes('signin'), file);
 });
+
+test('with signIn the stats pages are built behind sign-in and the home page loads the wants script', () => {
+  const pages = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN });
+  for (const [file, script] of [['stats/index.html', 'js/stats.js'], ['stats/session/index.html', 'js/stats-session.js']]) {
+    const html = pages.get(file);
+    assert.ok(html, `expected ${file}`);
+    for (const piece of [...SIGN_IN_PIECES, script, 'id="activity-ids"']) assert.ok(html.includes(piece), `${file} lacks ${piece}`);
+  }
+  const home = pages.get('index.html');
+  assert.ok(home.includes('js/district-wants.js') && home.includes('id="activity-ids"'));
+});
+
+test('without signIn there are no stats pages', () => {
+  const pages = pagesWithEverything(fixtureSite());
+  assert.ok(!pages.has('stats/index.html') && !pages.has('stats/session/index.html'));
+  assert.ok(!pages.get('index.html').includes('district-wants'));
+});

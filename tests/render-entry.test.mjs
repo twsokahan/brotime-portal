@@ -206,3 +206,15 @@ test('the all page starts with a way back to the picks', () => {
   assert.ok(html.startsWith('<p class="home-link"><a href="../">← 回到推薦</a></p>'));
   assert.ok(html.includes('<a class="act" data-id="brunch-1" href="../a/brunch-1/">'));
 });
+
+test('the district wants block sits between the pushes and the season', () => {
+  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15', districtWants: true });
+  const block = html.indexOf('<section class="district-wants" hidden></section>');
+  assert.ok(block > html.indexOf('class="push"'), 'after the push');
+  assert.ok(block < html.indexOf('class="season"'), 'before the season');
+});
+
+test('without sign-in the home page has no district wants block', () => {
+  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
+  assert.ok(!html.includes('district-wants'));
+});

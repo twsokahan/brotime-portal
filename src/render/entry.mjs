@@ -109,18 +109,26 @@ ${cards}
 </section>`;
 }
 
-function renderFeatured(sections, byId, rel, today) {
+const DISTRICT_WANTS_BLOCK = '<section class="district-wants" hidden></section>';
+
+// The wants block goes right above the season, so a district leader can weigh it against the season's picks.
+function renderFeatured(sections, byId, rel, today, districtWants) {
   if (!sections.length) return '';
+  const rendered = sections.map((section) => renderFeaturedSection(section, byId, rel, today));
+  if (districtWants) {
+    const firstSeason = sections.findIndex((section) => section.kind === 'season');
+    rendered.splice(firstSeason < 0 ? rendered.length : firstSeason, 0, DISTRICT_WANTS_BLOCK);
+  }
   return `<div class="featured">
-${sections.map((section) => renderFeaturedSection(section, byId, rel, today)).join('\n')}
+${rendered.join('\n')}
 </div>`;
 }
 
-export function renderHomeMain({ activities, rel, featured, today }) {
+export function renderHomeMain({ activities, rel, featured, today, districtWants = false }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   return [
     `<header class="entry-head">\n${TITLE}\n</header>`,
-    renderFeatured(featuredSections(featured), byId, rel, today),
+    renderFeatured(featuredSections(featured), byId, rel, today, districtWants),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
   ]
     .filter(Boolean)
