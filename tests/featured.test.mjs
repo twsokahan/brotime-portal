@@ -38,3 +38,14 @@ test('the build date is the date in Taiwan, not in UTC', () => {
   assert.equal(taipeiIsoDate(new Date('2026-12-31T16:30:00Z')), '2027-01-01');
   assert.equal(taipeiIsoDate(new Date('2026-12-31T15:30:00Z')), '2026-12-31');
 });
+
+test('showFrom brings a push or a season forward without moving its end', () => {
+  assert.deepEqual(pushWindow({ from: '2027-02-06', to: '2027-02-20', showFrom: '2026-12-15' }), {
+    from: '2026-12-15',
+    to: '2027-02-20',
+  });
+  assert.deepEqual(seasonWindow({ from: '2027-01-01', to: '2027-03-31', showFrom: '2026-11-01' }), {
+    from: '2026-11-01',
+    to: '2027-02-28',
+  });
+});

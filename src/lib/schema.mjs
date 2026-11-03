@@ -1,4 +1,4 @@
-import { isLastDayOfMonth } from './featured.mjs';
+import { isLastDayOfMonth, seasonWindow } from './featured.mjs';
 import { KIDS, PLACE, RAIN, SLOTS, INTERESTS } from './labels.mjs';
 import { GRADES, MAX_PER_GRADE, MAX_TICKETS, countsProblem } from './ichiban.mjs';
 
@@ -499,6 +499,9 @@ function checkFeaturedEntry(check, entry, path) {
   const toOk = checkDate(check, entry.to, `${path}.to`);
   if (fromOk && toOk && entry.to < entry.from) check.fail(`${path}.to`, '不能早於 from');
   check.text(entry.lead, `${path}.lead`);
+  if (entry.showFrom !== undefined && checkDate(check, entry.showFrom, `${path}.showFrom`) && fromOk && entry.showFrom > entry.from) {
+    check.fail(`${path}.showFrom`, '不能晚於 from');
+  }
   if (check.list(entry.ids, `${path}.ids`, 1)) {
     entry.ids.forEach((id, i) => check.text(id, `${path}.ids[${i}]`));
     if (new Set(entry.ids).size !== entry.ids.length) check.fail(`${path}.ids`, '有重複的活動');
@@ -515,9 +518,12 @@ function checkSeasons(check, seasons) {
     if (!isLastDayOfMonth(season.to)) check.fail(`${path}.to`, '要是某個月的最後一天');
     return true;
   });
-  const byStart = [...dated].sort((a, b) => a.from.localeCompare(b.from));
-  byStart.slice(1).forEach((season, i) => {
-    if (season.from <= byStart[i].to) check.fail('featured.seasons', `${byStart[i].from} 和 ${season.from} 開始的兩季重疊`);
+  const windows = dated.map((season) => ({ season, window: seasonWindow(season) }));
+  const byStart = windows.sort((a, b) => a.window.from.localeCompare(b.window.from));
+  byStart.slice(1).forEach(({ season, window }, i) => {
+    if (window.from <= byStart[i].window.to) {
+      check.fail('featured.seasons', `${byStart[i].season.from} 和 ${season.from} 開始的兩季顯示期間重疊，會同時出現`);
+    }
   });
 }
 

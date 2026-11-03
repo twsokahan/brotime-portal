@@ -23,11 +23,15 @@ export function isLastDayOfMonth(isoDate) {
   return utcIsoDate(new Date(Date.UTC(year, month, 0))) === isoDate;
 }
 
-// The entry page asks about next month, so a push shows from the month before it starts until it ends.
-export const pushWindow = ({ from, to }) => ({ from: firstDayOfMonthBefore(from), to });
+// The entry page asks about next month, so a push shows from the month before it starts until it ends,
+// unless showFrom brings it forward.
+export const pushWindow = ({ from, to, showFrom }) => ({ from: showFrom ?? firstDayOfMonthBefore(from), to });
 
-// A season shows while next month falls inside it.
-export const seasonWindow = ({ from, to }) => ({ from: firstDayOfMonthBefore(from), to: lastDayOfMonthBefore(to) });
+// A season shows while next month falls inside it, or from showFrom.
+export const seasonWindow = ({ from, to, showFrom }) => ({
+  from: showFrom ?? firstDayOfMonthBefore(from),
+  to: lastDayOfMonthBefore(to),
+});
 
 export const isShowing = (window, today) => window.from <= today && today <= window.to;
 

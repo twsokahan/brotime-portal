@@ -828,3 +828,15 @@ test('validateAll only lets ready activities be featured', () => {
   assertReports(validateAll(withId('nobody'), allFilesExist), 'featured.pushes[0].ids nobody 不是已上線的活動');
   assertReports(validateAll(withId(preparingActivity().id), allFilesExist), '不是已上線的活動');
 });
+
+test('showFrom is a date no later than from', () => {
+  const [first, second] = featuredSite().featured.seasons;
+  assert.deepEqual(validateSite(featuredSite({ seasons: [{ ...first, showFrom: '2026-11-01' }, second] })), []);
+  assertReports(validateSite(featuredSite({ seasons: [{ ...first, showFrom: '2027-01-02' }, second] })), 'showFrom 不能晚於 from');
+  assertReports(validateSite(featuredSite({ seasons: [{ ...first, showFrom: '11/1' }, second] })), 'featured.seasons[0].showFrom');
+});
+
+test('a season brought forward may not show at the same time as the season before it', () => {
+  const [first, second] = featuredSite().featured.seasons;
+  assertReports(validateSite(featuredSite({ seasons: [first, { ...second, showFrom: '2027-02-01' }] })), '會同時出現');
+});
