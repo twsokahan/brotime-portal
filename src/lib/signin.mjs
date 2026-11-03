@@ -10,3 +10,20 @@ export function parseSigninRecord(raw) {
     return null;
   }
 }
+
+export const RECHECK_AFTER_MS = 24 * 60 * 60 * 1000;
+export const SIGN_OUT_ERRORS = ['bad-session', 'not-listed'];
+
+export const needsRecheck = (record, nowMs) =>
+  !Number.isFinite(record.checkedAt) || nowMs - record.checkedAt >= RECHECK_AFTER_MS;
+
+// Only a clear answer from the server signs a phone out; no signal or a server hiccup keeps it in.
+export function recheckOutcome(response) {
+  if (!response) return 'keep';
+  if (response.ok) return response.listed ? 'update' : 'sign-out';
+  return SIGN_OUT_ERRORS.includes(response.error) ? 'sign-out' : 'keep';
+}
+
+export const recordFrom = (response, session, nowMs) => ({ email: response.email, session, scope: response.scope, checkedAt: nowMs });
+
+export const isInLine = (userAgent) => /\bLine\//i.test(userAgent);
