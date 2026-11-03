@@ -1,4 +1,3 @@
-import { isShowing, localIsoDate } from './lib/featured.mjs';
 import { countMatches, emptyFilters, matchesFilters, wallOrder } from './lib/filter.mjs';
 import { INTERESTS, PLACE, SLOTS } from './lib/labels.mjs';
 import { recommend } from './lib/recommend.mjs';
@@ -39,27 +38,6 @@ const QUESTIONS = [
     options: [...Object.entries(INTERESTS), ['none', '沒特別']],
   },
 ];
-
-const everything = document.getElementById('all');
-const ALL_HASH = '#all';
-
-function showFeaturedFor(today) {
-  const sections = [...document.querySelectorAll('[data-show-from]')];
-  for (const section of sections) {
-    section.hidden = !isShowing({ from: section.dataset.showFrom, to: section.dataset.showTo }, today);
-  }
-  const alone = sections.every((section) => section.hidden);
-  everything.classList.toggle('is-alone', alone);
-  everything.open = alone || location.hash === ALL_HASH;
-}
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const previewDate = new URLSearchParams(location.search).get('today');
-showFeaturedFor(ISO_DATE.test(previewDate ?? '') ? previewDate : localIsoDate());
-everything.addEventListener('toggle', () => {
-  if (everything.classList.contains('is-alone')) return;
-  history.replaceState(history.state, '', everything.open ? ALL_HASH : location.pathname + location.search);
-});
 
 const activities = JSON.parse(document.getElementById('activities-data').textContent);
 const activityById = new Map(activities.map((activity) => [activity.id, activity]));
@@ -157,7 +135,7 @@ function askQuestion(index) {
 }
 
 function pickItem({ id, name, reasons, onlyDuring }) {
-  const link = el('a', { href: `a/${id}/` }, [
+  const link = el('a', { href: new URL(`../a/${id}/`, import.meta.url).href }, [
     el('h3', { textContent: name }),
     reasons.length > 0 && el('p', { className: 'why', textContent: reasons.join('・') }),
     onlyDuring && el('p', { className: 'only-during' }, [el('span', { className: 'badge', textContent: `限 ${onlyDuring}` })]),

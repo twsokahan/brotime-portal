@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { page } from '../src/render/layout.mjs';
-import { renderEntryMain } from '../src/render/entry.mjs';
+import { renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { readyActivity, preparingActivity } from './fixtures/activities.mjs';
 
 const READY_COUNT = 3;
@@ -181,8 +181,8 @@ function featuredSection(html, title) {
 
 const isHidden = (section) => /^<section[^>]* hidden>/.test(section);
 
-test('in a featured month the push and the season come first and everything else is folded away', () => {
-  const html = renderEntryMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
+test('the home page shows the push and the season, then a link to all the ways', () => {
+  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
   const push = featuredSection(html, '春節強力建議');
   const season = featuredSection(html, '這一季主打');
   assert.ok(push.startsWith('<section class="push" data-show-from="2027-01-01" data-show-to="2027-02-20">'));
@@ -190,22 +190,19 @@ test('in a featured month the push and the season come first and everything else
   assert.deepEqual([...push.matchAll(/data-id="([^"]+)"/g)].map(([, id]) => id), ['brunch-2', 'brunch-3']);
   assert.ok(push.includes('<h3>兄弟早午餐會</h3>'));
   assert.ok(season.startsWith('<section class="season" data-show-from="2026-12-01" data-show-to="2027-02-28">'));
-  assert.ok(html.includes('<details class="everything" id="all">'));
-  assert.ok(html.includes('<summary>都不合適？看全部 16 種<small>可以用「幫我挑」或篩選</small></summary>'));
-  assert.ok(html.indexOf('class="featured"') < html.indexOf('id="all"'));
-  assert.ok(html.indexOf('id="all"') < html.indexOf('id="open-quiz"'));
+  assert.ok(html.includes('<p class="all-link"><a href="all/">都不合適？看全部 16 種<small>可以用「幫我挑」或篩選</small></a></p>'));
+  assert.ok(html.indexOf('class="featured"') < html.indexOf('class="all-link"'));
+  for (const part of ['id="open-quiz"', 'id="filters"', 'class="wall"', 'activities-data']) assert.ok(!html.includes(part), part);
 });
 
 test('a push or season outside its window is rendered hidden so the phone can switch it on later', () => {
-  const html = renderEntryMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-02-25' });
+  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-02-25' });
   assert.ok(isHidden(featuredSection(html, '春節強力建議')));
   assert.ok(!isHidden(featuredSection(html, '這一季主打')));
 });
 
-test('with nothing featured right now everything is open and the fold button is hidden', () => {
-  for (const featured of [undefined, featuredFixture()]) {
-    const html = renderEntryMain({ activities: sixteenActivities(), rel: '', featured, today: '2026-11-03' });
-    assert.ok(html.includes('<details class="everything is-alone" id="all" open>'));
-    assert.ok(html.includes('<p class="lead">16 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>'));
-  }
+test('the all page starts with a way back to the picks', () => {
+  const html = renderEntryMain({ activities: sixteenActivities(), rel: '../' });
+  assert.ok(html.startsWith('<p class="home-link"><a href="../">← 回到推薦</a></p>'));
+  assert.ok(html.includes('<a class="act" data-id="brunch-1" href="../a/brunch-1/">'));
 });

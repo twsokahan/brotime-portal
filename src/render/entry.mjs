@@ -15,12 +15,15 @@ const ENTRY_ACTIONS = `<div class="entry-actions">
 <button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters"><span class="filter-summary">篩選</span> <span class="caret" aria-hidden="true">▾</span></button>
 </div>`;
 
-const HEAD = `<header class="entry-head">
-<h1>下個月，<span>約兄弟做什麼？</span></h1>
-</header>`;
+const TITLE = '<h1>下個月，<span>約兄弟做什麼？</span></h1>';
 
-function renderIntro(canPick, count) {
-  return `<p class="lead">${count} 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}`;
+export const ALL_PATH = 'all/';
+
+function renderHead(canPick, count) {
+  return `<header class="entry-head">
+${TITLE}
+<p class="lead">${count} 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}
+</header>`;
 }
 
 function renderFilters(matchCount) {
@@ -113,30 +116,29 @@ ${sections.map((section) => renderFeaturedSection(section, byId, rel, today)).jo
 </div>`;
 }
 
-function renderEverything(alone, count, parts) {
-  return `<details class="everything${alone ? ' is-alone' : ''}" id="all"${alone ? ' open' : ''}>
-<summary>都不合適？看全部 ${count} 種<small>可以用「幫我挑」或篩選</small></summary>
-${parts.filter(Boolean).join('\n')}
-</details>`;
+export function renderHomeMain({ activities, rel, featured, today }) {
+  const byId = new Map(activities.map((activity) => [activity.id, activity]));
+  return [
+    `<header class="entry-head">\n${TITLE}\n</header>`,
+    renderFeatured(featuredSections(featured), byId, rel, today),
+    `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
-export function renderEntryMain({ activities, rel, featured, today }) {
+export function renderEntryMain({ activities, rel }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   const ordered = wallOrder(activities, emptyFilters()).map((id) => byId.get(id));
   const ready = ordered.filter((activity) => activity.status === 'ready');
   const preparing = ordered.filter((activity) => activity.status !== 'ready');
   const canPick = ready.length > 0;
-  const sections = featuredSections(featured);
-  const alone = !sections.some(({ window }) => isShowing(window, today));
   return [
-    HEAD,
-    renderFeatured(sections, byId, rel, today),
-    renderEverything(alone, activities.length, [
-      renderIntro(canPick, activities.length),
-      canPick && renderFilters(countMatches(activities, emptyFilters())),
-      renderWall(ready, rel),
-      renderPreparing(preparing, rel),
-    ]),
+    `<p class="home-link"><a href="${rel}">← 回到推薦</a></p>`,
+    renderHead(canPick, activities.length),
+    canPick && renderFilters(countMatches(activities, emptyFilters())),
+    renderWall(ready, rel),
+    renderPreparing(preparing, rel),
     canPick && renderData(ordered),
   ]
     .filter(Boolean)

@@ -88,16 +88,25 @@ test('entry, ready and preparing pages send LINE visitors to the phone browser, 
   assert.ok(!cardPage.includes('line-notice'));
 });
 
-test('the entry page loads the entry script and points og:url at the site', async () => {
+test('the home page loads the home script and points og:url at the site', async () => {
   const html = await read(production, 'index.html');
-  assert.ok(html.includes('src="js/entry.js"'));
+  assert.ok(html.includes('src="js/home.js"'));
   assert.ok(html.includes('<meta property="og:url" content="https://twsokahan.github.io/brotime-portal/">'));
 });
 
-test('the entry page shows a review activity as preparing in production and as ready in preview', async () => {
+test('the all page loads the entry script, leaves LINE and carries its own og:url', async () => {
+  const html = await read(production, 'all/index.html');
+  assert.ok(html.includes('src="../js/entry.js"'));
+  assert.ok(html.includes('<link rel="stylesheet" href="../css/site.css">'));
+  assert.ok(html.includes('<meta property="og:url" content="https://twsokahan.github.io/brotime-portal/all/">'));
+  assert.ok(html.includes('<title>全部 3 種｜兄弟時光</title>'));
+  assert.ok(html.includes('class="line-notice"'));
+});
+
+test('the all page shows a review activity as preparing in production and as ready in preview', async () => {
   const isCard = (html) => html.includes('<a class="act" data-id="city-walk"');
-  const isPreparing = (html) => html.match(/<section class="preparing">.*?<\/section>/s)?.[0].includes('href="a/city-walk/"') ?? false;
-  const [productionEntry, previewEntry] = await Promise.all([read(production, 'index.html'), read(preview, 'index.html')]);
+  const isPreparing = (html) => html.match(/<section class="preparing">.*?<\/section>/s)?.[0].includes('href="../a/city-walk/"') ?? false;
+  const [productionEntry, previewEntry] = await Promise.all([read(production, 'all/index.html'), read(preview, 'all/index.html')]);
   assert.ok(isPreparing(productionEntry) && !isCard(productionEntry));
   assert.ok(isCard(previewEntry) && !isPreparing(previewEntry));
 });
@@ -195,15 +204,15 @@ test('build works without a public folder, activities or routes', async () => {
   await cp(path.join(CONTENT_DIR, 'site.json'), path.join(contentDir, 'site.json'));
   const outDir = await tempDir();
   const { pages } = await build({ contentDir, publicDir: path.join(contentDir, 'missing'), outDir, preview: false });
-  assert.deepEqual(pages, ['index.html']);
+  assert.deepEqual(pages, ['index.html', 'all/index.html']);
 });
 
-test('with nothing ready the entry page loads no script', async () => {
+test('with nothing ready the all page loads no script', async () => {
   const contentDir = await tempDir();
   await cp(path.join(CONTENT_DIR, 'site.json'), path.join(contentDir, 'site.json'));
   const outDir = await tempDir();
   await build({ contentDir, publicDir: path.join(contentDir, 'missing'), outDir, preview: false });
-  assert.ok(!(await read(outDir, 'index.html')).includes('<script type="module"'));
+  assert.ok(!(await read(outDir, 'all/index.html')).includes('<script type="module"'));
 });
 
 test('build returns the pages it wrote', async () => {
@@ -214,6 +223,7 @@ test('build returns the pages it wrote', async () => {
     'a/brunch/index.html',
     'a/city-walk/index.html',
     'a/night-run/index.html',
+    'all/index.html',
     'index.html',
   ]);
 });

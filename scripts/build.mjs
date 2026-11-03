@@ -10,7 +10,7 @@ import { validateAll } from '../src/lib/schema.mjs';
 import { cardPageUrl } from '../src/lib/share.mjs';
 import { renderActivityMain, renderPreparingMain } from '../src/render/activity.mjs';
 import { renderCardMain } from '../src/render/card.mjs';
-import { renderEntryMain } from '../src/render/entry.mjs';
+import { ALL_PATH, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { renderGuideMain } from '../src/render/guide.mjs';
 import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
@@ -25,6 +25,7 @@ const CITY_WALK_ID = 'city-walk';
 const entryDescription = (count) => `下個月，約兄弟做什麼？${count} 種過兄弟時光的方式，回答 4 題幫你挑。`;
 const ICHIBAN_DESCRIPTION = '填好 A～D 賞各幾份，手機傳下去，每人選一張登機證撕開。';
 const ENTRY_REL = '';
+const ALL_REL = '../';
 const ACTIVITY_REL = '../../';
 const ICHIBAN_REL = '../../../';
 const GUIDE_REL = '../../../';
@@ -191,6 +192,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
     ...activity,
     status: shownStatus(activity.status, preview),
   }));
+  const canPick = activities.some((activity) => activity.status === 'ready');
   const pages = [
     [
       'index.html',
@@ -198,9 +200,21 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         title: site.title,
         description: entryDescription(activities.length),
         rel: ENTRY_REL,
-        main: renderEntryMain({ activities, rel: ENTRY_REL, featured: site.featured, today }),
-        scripts: activities.some((activity) => activity.status === 'ready') ? ['js/entry.js'] : [],
+        main: renderHomeMain({ activities, rel: ENTRY_REL, featured: site.featured, today }),
+        scripts: ['js/home.js'],
         ogUrl: site.baseUrl,
+        leaveLine: true,
+      }),
+    ],
+    [
+      `${ALL_PATH}index.html`,
+      page({
+        title: `全部 ${activities.length} 種｜${site.title}`,
+        description: entryDescription(activities.length),
+        rel: ALL_REL,
+        main: renderEntryMain({ activities, rel: ALL_REL }),
+        scripts: canPick ? ['js/entry.js'] : [],
+        ogUrl: `${site.baseUrl}${ALL_PATH}`,
         leaveLine: true,
       }),
     ],
