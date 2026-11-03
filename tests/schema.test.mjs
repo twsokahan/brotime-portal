@@ -840,3 +840,15 @@ test('a season brought forward may not show at the same time as the season befor
   const [first, second] = featuredSite().featured.seasons;
   assertReports(validateSite(featuredSite({ seasons: [first, { ...second, showFrom: '2027-02-01' }] })), '會同時出現');
 });
+
+const SIGN_IN = { clientId: 'test.apps.googleusercontent.com', endpoint: 'https://script.google.com/macros/s/test/exec' };
+
+test('a site with a Google client id and an Apps Script exec url is valid', () => {
+  assert.deepEqual(validateSite({ ...fixtureSite(), signIn: SIGN_IN }), []);
+});
+
+test('a malformed sign-in client id or endpoint is named in the error', () => {
+  assertReports(validateSite({ ...fixtureSite(), signIn: { ...SIGN_IN, clientId: 'abc' } }), 'signIn.clientId');
+  assertReports(validateSite({ ...fixtureSite(), signIn: { ...SIGN_IN, endpoint: 'https://example.com/exec' } }), 'signIn.endpoint');
+  assertReports(validateSite({ ...fixtureSite(), signIn: 'yes' }), 'signIn');
+});

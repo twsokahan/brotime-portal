@@ -537,6 +537,19 @@ function checkFeatured(check, featured) {
   checkSeasons(check, featured.seasons);
 }
 
+const GOOGLE_CLIENT_ID = /^[\w-]+\.apps\.googleusercontent\.com$/;
+const APPS_SCRIPT_EXEC_URL = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
+
+function checkSignIn(check, signIn) {
+  if (!check.object(signIn, 'signIn')) return;
+  if (check.text(signIn.clientId, 'signIn.clientId') && !GOOGLE_CLIENT_ID.test(signIn.clientId)) {
+    check.fail('signIn.clientId', '要是 Google OAuth 用戶端 ID（…apps.googleusercontent.com）');
+  }
+  if (check.text(signIn.endpoint, 'signIn.endpoint') && !APPS_SCRIPT_EXEC_URL.test(signIn.endpoint)) {
+    check.fail('signIn.endpoint', '要是 Apps Script 網頁應用程式的 /exec 網址');
+  }
+}
+
 export function validateSite(site) {
   const check = createChecker('site');
   if (!check.object(site, 'site')) return check.errors;
@@ -546,6 +559,7 @@ export function validateSite(site) {
   }
   checkSurveys(check, site.surveys);
   if (site.featured !== undefined) checkFeatured(check, site.featured);
+  if (site.signIn !== undefined) checkSignIn(check, site.signIn);
   return check.errors;
 }
 

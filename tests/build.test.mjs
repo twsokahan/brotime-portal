@@ -289,3 +289,31 @@ test('an output folder inside the repo or elsewhere is allowed', () => {
     assert.equal(unsafeOutDirReason(outDir, PLACES), null, outDir);
   }
 });
+
+const SIGN_IN = { clientId: 'test.apps.googleusercontent.com', endpoint: 'https://script.google.com/macros/s/test/exec' };
+const SIGN_IN_PIECES = ['class="signin"', 'id="signin-config"', 'js/signin.js', 'signin-needed'];
+
+function pagesWithEverything(site) {
+  const activity = { ...withIchiban('ready'), guide: withGuide('ready').guide };
+  const activityFiles = [
+    { fileName: 'brunch.json', activity },
+    { fileName: 'night-run.json', activity: { ...readyActivity(), id: 'night-run', name: '河濱夜跑・單車', status: 'preparing' } },
+  ];
+  return new Map(renderPages({ site, routes: undefined, activityFiles }, false));
+}
+
+test('with signIn, entry, all, activity, preparing and ichiban pages carry the sign-in panel; card and guide pages do not', () => {
+  const pages = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN });
+  for (const file of ['index.html', 'all/index.html', 'a/brunch/index.html', 'a/night-run/index.html', ICHIBAN_PAGE]) {
+    const html = pages.get(file);
+    assert.ok(html, `expected ${file}`);
+    for (const piece of SIGN_IN_PIECES) assert.ok(html.includes(piece), `${file} lacks ${piece}`);
+  }
+  const open = [...pages.keys()].filter((file) => file.includes('/cards/') || file === GUIDE_PAGE);
+  assert.ok(open.includes(GUIDE_PAGE) && open.length > 1, JSON.stringify(open));
+  for (const file of open) assert.ok(!pages.get(file).includes('signin'), file);
+});
+
+test('without signIn no page mentions sign-in', () => {
+  for (const [file, html] of pagesWithEverything(fixtureSite())) assert.ok(!html.includes('signin'), file);
+});

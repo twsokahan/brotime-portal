@@ -51,6 +51,55 @@ main {
   flex: none;
 }
 
+.signin {
+  display: none;
+}
+
+html.signin-needed main {
+  display: none;
+}
+
+html.signin-needed .signin {
+  display: block;
+}
+
+.signin > div {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+.signin h1 {
+  margin: 0 0 12px;
+}
+
+.signin-button {
+  min-height: 44px;
+  margin: 24px 0;
+}
+
+.signin-email {
+  margin: 4px 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box);
+  font-weight: 700;
+}
+
+.signin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.signin-note,
+.signin-error {
+  color: var(--muted);
+  font-size: 15px;
+}
+
 h1,
 h2,
 h3,

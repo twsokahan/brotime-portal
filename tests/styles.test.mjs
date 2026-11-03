@@ -18,3 +18,8 @@ test('the start button stays at the bottom of the screen and the page leaves roo
 test('flow thumbnails keep their own shape when a short card shares a row with tall ones', () => {
   assert.match(rule('.thumbs'), /align-items: flex-start;/);
 });
+
+test('pages behind sign-in hide their content until the panel lets them through', () => {
+  assert.match(rule('html.signin-needed main'), /display: none;/);
+  assert.match(rule('html.signin-needed .signin'), /display: block;/);
+});

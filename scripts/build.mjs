@@ -137,10 +137,11 @@ function readyActivityPage({ activity, site, routes, ogUrl }) {
     scripts: ['js/activity.js'],
     ogUrl,
     leaveLine: true,
+    signIn: site.signIn,
   });
 }
 
-function preparingActivityPage({ activity, ogUrl }) {
+function preparingActivityPage({ activity, site, ogUrl }) {
   return page({
     title: activity.name,
     description: activity.tagline,
@@ -149,6 +150,7 @@ function preparingActivityPage({ activity, ogUrl }) {
     scripts: [],
     ogUrl,
     leaveLine: true,
+    signIn: site.signIn,
   });
 }
 
@@ -164,7 +166,7 @@ function cardPage({ activity, card, site }) {
   });
 }
 
-function ichibanPage({ activity, ogUrl }) {
+function ichibanPage({ activity, site, ogUrl }) {
   return page({
     title: `電子一番賞｜${activity.name}`,
     description: ICHIBAN_DESCRIPTION,
@@ -173,6 +175,7 @@ function ichibanPage({ activity, ogUrl }) {
     scripts: ['js/ichiban.js'],
     ogUrl,
     leaveLine: true,
+    signIn: site.signIn,
   });
 }
 
@@ -204,6 +207,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         scripts: ['js/home.js'],
         ogUrl: site.baseUrl,
         leaveLine: true,
+        signIn: site.signIn,
       }),
     ],
     [
@@ -216,6 +220,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         scripts: canPick ? ['js/entry.js'] : [],
         ogUrl: `${site.baseUrl}${ALL_PATH}`,
         leaveLine: true,
+        signIn: site.signIn,
       }),
     ],
   ];
@@ -223,7 +228,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
     const dir = `a/${activity.id}`;
     const ogUrl = `${site.baseUrl}${dir}/`;
     if (activity.status !== 'ready') {
-      pages.push([`${dir}/index.html`, preparingActivityPage({ activity, ogUrl })]);
+      pages.push([`${dir}/index.html`, preparingActivityPage({ activity, site, ogUrl })]);
       continue;
     }
     pages.push([`${dir}/index.html`, readyActivityPage({ activity, site, routes, ogUrl })]);
@@ -231,7 +236,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
       pages.push([`${dir}/cards/${card.id}/index.html`, cardPage({ activity, card, site })]);
     }
     if (activity.ichiban) {
-      pages.push([`${dir}/ichiban/index.html`, ichibanPage({ activity, ogUrl: `${ogUrl}ichiban/` })]);
+      pages.push([`${dir}/ichiban/index.html`, ichibanPage({ activity, site, ogUrl: `${ogUrl}ichiban/` })]);
     }
     if (activity.guide) {
       pages.push([`${dir}/guide/index.html`, guidePage({ activity, site, ogUrl: `${ogUrl}guide/` })]);
