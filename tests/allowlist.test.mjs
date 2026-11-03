@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  canonicalEmail,
   extractEmails,
   mergeAllowlist,
   NONE_SCOPE,
@@ -91,4 +92,11 @@ test('merging keeps the widest scope and joins districts at the same level', () 
   ]);
   assert.deepEqual(merged['a@gmail.com'], district('花蓮區'));
   assert.deepEqual(merged['b@gmail.com'], { level: 'district', label: '花蓮區、台東區', districts: ['花蓮區', '台東區'] });
+});
+
+test('Gmail addresses match whatever dots or +tag the list used, other domains stay as written', () => {
+  assert.equal(canonicalEmail('hua.lien+brotime@gmail.com'), 'hualien@gmail.com');
+  assert.equal(canonicalEmail('a.b@g.ntu.edu.tw'), 'a.b@g.ntu.edu.tw');
+  const merged = mergeAllowlist([[{ email: 'hua.lien@gmail.com', scope: { level: 'district', label: '花蓮區', districts: ['花蓮區'] } }]]);
+  assert.equal(merged['hualien@gmail.com'].label, '花蓮區');
 });

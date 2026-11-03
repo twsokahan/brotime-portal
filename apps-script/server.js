@@ -144,7 +144,7 @@ function removeSupplementRow_(email, district) {
     const districtColumn = values[0].indexOf(SUPPLEMENT_HEADERS[2]);
     for (let index = values.length - 1; index >= 1; index -= 1) {
       const [rowEmail] = extractEmails(values[index][emailColumn]);
-      if (rowEmail === email && values[index][districtColumn].trim() === district) {
+      if (rowEmail && canonicalEmail(rowEmail) === canonicalEmail(email) && values[index][districtColumn].trim() === district) {
         sheet.deleteRow(index + 1);
         return true;
       }

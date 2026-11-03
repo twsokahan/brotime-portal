@@ -1,4 +1,4 @@
-import { extractEmails } from './allowlist.mjs';
+import { canonicalEmail, extractEmails } from './allowlist.mjs';
 import { hasKey } from './districts.mjs';
 import { taipeiDate } from './responses.mjs';
 import { checkTokenInfo, makeSession, readSession } from './session-token.mjs';
@@ -7,7 +7,8 @@ const fail = (error) => ({ ok: false, error });
 
 function listedScope(deps, email) {
   const allowlist = deps.allowlist();
-  return hasKey(allowlist, email) ? allowlist[email] : null;
+  const key = canonicalEmail(email);
+  return hasKey(allowlist, key) ? allowlist[key] : null;
 }
 
 // Returns { email, scope } for a valid session, or { failure } to send back as is.

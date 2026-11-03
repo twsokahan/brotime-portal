@@ -15,6 +15,12 @@ export function extractEmails(cell) {
   return (text.match(EMAIL_PATTERN) ?? []).map((email) => email.replace(/@gmail\.com\.tw$/, '@gmail.com'));
 }
 
+// Gmail ignores dots and +tags, so the list and the Google account may spell the same address differently.
+export function canonicalEmail(email) {
+  const [local, domain] = email.split('@');
+  return domain === 'gmail.com' ? `${local.split('+')[0].replace(/\./g, '')}@${domain}` : email;
+}
+
 const columnOf = (header, name) => header.findIndex((cell) => normalizePlace(cell) === normalizePlace(name));
 const findHeaderRow = (rows, names) => rows.findIndex((row) => names.every((name) => columnOf(row, name) >= 0));
 const cellText = (row, column) => String(row[column] ?? '').trim();
@@ -110,7 +116,8 @@ function widerScope(a, b) {
 export function mergeAllowlist(lists) {
   const merged = {};
   for (const { email, scope } of lists.flat()) {
-    merged[email] = hasKey(merged, email) ? widerScope(merged[email], scope) : scope;
+    const key = canonicalEmail(email);
+    merged[key] = hasKey(merged, key) ? widerScope(merged[key], scope) : scope;
   }
   return merged;
 }

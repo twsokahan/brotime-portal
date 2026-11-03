@@ -122,3 +122,11 @@ test('unknown actions and tampered sessions are refused', () => {
   const tampered = sessionFor('hualien@gmail.com').replace('hualien', 'taitung');
   assert.deepEqual(handleRequest({ action: 'me', session: tampered }, deps), { ok: false, error: 'bad-session' });
 });
+
+test('a Gmail account signs in even when the list wrote its address with different dots', () => {
+  const { deps } = fakeDeps({ allowlist: { 'hualien@gmail.com': HUALIEN } });
+  const signedIn = handleRequest({ action: 'signIn', idToken: idToken('hua.lien@gmail.com') }, deps);
+  assert.equal(signedIn.listed, true);
+  assert.equal(signedIn.email, 'hua.lien@gmail.com');
+  assert.equal(handleRequest({ action: 'me', session: signedIn.session }, deps).listed, true);
+});
