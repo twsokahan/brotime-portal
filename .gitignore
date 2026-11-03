@@ -3,3 +3,5 @@ dist-preview/
 node_modules/
 .DS_Store
 .superpowers/
+dist-apps-script/
+apps-script/.clasp.json

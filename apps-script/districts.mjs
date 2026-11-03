@@ -16,6 +16,8 @@ export const DISTRICT_ABBREVIATIONS = {
   高北: '高雄北區',
 };
 
+export const hasKey = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+
 export function normalizePlace(text) {
   return String(text ?? '').replace(/\s+/g, '');
 }
@@ -30,7 +32,7 @@ export function resolveDistrict(text) {
     (district) => district === place || withoutSuffix(district, '區') === place || islandShortName(district) === place,
   );
   if (match) return match;
-  return Object.hasOwn(DISTRICT_ABBREVIATIONS, place) ? DISTRICT_ABBREVIATIONS[place] : null;
+  return hasKey(DISTRICT_ABBREVIATIONS, place) ? DISTRICT_ABBREVIATIONS[place] : null;
 }
 
 export function resolveCircle(text, circles) {

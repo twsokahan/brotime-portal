@@ -1,4 +1,5 @@
 import { extractEmails } from './allowlist.mjs';
+import { hasKey } from './districts.mjs';
 import { taipeiDate } from './responses.mjs';
 import { checkTokenInfo, makeSession, readSession } from './session-token.mjs';
 
@@ -6,7 +7,7 @@ const fail = (error) => ({ ok: false, error });
 
 function listedScope(deps, email) {
   const allowlist = deps.allowlist();
-  return Object.hasOwn(allowlist, email) ? allowlist[email] : null;
+  return hasKey(allowlist, email) ? allowlist[email] : null;
 }
 
 // Returns { email, scope } for a valid session, or { failure } to send back as is.
@@ -80,6 +81,6 @@ const REQUEST_HANDLERS = {
 
 export function handleRequest(request, deps) {
   const action = request?.action;
-  if (typeof action !== 'string' || !Object.hasOwn(REQUEST_HANDLERS, action)) return fail('bad-request');
+  if (typeof action !== 'string' || !hasKey(REQUEST_HANDLERS, action)) return fail('bad-request');
   return REQUEST_HANDLERS[action](request, deps);
 }

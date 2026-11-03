@@ -1,4 +1,4 @@
-import { DISTRICTS, normalizePlace, resolveCircle, resolveDistrict } from './districts.mjs';
+import { DISTRICTS, hasKey, normalizePlace, resolveCircle, resolveDistrict } from './districts.mjs';
 
 export const NONE_SCOPE = { level: 'none', label: '', districts: [] };
 const ALL_SCOPE = { level: 'all', label: '全部', districts: DISTRICTS };
@@ -36,13 +36,13 @@ export function parseRoster(rows) {
   const circles = {};
   for (const { circle, district } of parsed) {
     if (!circle || !district) continue;
-    circles[circle] ??= [];
+    if (!hasKey(circles, circle)) circles[circle] = [];
     if (!circles[circle].includes(district)) circles[circle].push(district);
   }
   const scopeOf = ({ circle, district }) => {
     if (circle.includes('企劃組')) return ALL_SCOPE;
     if (district) return districtScope(district);
-    if (Object.hasOwn(circles, circle)) return circleScope(circle, circles);
+    if (hasKey(circles, circle)) return circleScope(circle, circles);
     return NONE_SCOPE;
   };
   const entries = parsed.flatMap((row) => row.emails.map((email) => ({ email, scope: scopeOf(row) })));
@@ -110,7 +110,7 @@ function widerScope(a, b) {
 export function mergeAllowlist(lists) {
   const merged = {};
   for (const { email, scope } of lists.flat()) {
-    merged[email] = Object.hasOwn(merged, email) ? widerScope(merged[email], scope) : scope;
+    merged[email] = hasKey(merged, email) ? widerScope(merged[email], scope) : scope;
   }
   return merged;
 }
