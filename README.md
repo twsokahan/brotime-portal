@@ -121,6 +121,29 @@ node tools/import-city-walk.mjs
 
 **這個 repo 是公開的**：只放公開填寫網址，表單的編輯網址、回覆試算表網址都不要放進來。個人信箱、電話、金鑰也一樣。
 
+## 登入用的 Apps Script
+
+比對名單、算問卷統計、加主持人都在一支 Google Apps Script 網頁應用程式裡做，名單不會離開 Google。程式在 `apps-script/`：
+
+- `districts.mjs`、`allowlist.mjs`、`responses.mjs`、`session-token.mjs`、`api.mjs`：純邏輯，`npm test` 會測。
+- `server.js`：Apps Script 的外殼（讀試算表、快取、`doPost`），只在 Apps Script 上跑。
+- `npm run build:apps-script` 把它們拼成 `dist-apps-script/Code.js`，再用 clasp 推上去。
+
+要用讀得到通訊錄、男子部幹部名單、問卷回覆試算表的帳號部署（以部署者身分執行、任何人都能呼叫）。試算表 ID 不寫進程式，放在 Apps Script 編輯器「專案設定 → 指令碼屬性」：
+
+| 名稱 | 放什麼 |
+|---|---|
+| `CLIENT_ID` | 網站登入用的 OAuth 用戶端 ID，跟 `content/site.json` 的 `signIn.clientId` 一樣 |
+| `SESSION_SECRET` | 一串隨機字（`openssl rand -base64 48`），換掉的話每個人都要重新登入 |
+| `ROSTER_ID`、`ROSTER_SHEET` | 創價班通訊錄的試算表 ID、分頁名稱（通訊錄改版換分頁時要改） |
+| `CADRE_ID` | 男子部幹部名單的試算表 ID（讀第一個分頁） |
+| `SUPPLEMENT_ID` | 補充名單的試算表 ID，`createSupplementSheet()` 會自己建好並填上 |
+| `RESPONSES_ID` | 問卷回覆試算表的 ID（自己找參加者問卷那個分頁） |
+
+更新程式：`npm run build:apps-script`，再 `cd apps-script && clasp push`，然後 `clasp deploy -i <部署 ID>`，網站用的 `/exec` 網址才會換成新版、而且網址不變（只跑 `clasp deploy` 會多一個新網址）。`apps-script/.clasp.json` 記著專案 ID，不進 repo。
+
+名單有變（通訊錄換分頁、幹部名單換欄位）時，在編輯器執行 `checkSetup()`，它會列出各名單幾個信箱、各級幾人、幹部名單裡對不到圈或區的寫法。對不到的區名縮寫補進 `apps-script/districts.mjs` 的 `DISTRICT_ABBREVIATIONS`，幹部名單的欄名改了就改 `server.js` 的 `CADRE_HEADERS`。
+
 ## 怎麼上線
 
 推到 `main` 之後，GitHub Actions（`.github/workflows/pages.yml`）會跑 `npm test` 和 `npm run build`，兩個都過才把 `dist/` 部署到 GitHub Pages。測試沒過就不會上線，到 GitHub 上這個 repo 的 Actions 分頁看是哪裡錯。開 pull request 時只跑測試和 build，不會上線。
