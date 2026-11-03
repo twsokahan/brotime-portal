@@ -3,18 +3,6 @@ const DEFAULT_PRELOAD_TIMEOUT_MS = 8000;
 const MAX_GROUP_CHARS_FOR_HALF_ROW = 6;
 const DEFAULT_READ_ALOUD_LABEL = '念這段：';
 
-const twoDigits = (value) => String(value).padStart(2, '0');
-
-export function timerText(step, startedAtMs, nowMs) {
-  if (step.minutes === null) return { text: '照大家的步調', overtime: false };
-  const remaining = step.minutes * 60 - Math.floor((nowMs - startedAtMs) / 1000);
-  if (remaining >= 0) {
-    return { text: `還剩 ${twoDigits(Math.floor(remaining / 60))}:${twoDigits(remaining % 60)}`, overtime: false };
-  }
-  const overMinutes = Math.ceil(-remaining / 60);
-  return { text: `超過 ${overMinutes} 分鐘了，沒關係，聊開了就讓大家聊`, overtime: true };
-}
-
 export function progressText(index, total) {
   return `第 ${index + 1} 步，共 ${total} 步`;
 }
@@ -25,9 +13,9 @@ export function preflightItems(activity, extra = []) {
 
 const sessionKey = (activityId) => `brotime:live:${activityId}`;
 
-export function saveSession(storage, activityId, { index, startedAtMs, district }, nowMs) {
+export function saveSession(storage, activityId, { index, district }, nowMs) {
   try {
-    storage.setItem(sessionKey(activityId), JSON.stringify({ index, startedAtMs, district, savedAtMs: nowMs }));
+    storage.setItem(sessionKey(activityId), JSON.stringify({ index, district, savedAtMs: nowMs }));
   } catch {
     // Private browsing or a full quota: live mode keeps working, it just cannot resume.
   }
@@ -39,7 +27,6 @@ function isSavedSession(value) {
     value !== null &&
     Number.isInteger(value.index) &&
     value.index >= 0 &&
-    Number.isFinite(value.startedAtMs) &&
     (typeof value.district === 'string' || value.district === null) &&
     Number.isFinite(value.savedAtMs)
   );
@@ -49,7 +36,7 @@ export function loadSession(storage, activityId, nowMs) {
   try {
     const saved = JSON.parse(storage.getItem(sessionKey(activityId)));
     if (!isSavedSession(saved) || nowMs - saved.savedAtMs > SESSION_MAX_AGE_MS) return null;
-    return { index: saved.index, startedAtMs: saved.startedAtMs, district: saved.district };
+    return { index: saved.index, district: saved.district };
   } catch {
     return null;
   }

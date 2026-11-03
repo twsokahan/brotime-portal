@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  timerText,
   progressText,
   preflightItems,
   saveSession,
@@ -44,27 +43,6 @@ function brokenStorage() {
 
 const topicCards = () => readyActivity().cardSets.topic.cards;
 
-test('the timer counts down in minutes and seconds', () => {
-  assert.deepEqual(timerText({ minutes: 20 }, 0, 5 * MINUTE + 28 * SECOND), { text: '還剩 14:32', overtime: false });
-  assert.equal(timerText({ minutes: 10 }, 0, 0).text, '還剩 10:00');
-  assert.equal(timerText({ minutes: 10 }, 0, 10 * MINUTE).text, '還剩 00:00');
-});
-
-test('the timer turns into a gentle note once the step runs over', () => {
-  assert.deepEqual(timerText({ minutes: 10 }, 0, 11 * MINUTE + SECOND), {
-    text: '超過 2 分鐘了，沒關係，聊開了就讓大家聊',
-    overtime: true,
-  });
-  assert.deepEqual(timerText({ minutes: 10 }, 0, 10 * MINUTE + SECOND), {
-    text: '超過 1 分鐘了，沒關係，聊開了就讓大家聊',
-    overtime: true,
-  });
-});
-
-test('a step without minutes is not timed', () => {
-  assert.deepEqual(timerText({ minutes: null }, 0, 999), { text: '照大家的步調', overtime: false });
-});
-
 test('progress counts steps from one', () => {
   assert.equal(progressText(1, 5), '第 2 步，共 5 步');
 });
@@ -79,11 +57,10 @@ test('preflight items are a copy of the activity preflight list', () => {
 
 test('a saved session comes back after a reload', () => {
   const storage = memoryStorage();
-  saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: '台北西區' }, 5000);
-  assert.deepEqual(loadSession(storage, 'brunch', 5000 + 24 * HOUR), { index: 2, startedAtMs: 1000, district: '台北西區' });
+  saveSession(storage, 'brunch', { index: 2, district: '台北西區' }, 5000);
+  assert.deepEqual(loadSession(storage, 'brunch', 5000 + 24 * HOUR), { index: 2, district: '台北西區' });
   assert.deepEqual(JSON.parse(storage.getItem('brotime:live:brunch')), {
     index: 2,
-    startedAtMs: 1000,
     district: '台北西區',
     savedAtMs: 5000,
   });
@@ -91,19 +68,25 @@ test('a saved session comes back after a reload', () => {
 
 test('a session saved without a district comes back with district null', () => {
   const storage = memoryStorage();
-  saveSession(storage, 'brunch', { index: 0, startedAtMs: 1000, district: null }, 1000);
-  assert.deepEqual(loadSession(storage, 'brunch', 2000), { index: 0, startedAtMs: 1000, district: null });
+  saveSession(storage, 'brunch', { index: 0, district: null }, 1000);
+  assert.deepEqual(loadSession(storage, 'brunch', 2000), { index: 0, district: null });
+});
+
+test('a session saved while steps were still timed can be resumed', () => {
+  const storage = memoryStorage();
+  storage.setItem('brotime:live:brunch', JSON.stringify({ index: 1, startedAtMs: 1000, district: null, savedAtMs: 1000 }));
+  assert.deepEqual(loadSession(storage, 'brunch', 2000), { index: 1, district: null });
 });
 
 test('a session older than a day is dropped', () => {
   const storage = memoryStorage();
-  saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: null }, 5000);
+  saveSession(storage, 'brunch', { index: 2, district: null }, 5000);
   assert.equal(loadSession(storage, 'brunch', 5000 + 24 * HOUR + SECOND), null);
 });
 
 test('sessions are kept per activity', () => {
   const storage = memoryStorage();
-  saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: null }, 1000);
+  saveSession(storage, 'brunch', { index: 2, district: null }, 1000);
   assert.equal(loadSession(storage, 'night-run', 1000), null);
 });
 
@@ -114,15 +97,13 @@ test('a missing or malformed session loads as null', () => {
     '{not json',
     'null',
     '42',
-    JSON.stringify({ index: 1, startedAtMs: 1000, district: null }),
-    JSON.stringify({ index: 1.5, startedAtMs: 1000, district: null, savedAtMs: 1000 }),
-    JSON.stringify({ index: -1, startedAtMs: 1000, district: null, savedAtMs: 1000 }),
-    JSON.stringify({ index: '1', startedAtMs: 1000, district: null, savedAtMs: 1000 }),
-    JSON.stringify({ index: 1, startedAtMs: '1000', district: null, savedAtMs: 1000 }),
-    JSON.stringify({ index: 1, district: null, savedAtMs: 1000 }),
-    JSON.stringify({ index: 1, startedAtMs: 1000, district: 3, savedAtMs: 1000 }),
-    JSON.stringify({ index: 1, startedAtMs: 1000, savedAtMs: 1000 }),
-    JSON.stringify({ index: 1, startedAtMs: 1000, district: null, savedAtMs: '1000' }),
+    JSON.stringify({ index: 1, district: null }),
+    JSON.stringify({ index: 1.5, district: null, savedAtMs: 1000 }),
+    JSON.stringify({ index: -1, district: null, savedAtMs: 1000 }),
+    JSON.stringify({ index: '1', district: null, savedAtMs: 1000 }),
+    JSON.stringify({ index: 1, district: 3, savedAtMs: 1000 }),
+    JSON.stringify({ index: 1, savedAtMs: 1000 }),
+    JSON.stringify({ index: 1, district: null, savedAtMs: '1000' }),
   ];
   for (const value of malformed) {
     storage.setItem('brotime:live:brunch', value);
@@ -132,14 +113,14 @@ test('a missing or malformed session loads as null', () => {
 
 test('storage that throws never breaks live mode', () => {
   const storage = brokenStorage();
-  assert.doesNotThrow(() => saveSession(storage, 'brunch', { index: 1, startedAtMs: 0, district: null }, 0));
+  assert.doesNotThrow(() => saveSession(storage, 'brunch', { index: 1, district: null }, 0));
   assert.equal(loadSession(storage, 'brunch', 0), null);
   assert.doesNotThrow(() => clearSession(storage, 'brunch'));
 });
 
 test('a cleared session no longer loads', () => {
   const storage = memoryStorage();
-  saveSession(storage, 'brunch', { index: 2, startedAtMs: 1000, district: null }, 1000);
+  saveSession(storage, 'brunch', { index: 2, district: null }, 1000);
   clearSession(storage, 'brunch');
   assert.equal(loadSession(storage, 'brunch', 1000), null);
 });

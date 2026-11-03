@@ -1168,18 +1168,6 @@ p.availability,
   font-size: 15px;
 }
 
-.live-timer {
-  color: var(--ink);
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-}
-
-.live-timer.is-over {
-  flex-basis: 100%;
-  color: var(--muted);
-  font-weight: 700;
-}
-
 .live-progress {
   display: flex;
   gap: 4px;

@@ -27,7 +27,6 @@ import {
   storyCardBefore,
   storyTopicHeadings,
   storyTopics,
-  timerText,
   topicChoices,
   topicDeck,
 } from './lib/live.mjs';
@@ -308,12 +307,11 @@ liveLayer.setAttribute('aria-modal', 'true');
 liveLayer.setAttribute('aria-labelledby', 'live-title');
 document.body.append(liveLayer);
 
-const live = { steps: [], index: 0, startedAtMs: 0, district: null };
+const live = { steps: [], index: 0, district: null };
 const topicPicks = new Map();
 const storyPicks = new Map();
 const preloadedImages = [];
 let drawnIds = [];
-let timerId = 0;
 let resumePrompt = null;
 let stepImagesLoaded = Promise.resolve();
 
@@ -333,24 +331,6 @@ function loadImage(url) {
     img.src = url;
     preloadedImages.push(img);
   });
-}
-
-function updateTimer() {
-  const timer = liveBody.querySelector('.live-timer');
-  if (!timer) return;
-  const { text, overtime } = timerText(live.steps[live.index], live.startedAtMs, Date.now());
-  timer.textContent = text;
-  timer.classList.toggle('is-over', overtime);
-}
-
-function startTimer() {
-  stopTimer();
-  updateTimer();
-  timerId = setInterval(updateTimer, 1000);
-}
-
-function stopTimer() {
-  clearInterval(timerId);
 }
 
 let wakeLock = null;
@@ -692,10 +672,9 @@ function earlierStoryQuestions(index) {
   return card.questions ? storyQuestions(card.questions, `〈${card.title}〉的分享提問`) : storyNote(card.note);
 }
 
-function showStep(index, startedAtMs = Date.now()) {
+function showStep(index) {
   live.index = index;
-  live.startedAtMs = startedAtMs;
-  saveSession(storage, activity.id, { index, startedAtMs, district: live.district }, Date.now());
+  saveSession(storage, activity.id, { index, district: live.district }, Date.now());
 
   const step = live.steps[index];
   const next = live.steps[index + 1];
@@ -706,10 +685,7 @@ function showStep(index, startedAtMs = Date.now()) {
   );
   progress.setAttribute('aria-hidden', 'true');
   const view = el('div', { className: 'live-step' }, [
-    el('div', { className: 'live-bar' }, [
-      el('span', { textContent: progressText(index, live.steps.length) }),
-      el('span', { className: 'live-timer' }),
-    ]),
+    el('div', { className: 'live-bar' }, [el('span', { textContent: progressText(index, live.steps.length) })]),
     progress,
     el('p', { className: 'live-time', textContent: step.time }),
     screenTitle(step.title),
@@ -734,7 +710,6 @@ function showStep(index, startedAtMs = Date.now()) {
   view.style.setProperty('--dot', `var(--step${colour})`);
   view.style.setProperty('--dot-text', `var(--step${colour}-text)`);
   showScreen([view]);
-  startTimer();
 }
 
 function preloadStepImages() {
@@ -742,15 +717,13 @@ function preloadStepImages() {
   stepImagesLoaded = preload(urls, loadImage);
 }
 
-async function loadThenShowStep(index, startedAtMs) {
-  stopTimer();
+async function loadThenShowStep(index) {
   showScreen([screenTitle('載入中…')]);
   await stepImagesLoaded;
-  showStep(index, startedAtMs);
+  showStep(index);
 }
 
 function showPreflight() {
-  stopTimer();
   const items = preflightItems(activity, routeReminders()).map((item) =>
     el('li', {}, [el('label', {}, [el('input', { type: 'checkbox' }), el('span', { textContent: item })])]),
   );
@@ -766,7 +739,6 @@ function showPreflight() {
 
 function finishLive() {
   clearSession(storage, activity.id);
-  stopTimer();
   letScreenSleep();
   showScreen([
     screenTitle('今天辛苦了！'),
@@ -786,7 +758,6 @@ function openLive() {
 }
 
 function closeLive() {
-  stopTimer();
   letScreenSleep();
   liveLayer.hidden = true;
   page.inert = false;
@@ -805,7 +776,7 @@ function offerResume(chooseDistrict) {
   const resume = () => {
     if (routes) chooseDistrict(saved.district);
     openLive();
-    loadThenShowStep(saved.index, saved.startedAtMs);
+    loadThenShowStep(saved.index);
   };
   const restart = () => {
     clearSession(storage, activity.id);
@@ -822,7 +793,6 @@ function offerResume(chooseDistrict) {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible' || liveLayer.hidden) return;
-  updateTimer();
   if (screenShouldStayOn) keepScreenOn();
 });
 
