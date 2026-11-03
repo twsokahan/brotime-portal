@@ -1,3 +1,4 @@
+import { isLastDayOfMonth } from './featured.mjs';
 import { KIDS, PLACE, RAIN, SLOTS, INTERESTS } from './labels.mjs';
 import { GRADES, MAX_PER_GRADE, MAX_TICKETS, countsProblem } from './ichiban.mjs';
 
@@ -492,6 +493,44 @@ export function validateActivity(activity, { fileExists } = {}) {
   return check.errors;
 }
 
+function checkFeaturedEntry(check, entry, path) {
+  if (!check.object(entry, path)) return false;
+  const fromOk = checkDate(check, entry.from, `${path}.from`);
+  const toOk = checkDate(check, entry.to, `${path}.to`);
+  if (fromOk && toOk && entry.to < entry.from) check.fail(`${path}.to`, '不能早於 from');
+  check.text(entry.lead, `${path}.lead`);
+  if (check.list(entry.ids, `${path}.ids`, 1)) {
+    entry.ids.forEach((id, i) => check.text(id, `${path}.ids[${i}]`));
+    if (new Set(entry.ids).size !== entry.ids.length) check.fail(`${path}.ids`, '有重複的活動');
+  }
+  return fromOk && toOk;
+}
+
+function checkSeasons(check, seasons) {
+  if (!check.list(seasons, 'featured.seasons')) return;
+  const dated = seasons.filter((season, i) => {
+    const path = `featured.seasons[${i}]`;
+    if (!checkFeaturedEntry(check, season, path)) return false;
+    if (!season.from.endsWith('-01')) check.fail(`${path}.from`, '要是某個月的 1 號');
+    if (!isLastDayOfMonth(season.to)) check.fail(`${path}.to`, '要是某個月的最後一天');
+    return true;
+  });
+  const byStart = [...dated].sort((a, b) => a.from.localeCompare(b.from));
+  byStart.slice(1).forEach((season, i) => {
+    if (season.from <= byStart[i].to) check.fail('featured.seasons', `${byStart[i].from} 和 ${season.from} 開始的兩季重疊`);
+  });
+}
+
+function checkFeatured(check, featured) {
+  if (!check.object(featured, 'featured')) return;
+  if (check.list(featured.pushes, 'featured.pushes')) {
+    featured.pushes.forEach((push, i) => {
+      if (checkFeaturedEntry(check, push, `featured.pushes[${i}]`)) check.text(push.title, `featured.pushes[${i}].title`);
+    });
+  }
+  checkSeasons(check, featured.seasons);
+}
+
 export function validateSite(site) {
   const check = createChecker('site');
   if (!check.object(site, 'site')) return check.errors;
@@ -500,6 +539,7 @@ export function validateSite(site) {
     check.fail('baseUrl', '要是 https:// 開頭、/ 結尾');
   }
   checkSurveys(check, site.surveys);
+  if (site.featured !== undefined) checkFeatured(check, site.featured);
   return check.errors;
 }
 
@@ -569,9 +609,21 @@ function extraRouteErrors(activities, routes) {
   );
 }
 
+function featuredActivityErrors(activities, site) {
+  const readyIds = new Set(activities.filter((activity) => activity?.status === 'ready').map((activity) => activity.id));
+  return ['pushes', 'seasons'].flatMap((key) =>
+    listOf(site?.featured?.[key]).flatMap((entry, i) =>
+      listOf(entry?.ids)
+        .filter((id) => isText(id) && !readyIds.has(id))
+        .map((id) => `site: featured.${key}[${i}].ids ${id} 不是已上線的活動`),
+    ),
+  );
+}
+
 export function validateAll({ activities, site, routes }, opts = {}) {
   return [
     ...validateSite(site),
+    ...featuredActivityErrors(activities, site),
     ...activities.flatMap((activity) => validateActivity(activity, opts)),
     ...duplicateErrors(activities, 'id'),
     ...duplicateErrors(activities, 'order'),

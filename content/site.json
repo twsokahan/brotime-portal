@@ -14,5 +14,78 @@
       "url": "https://docs.google.com/forms/d/e/1FAIpQLSeV_DgkFhgRKGKYG78GZmU9IJ_xAVN8G3ZsQppr5oXBslWF6g/viewform",
       "activityEntry": "entry.1462715488"
     }
+  },
+  "featured": {
+    "pushes": [
+      {
+        "title": "春節強力建議",
+        "lead": "過年期間，推薦約這兩個",
+        "from": "2027-02-06",
+        "to": "2027-02-20",
+        "ids": [
+          "new-year-visit",
+          "new-year-daimoku"
+        ]
+      },
+      {
+        "title": "十月強力建議",
+        "lead": "西洋名畫展期間，推薦約這一個",
+        "from": "2027-10-01",
+        "to": "2027-10-31",
+        "ids": [
+          "masterpiece-trip"
+        ]
+      }
+    ],
+    "seasons": [
+      {
+        "lead": "一到三月，企劃室推薦這幾個",
+        "from": "2027-01-01",
+        "to": "2027-03-31",
+        "ids": [
+          "kitchen",
+          "workplace",
+          "at-home",
+          "brunch",
+          "city-walk"
+        ]
+      },
+      {
+        "lead": "四到六月，企劃室推薦這幾個",
+        "from": "2027-04-01",
+        "to": "2027-06-30",
+        "ids": [
+          "ball-watching",
+          "camping",
+          "morning-hike",
+          "dad-day",
+          "board-games"
+        ]
+      },
+      {
+        "lead": "七到九月，企劃室推薦這幾個",
+        "from": "2027-07-01",
+        "to": "2027-09-30",
+        "ids": [
+          "night-run",
+          "art-walk",
+          "ball-games",
+          "fishing",
+          "bbq"
+        ]
+      },
+      {
+        "lead": "十到十二月，企劃室推薦這幾個",
+        "from": "2027-10-01",
+        "to": "2027-12-31",
+        "ids": [
+          "farm",
+          "camping",
+          "city-walk",
+          "craft",
+          "kitchen"
+        ]
+      }
+    ]
   }
 }

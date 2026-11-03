@@ -1,3 +1,4 @@
+import { SEASON_TITLE, isShowing, pushWindow, seasonWindow } from '../lib/featured.mjs';
 import { countMatches, emptyFilters, wallOrder } from '../lib/filter.mjs';
 import { INTERESTS, SLOTS } from '../lib/labels.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
@@ -14,11 +15,12 @@ const ENTRY_ACTIONS = `<div class="entry-actions">
 <button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters"><span class="filter-summary">篩選</span> <span class="caret" aria-hidden="true">▾</span></button>
 </div>`;
 
-function renderHead(canPick, count) {
-  return `<header class="entry-head">
+const HEAD = `<header class="entry-head">
 <h1>下個月，<span>約兄弟做什麼？</span></h1>
-<p class="lead">${count} 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}
 </header>`;
+
+function renderIntro(canPick, count) {
+  return `<p class="lead">${count} 種過兄弟時光的方式，回答 4 題幫你挑，或往下自己逛。</p>${canPick ? `\n${ENTRY_ACTIONS}` : ''}`;
 }
 
 function renderFilters(matchCount) {
@@ -48,12 +50,12 @@ function renderOnlyDuring(availability) {
   return `\n<p class="only-during"><span class="badge">限 ${escapeHtml(availability.label)}</span></p>`;
 }
 
-function renderCard(activity, rel) {
+function renderCard(activity, rel, heading = 'h2') {
   const id = escapeHtml(activity.id);
   const interests = activity.tags.interests.map((key) => INTERESTS[key]).join('・');
   return `<a class="act" data-id="${id}" href="${rel}a/${id}/">
 ${renderCover(activity, rel)}
-<h2>${escapeHtml(activity.name)}</h2>
+<${heading}>${escapeHtml(activity.name)}</${heading}>
 <p class="interests">${escapeHtml(interests)}</p>${renderOnlyDuring(activity.availability)}
 </a>`;
 }
@@ -86,17 +88,55 @@ function renderData(activities) {
   return `<script type="application/json" id="activities-data">${jsonForScript(data)}</script>`;
 }
 
-export function renderEntryMain({ activities, rel }) {
+function featuredSections(featured) {
+  return [
+    ...(featured?.pushes ?? []).map((push) => ({ ...push, kind: 'push', window: pushWindow(push) })),
+    ...(featured?.seasons ?? []).map((season) => ({ ...season, kind: 'season', title: SEASON_TITLE, window: seasonWindow(season) })),
+  ];
+}
+
+function renderFeaturedSection({ kind, title, lead, ids, window }, byId, rel, today) {
+  const cards = ids.map((id) => renderCard(byId.get(id), rel, 'h3')).join('\n');
+  return `<section class="${kind}" data-show-from="${window.from}" data-show-to="${window.to}"${isShowing(window, today) ? '' : ' hidden'}>
+<h2>${escapeHtml(title)}</h2>
+<p class="lead">${escapeHtml(lead)}</p>
+<div class="featured-grid">
+${cards}
+</div>
+</section>`;
+}
+
+function renderFeatured(sections, byId, rel, today) {
+  if (!sections.length) return '';
+  return `<div class="featured">
+${sections.map((section) => renderFeaturedSection(section, byId, rel, today)).join('\n')}
+</div>`;
+}
+
+function renderEverything(alone, count, parts) {
+  return `<details class="everything${alone ? ' is-alone' : ''}" id="all"${alone ? ' open' : ''}>
+<summary>都不合適？看全部 ${count} 種<small>可以用「幫我挑」或篩選</small></summary>
+${parts.filter(Boolean).join('\n')}
+</details>`;
+}
+
+export function renderEntryMain({ activities, rel, featured, today }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   const ordered = wallOrder(activities, emptyFilters()).map((id) => byId.get(id));
   const ready = ordered.filter((activity) => activity.status === 'ready');
   const preparing = ordered.filter((activity) => activity.status !== 'ready');
   const canPick = ready.length > 0;
+  const sections = featuredSections(featured);
+  const alone = !sections.some(({ window }) => isShowing(window, today));
   return [
-    renderHead(canPick, activities.length),
-    canPick && renderFilters(countMatches(activities, emptyFilters())),
-    renderWall(ready, rel),
-    renderPreparing(preparing, rel),
+    HEAD,
+    renderFeatured(sections, byId, rel, today),
+    renderEverything(alone, activities.length, [
+      renderIntro(canPick, activities.length),
+      canPick && renderFilters(countMatches(activities, emptyFilters())),
+      renderWall(ready, rel),
+      renderPreparing(preparing, rel),
+    ]),
     canPick && renderData(ordered),
   ]
     .filter(Boolean)

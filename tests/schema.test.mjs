@@ -779,3 +779,52 @@ test('a flow note must be text', () => {
   assert.deepEqual(validateActivity({ ...readyActivity(), flowNote: '先吃飯也可以。' }, allFilesExist), []);
   assertReports(validateActivity({ ...readyActivity(), flowNote: '' }, allFilesExist), 'flowNote');
 });
+
+function featuredSite(featured) {
+  return {
+    ...fixtureSite(),
+    featured: {
+      pushes: [{ title: '春節強力建議', lead: '過年期間，推薦約這兩個', from: '2027-02-06', to: '2027-02-20', ids: ['brunch'] }],
+      seasons: [
+        { lead: '一到三月，企劃室推薦這幾個', from: '2027-01-01', to: '2027-03-31', ids: ['brunch'] },
+        { lead: '四到六月，企劃室推薦這幾個', from: '2027-04-01', to: '2027-06-30', ids: ['brunch'] },
+      ],
+      ...featured,
+    },
+  };
+}
+
+test('validateSite accepts featured pushes and seasons', () => {
+  assert.deepEqual(validateSite(featuredSite()), []);
+});
+
+test('a push needs a title, a lead, dates in order and at least one activity', () => {
+  const push = featuredSite().featured.pushes[0];
+  const withPush = (changes) => featuredSite({ pushes: [{ ...push, ...changes }] });
+  assertReports(validateSite(withPush({ title: undefined })), 'featured.pushes[0].title');
+  assertReports(validateSite(withPush({ lead: '' })), 'featured.pushes[0].lead');
+  assertReports(validateSite(withPush({ to: '2027-02-01' })), 'featured.pushes[0].to 不能早於 from');
+  assertReports(validateSite(withPush({ from: '2027-02-30' })), 'featured.pushes[0].from');
+  assertReports(validateSite(withPush({ ids: [] })), 'featured.pushes[0].ids');
+  assertReports(validateSite(withPush({ ids: ['brunch', 'brunch'] })), '有重複的活動');
+});
+
+test('a season runs from the first of a month to the last day of a month', () => {
+  const [first, second] = featuredSite().featured.seasons;
+  assertReports(validateSite(featuredSite({ seasons: [{ ...first, from: '2027-01-02' }] })), '要是某個月的 1 號');
+  assertReports(validateSite(featuredSite({ seasons: [{ ...first, to: '2027-03-30' }] })), '要是某個月的最後一天');
+  assert.deepEqual(validateSite(featuredSite({ seasons: [second, first] })), []);
+});
+
+test('seasons may not overlap, or two seasons would show at once', () => {
+  const [first, second] = featuredSite().featured.seasons;
+  assertReports(validateSite(featuredSite({ seasons: [first, { ...second, from: '2027-03-01' }] })), '重疊');
+});
+
+test('validateAll only lets ready activities be featured', () => {
+  const content = { activities: [readyActivity(), preparingActivity()], site: featuredSite(), routes: null };
+  assert.deepEqual(validateAll(content, allFilesExist), []);
+  const withId = (id) => ({ ...content, site: featuredSite({ pushes: [{ ...content.site.featured.pushes[0], ids: [id] }] }) });
+  assertReports(validateAll(withId('nobody'), allFilesExist), 'featured.pushes[0].ids nobody 不是已上線的活動');
+  assertReports(validateAll(withId(preparingActivity().id), allFilesExist), '不是已上線的活動');
+});

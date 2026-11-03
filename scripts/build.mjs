@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { taipeiIsoDate } from '../src/lib/featured.mjs';
 import { paletteCss } from '../src/lib/palette.mjs';
 import { validateAll } from '../src/lib/schema.mjs';
 import { cardPageUrl } from '../src/lib/share.mjs';
@@ -185,7 +186,7 @@ function guidePage({ activity, site, ogUrl }) {
   });
 }
 
-export function renderPages({ site, routes, activityFiles }, preview) {
+export function renderPages({ site, routes, activityFiles }, preview, today = taipeiIsoDate()) {
   const activities = activityFiles.map(({ activity }) => ({
     ...activity,
     status: shownStatus(activity.status, preview),
@@ -197,7 +198,7 @@ export function renderPages({ site, routes, activityFiles }, preview) {
         title: site.title,
         description: entryDescription(activities.length),
         rel: ENTRY_REL,
-        main: renderEntryMain({ activities, rel: ENTRY_REL }),
+        main: renderEntryMain({ activities, rel: ENTRY_REL, featured: site.featured, today }),
         scripts: activities.some((activity) => activity.status === 'ready') ? ['js/entry.js'] : [],
         ogUrl: site.baseUrl,
         leaveLine: true,
