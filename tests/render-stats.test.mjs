@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { activityIdsScript, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
+import { activityIdsScript, renderHostsMain, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
 
 test('the stats page links to adding a host and back home', () => {
   const html = renderStatsMain({ rel: '../' });
@@ -19,4 +19,12 @@ test('activity ids are embedded as name to id and cannot close the script tag', 
   assert.equal(html.match(/<\/script>/g).length, 1);
   const json = html.replace(/^<script[^>]*>/, '').replace(/<\/script>$/, '');
   assert.deepEqual(JSON.parse(json), { 城市散步: 'city-walk', '</script>': 'odd' });
+});
+
+test('the hosts page has an email field, an optional name and a way back to the stats list', () => {
+  const html = renderHostsMain({ rel: '../' });
+  assert.ok(html.includes('<h1>加一位主持人</h1>'));
+  assert.ok(html.includes('type="email" name="email"'));
+  assert.ok(html.includes('name="name"'));
+  assert.ok(html.includes('href="../stats/"'));
 });

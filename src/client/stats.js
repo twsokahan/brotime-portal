@@ -19,7 +19,9 @@ if (record.scope?.level === 'none') {
   else status.textContent = OFFLINE_TEXT;
 }
 
-const chosenDistrict = () => new URLSearchParams(location.search).get('d') ?? ALL;
+function chosenDistrict() {
+  return new URLSearchParams(location.search).get('d') ?? ALL;
+}
 
 function remember(district) {
   const url = new URL(location.href);

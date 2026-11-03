@@ -8,14 +8,14 @@ import { taipeiIsoDate } from '../src/lib/featured.mjs';
 import { paletteCss } from '../src/lib/palette.mjs';
 import { validateAll } from '../src/lib/schema.mjs';
 import { cardPageUrl } from '../src/lib/share.mjs';
-import { SESSION_PATH, STATS_PATH } from '../src/lib/stats-view.mjs';
+import { HOSTS_PATH, SESSION_PATH, STATS_PATH } from '../src/lib/stats-view.mjs';
 import { renderActivityMain, renderPreparingMain } from '../src/render/activity.mjs';
 import { renderCardMain } from '../src/render/card.mjs';
 import { ALL_PATH, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { renderGuideMain } from '../src/render/guide.mjs';
 import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
-import { activityIdsScript, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
+import { activityIdsScript, renderHostsMain, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
 import { page } from '../src/render/layout.mjs';
 
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -201,6 +201,7 @@ function statsPages({ site, activities }) {
   return [
     [`${STATS_PATH}index.html`, statsPage({ title: '每一場的回顧', rel: STATS_REL, main: renderStatsMain({ rel: STATS_REL }), script: 'js/stats.js' })],
     [`${SESSION_PATH}index.html`, statsPage({ title: '這一場的回顧', rel: SESSION_REL, main: renderSessionMain({ rel: SESSION_REL }), script: 'js/stats-session.js' })],
+    [`${HOSTS_PATH}index.html`, statsPage({ title: '加一位主持人', rel: STATS_REL, main: renderHostsMain({ rel: STATS_REL }), script: 'js/hosts.js' })],
   ];
 }
 

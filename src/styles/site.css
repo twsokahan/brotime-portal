@@ -2729,3 +2729,52 @@ html[data-zoom="out"]::view-transition-new(root) {
   border-radius: 999px;
   background: var(--ink);
 }
+
+.host-form {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+
+.host-form label {
+  display: grid;
+  gap: 4px;
+}
+
+.host-form input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box);
+  color: var(--ink);
+  font: inherit;
+}
+
+.host-form button {
+  justify-self: start;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.host-result {
+  min-height: 1.7em;
+  margin: 0;
+  color: var(--muted);
+}
+
+.host-list ul {
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.host-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}

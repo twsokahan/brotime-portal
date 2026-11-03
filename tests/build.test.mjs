@@ -334,3 +334,10 @@ test('without signIn there are no stats pages', () => {
   assert.ok(!pages.has('stats/index.html') && !pages.has('stats/session/index.html'));
   assert.ok(!pages.get('index.html').includes('district-wants'));
 });
+
+test('with signIn the hosts page is built behind sign-in; without it there is none', () => {
+  const html = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN }).get('hosts/index.html');
+  assert.ok(html, 'expected hosts/index.html');
+  for (const piece of [...SIGN_IN_PIECES, 'js/hosts.js']) assert.ok(html.includes(piece), `hosts page lacks ${piece}`);
+  assert.ok(!pagesWithEverything(fixtureSite()).has('hosts/index.html'));
+});
