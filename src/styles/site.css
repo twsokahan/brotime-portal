@@ -462,8 +462,27 @@ main > p > a {
   font-weight: 400;
 }
 
+.about {
+  margin: 48px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.about h2 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.about p {
+  margin: 0 0 8px;
+}
+
 .site-foot {
-  margin: 40px 0 0;
+  margin: 24px 0 0;
   font-size: 14px;
   text-align: center;
 }
