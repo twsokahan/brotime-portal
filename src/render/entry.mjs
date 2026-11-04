@@ -122,21 +122,12 @@ ${rendered.join('\n')}
 </div>`;
 }
 
-function renderAbout(count) {
-  return `<section class="about">
-<h2>關於兄弟時光</h2>
-<p>「兄弟時光」是台灣創價學會創價班今年的主題：約兄弟一起吃飯、散步、打球、看展，好好聊一聊。這個網站整理了 ${count} 種過兄弟時光的方式，每一種都附上企劃案、故事卡和話題卡，不用登入就能看、能下載。</p>
-<p>區負責人和幹部可以用 Google 帳號登入「每一場的回顧」，看參加者填的問卷結果。登入只拿你的信箱和名字，用來確認你負責哪一區或哪一圈。</p>
-</section>`;
-}
-
 export function renderHomeMain({ activities, rel, featured, today }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   return [
     `<header class="entry-head">\n${TITLE}\n</header>`,
     renderFeatured(featuredSections(featured), byId, rel, today),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
-    renderAbout(activities.length),
     `<p class="site-foot"><a href="${rel}${PRIVACY_PATH}">隱私權說明</a></p>`,
   ]
     .filter(Boolean)

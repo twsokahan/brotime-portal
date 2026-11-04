@@ -370,15 +370,6 @@ test('the home page links to the privacy page, which Google brand verification r
   }
 });
 
-test('the home page explains what the site is for and what Google sign-in is used for', () => {
-  const home = pagesWithEverything(fixtureSite()).get('index.html');
-  assert.ok(home.includes('<h2>關於兄弟時光</h2>'));
-  assert.ok(home.includes('台灣創價學會創價班'));
-  assert.ok(home.includes('不用登入就能看'));
-  assert.ok(home.includes('用 Google 帳號登入「每一場的回顧」'));
-  assert.ok(!home.includes('href="stats/"'));
-});
-
 test('the privacy page is built with or without signIn, needs no sign-in, and links back home', () => {
   for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) {
     const html = pagesWithEverything(site).get('privacy/index.html');
