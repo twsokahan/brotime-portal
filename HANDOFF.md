@@ -1,5 +1,32 @@
 # 交接：兄弟時光活動入口網站
 
+## 登入與各區統計：上線進度（2026-11-04）
+
+程式都在 `main`，但登入還關著。打開登入的 `content/site.json`（`signIn.clientId`、`signIn.endpoint`）在分支 `task11-go-live`，還沒合併；快轉合併進 `main` 就上線。
+
+已經設好的（帳號與各種 ID 記在本機記憶，不進 repo）：
+
+- OAuth 用戶端：獨立的 GCP 專案 `brotime-portal`（不用 `sokahan`：它是測試中狀態，又有其他 App 共用），同意畫面名稱「兄弟時光」、已正式發布。Google 說品牌要驗證才會在登入視窗顯示名稱，沒驗證一樣能登入。
+- Apps Script：以部署帳號身分執行，8 個指令碼屬性都設好（`SESSION_SECRET` 用 `createSessionSecret()` 在 Apps Script 裡產生，沒人看過）。`checkSetup()`：通訊錄 87、幹部 400、合併 381 人，對不到圈區的寫法 0。
+- 補充名單：企劃室帳號的 Drive，共用給部署帳號編輯。
+- 隱私權說明頁 `privacy/` 已上線（OAuth 正式發布規定要有）。
+- 本機用 `localhost:8766` 試過：名單上的帳號登入 OK，不在名單上的帳號看到「這個帳號還不在名單上」。
+
+上線前，使用者 2026-11-04 要的：
+
+1. 給不在名單上的人一個簡易頁：列出 20 種（不用篩選、主打），點進去是那一種的故事卡列表。新功能，先 brainstorm（入口放哪、故事卡列表頁怎麼做）。
+2. 「每一場的回顧」頁改好看（使用者說很醜，截圖是沒有回覆時的空白狀態）。
+3. 「這個帳號還不在名單上」畫面還寫「名單照創價班通訊錄」。首頁那句已照使用者要求拿掉通訊錄的說法，這句要不要一起改，先問。
+
+合併上線後照計畫 Task 11 Step 8 用手機測正式網址。
+
+Apps Script 小坑：
+
+- clasp 3 建專案要用 `--type standalone`，而且建立時會把雲端的 `appsscript.json` 拉下來蓋掉 `dist-apps-script/`，要重跑 `npm run build:apps-script` 再推。
+- 改程式後：`npm run build:apps-script`，`cd apps-script && clasp push`，再 `clasp deploy -i <部署 ID>`，網址才不會變。
+- 用 curl 測 `/exec` 不要加 `-X POST`。Apps Script 會先 302 轉址，`-X POST` 會讓轉址後那一步也用 POST，回 405。
+- 幹部名單第一個分頁是隱藏的學生部，所以要用 `CADRE_SHEET` 指定「男子部」。
+
 ## 現況（2026-11-03）
 
 **已上線：https://kyodai-tokimitsu.twsokahan.org/**（`brotime.twsokahan.org` 會保留路徑轉過來）
