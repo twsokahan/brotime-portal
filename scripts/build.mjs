@@ -223,7 +223,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         description: entryDescription(activities.length),
         rel: ENTRY_REL,
         main: signedIn ? `${homeMain}\n${activityIdsScript(activities)}` : homeMain,
-        scripts: signedIn ? ['js/home.js', 'js/district-wants.js'] : ['js/home.js'],
+        scripts: signedIn ? ['js/home.js', 'js/district-wants.js', 'js/account.js'] : ['js/home.js'],
         ogUrl: site.baseUrl,
         leaveLine: true,
         signIn: site.signIn,

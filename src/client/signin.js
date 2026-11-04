@@ -116,6 +116,11 @@ function signOut() {
   showStart();
 }
 
+export function signOutByUser() {
+  if (window.google?.accounts) google.accounts.id.disableAutoSelect();
+  signOut();
+}
+
 function finishSignIn(newRecord) {
   record = newRecord;
   saveRecord(record);

@@ -2662,6 +2662,26 @@ html[data-zoom="out"]::view-transition-new(root) {
   margin: 12px 0 0;
 }
 
+.account-foot {
+  margin: 40px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.account-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.account-line span {
+  overflow-wrap: anywhere;
+}
+
 .stats-district {
   display: flex;
   align-items: center;

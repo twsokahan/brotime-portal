@@ -218,3 +218,11 @@ test('without sign-in the home page has no district wants block', () => {
   const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
   assert.ok(!html.includes('district-wants'));
 });
+
+test('with sign-in the account footer closes the home page, after the all link', () => {
+  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15', districtWants: true });
+  assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
+  assert.ok(html.indexOf('account-foot') > html.indexOf('class="all-link"'));
+  const signedOut = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
+  assert.ok(!signedOut.includes('account-foot'));
+});

@@ -328,6 +328,7 @@ test('with signIn the stats pages are built behind sign-in and the home page loa
   }
   const home = pages.get('index.html');
   assert.ok(home.includes('js/district-wants.js') && home.includes('id="activity-ids"'));
+  assert.ok(home.includes('js/account.js'));
 });
 
 test('without signIn there are no stats pages', () => {

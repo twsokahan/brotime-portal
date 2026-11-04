@@ -110,6 +110,7 @@ ${cards}
 }
 
 const DISTRICT_WANTS_BLOCK = '<section class="district-wants" hidden></section>';
+const ACCOUNT_FOOT = '<footer class="account-foot" hidden></footer>';
 
 // The wants block goes right above the season, so a district leader can weigh it against the season's picks.
 function renderFeatured(sections, byId, rel, today, districtWants) {
@@ -130,6 +131,7 @@ export function renderHomeMain({ activities, rel, featured, today, districtWants
     `<header class="entry-head">\n${TITLE}\n</header>`,
     renderFeatured(featuredSections(featured), byId, rel, today, districtWants),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
+    districtWants ? ACCOUNT_FOOT : '',
   ]
     .filter(Boolean)
     .join('\n');
