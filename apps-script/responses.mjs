@@ -1,8 +1,10 @@
 import { DISTRICTS } from './districts.mjs';
 
-export const MIN_RESPONSES = 3;
 export const RECENT_SESSIONS = 3;
 export const TOP_WANTS = 3;
+// A reply sent up to this many days after a session's first reply still belongs to that session.
+const SAME_SESSION_DAYS = 2;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 // A column belongs to a key when its question title contains the fragment, so small rewordings keep working.
 // The "留在心裡" question is deliberately absent: it never leaves the response sheet.
@@ -59,14 +61,22 @@ const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const newestFirst = (a, b) =>
   compareText(b.date, a.date) || DISTRICTS.indexOf(a.district) - DISTRICTS.indexOf(b.district) || compareText(a.activity, b.activity);
 
+const daysBetween = (fromIsoDate, toIsoDate) => (Date.parse(toIsoDate) - Date.parse(fromIsoDate)) / DAY_MS;
+
 export function groupSessions(responses) {
-  const byId = new Map();
-  for (const response of responses) {
-    const id = `${response.date}|${response.district}|${response.activity}`;
-    if (!byId.has(id)) byId.set(id, { id, date: response.date, district: response.district, activity: response.activity, responses: [] });
-    byId.get(id).responses.push(response);
+  const latestByPlace = new Map();
+  const sessions = [];
+  for (const response of [...responses].sort((a, b) => compareText(a.date, b.date))) {
+    const place = `${response.district}|${response.activity}`;
+    let session = latestByPlace.get(place);
+    if (!session || daysBetween(session.date, response.date) > SAME_SESSION_DAYS) {
+      session = { id: `${response.date}|${place}`, date: response.date, district: response.district, activity: response.activity, responses: [] };
+      latestByPlace.set(place, session);
+      sessions.push(session);
+    }
+    session.responses.push(response);
   }
-  return [...byId.values()].sort(newestFirst);
+  return sessions.sort(newestFirst);
 }
 
 function ranked(names) {
@@ -86,10 +96,12 @@ function countChoices(responses, key) {
 }
 
 export function sessionStats({ id, date, district, activity, responses }) {
-  const summary = { id, date, district, activity, responses: responses.length, enough: responses.length >= MIN_RESPONSES };
-  if (!summary.enough) return summary;
   return {
-    ...summary,
+    id,
+    date,
+    district,
+    activity,
+    responses: responses.length,
     answers: Object.fromEntries(ANSWER_KEYS.map((key) => [key, countChoices(responses, key)])),
     next: ranked(responses.flatMap((response) => response.next)),
   };
@@ -100,9 +112,7 @@ export function districtWants(sessions, districts) {
   const recent = districts.flatMap((district) => sessions.filter((session) => session.district === district).slice(0, RECENT_SESSIONS));
   if (!recent.length) return null;
   const responses = recent.flatMap((session) => session.responses);
-  const wants = { sessions: recent.length, responses: responses.length, enough: responses.length >= MIN_RESPONSES };
-  if (!wants.enough) return wants;
-  return { ...wants, top: ranked(responses.flatMap((response) => response.next)).slice(0, TOP_WANTS) };
+  return { sessions: recent.length, responses: responses.length, top: ranked(responses.flatMap((response) => response.next)).slice(0, TOP_WANTS) };
 }
 
 export function statsFor(scope, sessions) {

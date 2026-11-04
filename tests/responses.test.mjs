@@ -45,15 +45,47 @@ test('replies group by district, activity and Taiwan date, newest first', () => 
   assert.deepEqual(sessions.map((session) => session.id), ['2027-01-15|花蓮區|城市散步', '2027-01-15|花蓮區|桌遊之夜', '2027-01-08|花蓮區|城市散步']);
 });
 
-test('a session with fewer than 3 replies shows no numbers', () => {
-  const [session] = groupSessions(parseResponses([
+test('a session with one reply still shows its answers', () => {
+  const [session] = groupSessions(parseResponses([HEADER, reply('2027-01-15T02:00:00Z', '城市散步', '花蓮區')]));
+  const stats = sessionStats(session);
+  assert.equal(stats.responses, 1);
+  assert.deepEqual(stats.answers.listened, { 有: 1 });
+  assert.ok(!('enough' in stats));
+});
+
+test('replies of the same district and activity within two days of the first join one session', () => {
+  const sessions = groupSessions(parseResponses([
     HEADER,
-    reply('2027-01-15T02:00:00Z', '城市散步', '花蓮區'),
-    reply('2027-01-15T03:00:00Z', '城市散步', '花蓮區'),
+    reply('2026-11-16T02:00:00Z', '男人的廚房', '中和區'),
+    reply('2026-11-17T02:00:00Z', '男人的廚房', '中和區'),
+    reply('2026-11-18T02:00:00Z', '男人的廚房', '中和區'),
   ]));
-  assert.deepEqual(sessionStats(session), {
-    id: '2027-01-15|花蓮區|城市散步', date: '2027-01-15', district: '花蓮區', activity: '城市散步', responses: 2, enough: false,
-  });
+  assert.equal(sessions.length, 1);
+  assert.equal(sessions[0].id, '2026-11-16|中和區|男人的廚房');
+  assert.equal(sessions[0].date, '2026-11-16');
+  assert.equal(sessions[0].responses.length, 3);
+});
+
+test('a reply three days after the first starts a new session', () => {
+  const sessions = groupSessions(parseResponses([
+    HEADER,
+    reply('2026-11-19T02:00:00Z', '男人的廚房', '中和區'),
+    reply('2026-11-16T02:00:00Z', '男人的廚房', '中和區'),
+  ]));
+  assert.deepEqual(sessions.map((session) => session.id), ['2026-11-19|中和區|男人的廚房', '2026-11-16|中和區|男人的廚房']);
+});
+
+test('two days are counted from the first reply, not the latest', () => {
+  const sessions = groupSessions(parseResponses([
+    HEADER,
+    reply('2026-11-16T02:00:00Z', '男人的廚房', '中和區'),
+    reply('2026-11-18T02:00:00Z', '男人的廚房', '中和區'),
+    reply('2026-11-20T02:00:00Z', '男人的廚房', '中和區'),
+  ]));
+  assert.deepEqual(sessions.map((session) => [session.id, session.responses.length]), [
+    ['2026-11-20|中和區|男人的廚房', 1],
+    ['2026-11-16|中和區|男人的廚房', 2],
+  ]);
 });
 
 test('a session counts each choice and splits the next question on ", "', () => {
@@ -75,13 +107,13 @@ test('wants add up the latest 3 sessions of the district and leave the oldest ou
     for (const minute of ['00', '01']) rows.push(reply(`2027-01-${day}T02:${minute}:00Z`, '城市散步', '花蓮區', next));
   }
   assert.deepEqual(districtWants(groupSessions(parseResponses(rows)), ['花蓮區']), {
-    sessions: 3, responses: 6, enough: true, top: [{ name: '桌遊之夜', count: 4 }, { name: '城市散步', count: 2 }],
+    sessions: 3, responses: 6, top: [{ name: '桌遊之夜', count: 4 }, { name: '城市散步', count: 2 }],
   });
 });
 
-test('wants are not enough under 3 replies and null without sessions', () => {
+test('wants list as soon as there is one reply and are null without sessions', () => {
   const sessions = groupSessions(parseResponses([HEADER, reply('2027-01-15T02:00:00Z', '城市散步', '花蓮區', '桌遊之夜')]));
-  assert.deepEqual(districtWants(sessions, ['花蓮區']), { sessions: 1, responses: 1, enough: false });
+  assert.deepEqual(districtWants(sessions, ['花蓮區']), { sessions: 1, responses: 1, top: [{ name: '桌遊之夜', count: 1 }] });
   assert.equal(districtWants(sessions, ['台東區']), null);
 });
 
