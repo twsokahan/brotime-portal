@@ -370,6 +370,12 @@ test('the home page links to the privacy page, which Google brand verification r
   }
 });
 
+test('the home page says what the site is for without mentioning sign-in or leaders', () => {
+  const home = pagesWithEverything(fixtureSite()).get('index.html');
+  assert.ok(home.includes('<p class="about">「兄弟時光」是台灣創價學會創價班今年的主題。'));
+  for (const word of ['登入', '區負責人', '幹部']) assert.ok(!home.includes(word), word);
+});
+
 test('the privacy page is built with or without signIn, needs no sign-in, and links back home', () => {
   for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) {
     const html = pagesWithEverything(site).get('privacy/index.html');

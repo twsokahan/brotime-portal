@@ -122,12 +122,17 @@ ${rendered.join('\n')}
 </div>`;
 }
 
+function renderAbout(count) {
+  return `<p class="about">「兄弟時光」是台灣創價學會創價班今年的主題。這裡整理了 ${count} 種約兄弟聚一聚的方式，每一種都附上企劃案、故事卡和話題卡。</p>`;
+}
+
 export function renderHomeMain({ activities, rel, featured, today }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   return [
     `<header class="entry-head">\n${TITLE}\n</header>`,
     renderFeatured(featuredSections(featured), byId, rel, today),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
+    renderAbout(activities.length),
     `<p class="site-foot"><a href="${rel}${PRIVACY_PATH}">隱私權說明</a></p>`,
   ]
     .filter(Boolean)
