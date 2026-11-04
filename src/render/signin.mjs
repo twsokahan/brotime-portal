@@ -14,11 +14,10 @@ export const SIGNIN_HEAD_SCRIPT = `(${askToSignInWithoutRecord})(${JSON.stringif
 const SIGNIN_PANEL = `<section class="signin" aria-live="polite">
 <div data-view="start">
 <h1>下個月，約兄弟做什麼？</h1>
-<p>這裡是給各區帶兄弟時光的人用的。請用創價班通訊錄上登記的 Gmail 登入。</p>
+<p>這裡是給各區帶兄弟時光的人用的。請用 Gmail 登入。</p>
 <div class="signin-button"></div>
 <p class="signin-line" hidden>在 LINE 裡沒辦法用 Google 登入。請點右上角「⋯」，選「用預設瀏覽器開啟」。</p>
 <p class="signin-error" hidden></p>
-<p class="signin-note">通訊錄上登記的不是 Gmail，或還沒登記？請你們區的區負責人在網站上把你的 Gmail 加進名單。</p>
 </div>
 <div data-view="not-listed" hidden>
 <h1>這個帳號還不在名單上</h1>
