@@ -1,7 +1,7 @@
 import { guidePageUrl, shareFallbacks } from '../lib/share.mjs';
 import { escapeHtml } from './html.mjs';
 
-const renderSection = ({ heading, items }) =>
+export const renderSection = ({ heading, items }) =>
   `<section>
 <h2>${escapeHtml(heading)}</h2>
 <ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>

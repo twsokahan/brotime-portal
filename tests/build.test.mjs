@@ -204,7 +204,7 @@ test('build works without a public folder, activities or routes', async () => {
   await cp(path.join(CONTENT_DIR, 'site.json'), path.join(contentDir, 'site.json'));
   const outDir = await tempDir();
   const { pages } = await build({ contentDir, publicDir: path.join(contentDir, 'missing'), outDir, preview: false });
-  assert.deepEqual(pages, ['index.html', 'all/index.html']);
+  assert.deepEqual(pages, ['index.html', 'all/index.html', 'privacy/index.html']);
 });
 
 test('with nothing ready the all page loads no script', async () => {
@@ -225,6 +225,7 @@ test('build returns the pages it wrote', async () => {
     'a/night-run/index.html',
     'all/index.html',
     'index.html',
+    'privacy/index.html',
   ]);
 });
 
@@ -340,4 +341,14 @@ test('with signIn the hosts page is built behind sign-in; without it there is no
   assert.ok(html, 'expected hosts/index.html');
   for (const piece of [...SIGN_IN_PIECES, 'js/hosts.js']) assert.ok(html.includes(piece), `hosts page lacks ${piece}`);
   assert.ok(!pagesWithEverything(fixtureSite()).has('hosts/index.html'));
+});
+
+test('the privacy page is built with or without signIn, needs no sign-in, and links back home', () => {
+  for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) {
+    const html = pagesWithEverything(site).get('privacy/index.html');
+    assert.ok(html, 'expected privacy/index.html');
+    assert.ok(html.includes('<h1>隱私權說明</h1>'));
+    assert.ok(html.includes('href="../"'));
+    assert.ok(!html.includes('signin'));
+  }
 });

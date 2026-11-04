@@ -17,6 +17,7 @@ import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
 import { activityIdsScript, renderHostsMain, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
 import { page } from '../src/render/layout.mjs';
+import { PRIVACY_PATH, renderPrivacyMain } from '../src/render/privacy.mjs';
 
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url));
 const LIB_DIR = path.join(REPO_ROOT, 'src/lib');
@@ -34,6 +35,7 @@ const GUIDE_REL = '../../../';
 const CARD_REL = '../../../../';
 const STATS_REL = '../';
 const SESSION_REL = '../../';
+const PRIVACY_REL = '../';
 
 async function readJson(file, { optional = false } = {}) {
   let text;
@@ -238,6 +240,17 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         ogUrl: `${site.baseUrl}${ALL_PATH}`,
         leaveLine: true,
         signIn: site.signIn,
+      }),
+    ],
+    [
+      `${PRIVACY_PATH}index.html`,
+      page({
+        title: `隱私權說明｜${site.title}`,
+        description: `${site.title}網站登入時拿到什麼、怎麼用。`,
+        rel: PRIVACY_REL,
+        main: renderPrivacyMain({ siteTitle: site.title, rel: PRIVACY_REL }),
+        scripts: [],
+        ogUrl: `${site.baseUrl}${PRIVACY_PATH}`,
       }),
     ],
     ...(signedIn ? statsPages({ site, activities }) : []),
