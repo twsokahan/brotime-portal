@@ -33,7 +33,8 @@ test('the web app runs as the deployer, on Taiwan time, and anyone can call it',
 test('no spreadsheet id is written into the Apps Script source', async () => {
   const dir = new URL('../apps-script/', import.meta.url);
   for (const name of await readdir(dir)) {
-    if (!/\.(mjs|js|json)$/.test(name)) continue;
+    const isLocalClaspConfig = name === '.clasp.json';
+    if (isLocalClaspConfig || !/\.(mjs|js|json)$/.test(name)) continue;
     assert.doesNotMatch(await readFile(new URL(name, dir), 'utf8'), /[A-Za-z0-9_-]{40,}/, name);
   }
 });
