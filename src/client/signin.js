@@ -87,9 +87,18 @@ function loadGoogle() {
   return googleReady;
 }
 
+const GOOGLE_BUTTON_MAX_WIDTH = 400;
+
 function renderGoogleButton() {
   buttonBox.replaceChildren();
-  google.accounts.id.renderButton(buttonBox, { theme: 'outline', size: 'large', text: 'signin_with', locale: 'zh-TW' });
+  google.accounts.id.renderButton(buttonBox, {
+    theme: 'filled_black',
+    shape: 'pill',
+    size: 'large',
+    text: 'signin_with',
+    locale: 'zh-TW',
+    width: Math.min(buttonBox.clientWidth || GOOGLE_BUTTON_MAX_WIDTH, GOOGLE_BUTTON_MAX_WIDTH),
+  });
 }
 
 function showStart() {
