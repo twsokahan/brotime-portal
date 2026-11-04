@@ -23,10 +23,6 @@ const SECTIONS = [
       '不寄廣告、不交給別人，也不會公開在網站上。',
     ],
   },
-  {
-    heading: '想把自己從名單上拿掉',
-    items: ['問你的圈負責人就可以。'],
-  },
 ];
 
 export function renderPrivacyMain({ siteTitle, rel }) {

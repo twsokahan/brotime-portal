@@ -371,6 +371,7 @@ test('the privacy page is built with or without signIn, needs no sign-in, and li
     assert.ok(html.includes('href="../"'));
     assert.ok(!html.includes('signin'));
     assert.ok(!html.includes('主持人'));
+    assert.ok(!html.includes('從名單上拿掉'));
     assert.ok(html.includes('創價班通訊錄和男子部幹部名單'));
     assert.ok(html.includes('只有「每一場的回顧」要用 Google 帳號登入'));
   }
