@@ -363,6 +363,13 @@ test('the build fails without a cover for the sample review card', () => {
   assert.throws(() => renderPages({ site: { ...fixtureSite(), signIn: SIGN_IN }, routes: undefined, activityFiles }, false), /kitchen/);
 });
 
+test('the home page links to the privacy page, which Google brand verification requires', () => {
+  for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) {
+    const home = pagesWithEverything(site).get('index.html');
+    assert.ok(home.includes('<a href="privacy/">隱私權說明</a>'));
+  }
+});
+
 test('the privacy page is built with or without signIn, needs no sign-in, and links back home', () => {
   for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) {
     const html = pagesWithEverything(site).get('privacy/index.html');

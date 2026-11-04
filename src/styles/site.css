@@ -462,6 +462,17 @@ main > p > a {
   font-weight: 400;
 }
 
+.site-foot {
+  margin: 40px 0 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.site-foot a {
+  color: var(--muted);
+  text-underline-offset: 3px;
+}
+
 .wall {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -2,6 +2,7 @@ import { SEASON_TITLE, isShowing, pushWindow, seasonWindow } from '../lib/featur
 import { countMatches, emptyFilters, wallOrder } from '../lib/filter.mjs';
 import { INTERESTS, SLOTS } from '../lib/labels.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
+import { PRIVACY_PATH } from './privacy.mjs';
 
 const list = (items, renderItem) => items.map(renderItem).join('');
 
@@ -127,6 +128,7 @@ export function renderHomeMain({ activities, rel, featured, today }) {
     `<header class="entry-head">\n${TITLE}\n</header>`,
     renderFeatured(featuredSections(featured), byId, rel, today),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
+    `<p class="site-foot"><a href="${rel}${PRIVACY_PATH}">隱私權說明</a></p>`,
   ]
     .filter(Boolean)
     .join('\n');
