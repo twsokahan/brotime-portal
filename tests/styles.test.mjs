@@ -23,3 +23,13 @@ test('pages behind sign-in hide their content until the panel lets them through'
   assert.match(rule('html.signin-needed main'), /display: none;/);
   assert.match(rule('html.signin-needed .signin'), /display: block;/);
 });
+
+test('answer dots use the theme colours: deep, light and hollow', () => {
+  assert.match(rule('.dot-0'), /background: var\(--step4\);/);
+  assert.match(rule('.dot-1'), /background: var\(--dot-mid\);/);
+  assert.match(rule('.dot-2'), /background: transparent;[\s\S]*border:/);
+});
+
+test('the sample review card is drawn with a dashed outline', () => {
+  assert.match(rule('.review-card.is-sample'), /border-style: dashed;/);
+});

@@ -53,4 +53,5 @@ test('paletteCss exposes the palette as CSS custom properties', () => {
   assert.ok(css.includes('--paper:'), css);
   assert.ok(css.includes('--step3-text:'), css);
   assert.ok(css.includes('--book-accent:'), css);
+  assert.ok(css.includes('--dot-mid:'), css);
 });

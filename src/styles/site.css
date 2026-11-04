@@ -2651,7 +2651,6 @@ html[data-zoom="out"]::view-transition-new(root) {
 }
 
 .review-wants .count,
-.stats-list small,
 .bar-count {
   color: var(--muted);
 }
@@ -2701,19 +2700,132 @@ html[data-zoom="out"]::view-transition-new(root) {
   font: inherit;
 }
 
-.stats-list {
-  margin: 16px 0;
-  padding: 0;
-  list-style: none;
+.review-wants {
+  margin-top: 16px;
 }
 
-.stats-list li {
+.review-cards,
+.review-empty {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.review-empty p {
+  margin: 0 0 8px;
+}
+
+.review-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 0 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--box);
+  color: inherit;
+  text-decoration: none;
+}
+
+.review-card.has-cover {
+  grid-template-columns: 64px 1fr;
+}
+
+.review-card.is-sample {
+  border-style: dashed;
+  background: transparent;
+  opacity: 0.8;
+}
+
+.review-sample-tag {
+  position: absolute;
+  top: -0.8em;
+  left: 12px;
+  padding: 0 6px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.review-cover {
+  grid-row: span 2;
+  width: 64px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 8px;
+}
+
+.review-day {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.review-day small,
+.review-title small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.review-day small {
+  font-weight: 700;
+}
+
+.review-title {
+  margin: 4px 0 0;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.review-title small {
+  font-weight: 400;
+}
+
+.review-rows {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.review-rows dd {
+  margin: 0;
+}
+
+.dots {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 4px 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  align-items: center;
+  gap: 4px;
+  min-height: 1.7em;
+}
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.dot-0 {
+  background: var(--step4);
+}
+
+.dot-1 {
+  background: var(--dot-mid);
+}
+
+.dot-2 {
+  background: transparent;
+  border: 1.5px solid var(--muted);
 }
 
 .session .answer {

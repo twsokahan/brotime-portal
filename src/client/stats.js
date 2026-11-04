@@ -1,18 +1,43 @@
 import { el } from './dom.js';
-import { shortDate } from './lib/stats-view.mjs';
+import {
+  activityHref,
+  districtsWithSessions,
+  EMPTY_TEXT,
+  reviewTitle,
+  SAMPLE_SESSION,
+  summaryLine,
+  wantsCaption,
+  wantsHeading,
+} from './lib/stats-view.mjs';
+import { reviewCard } from './review-card.js';
 import { whenSignedIn } from './signin.js';
-import { loadStats, OFFLINE_TEXT } from './stats-data.js';
+import { activityIndex, loadStats, OFFLINE_TEXT } from './stats-data.js';
 
 const ALL = '';
+const REL = '../';
+const EMPTY_LEAD = '參加者問卷的結果，一場一張卡。';
+const heading = document.querySelector('.stats-head h1');
+const lead = document.querySelector('.stats-head .lead');
 const status = document.querySelector('.stats-status');
-const list = document.querySelector('.stats-list');
 const picker = document.querySelector('.stats-district');
 const select = picker.querySelector('select');
+const wantsBlock = document.querySelector('.review-wants');
+const cards = document.querySelector('.review-cards');
+const empty = document.querySelector('.review-empty');
 const record = await whenSignedIn();
+const index = activityIndex();
+
+const title = reviewTitle(record.scope);
+document.title = document.title.replace(heading.textContent, title);
+heading.textContent = title;
 
 const stats = await loadStats(record.email);
-if (stats) show(stats.sessions, record.scope.districts);
-else status.textContent = OFFLINE_TEXT;
+if (stats) {
+  status.hidden = true;
+  show(stats);
+} else {
+  status.textContent = OFFLINE_TEXT;
+}
 
 function chosenDistrict() {
   return new URLSearchParams(location.search).get('d') ?? ALL;
@@ -25,7 +50,13 @@ function remember(district) {
   history.replaceState(history.state, '', url);
 }
 
-function show(sessions, districts) {
+function show({ sessions, wants }) {
+  if (!sessions.length) {
+    showEmpty();
+    return;
+  }
+  showWants(wants);
+  const districts = districtsWithSessions(sessions, record.scope.districts);
   if (districts.length > 1) {
     select.replaceChildren(
       el('option', { value: ALL, textContent: '全部' }),
@@ -35,18 +66,44 @@ function show(sessions, districts) {
     picker.hidden = false;
     select.addEventListener('change', () => {
       remember(select.value);
-      renderList(sessions, select.value);
+      showCards(sessions, select.value);
     });
   }
-  renderList(sessions, districts.length > 1 ? select.value : ALL);
+  showCards(sessions, districts.length > 1 ? select.value : ALL);
 }
 
-function renderList(sessions, district) {
+function showWants(wants) {
+  if (!wants?.top?.length) return;
+  wantsBlock.replaceChildren(
+    el('h2', { textContent: wantsHeading(record.scope.level) }),
+    el(
+      'ol',
+      {},
+      wants.top.map(({ name, count }) => {
+        const href = activityHref(name, index, REL);
+        return el('li', {}, [href ? el('a', { href, textContent: name }) : name, el('span', { className: 'count', textContent: `・${count} 人` })]);
+      }),
+    ),
+    el('p', { className: 'lead', textContent: wantsCaption(wants) }),
+  );
+  wantsBlock.hidden = false;
+}
+
+function sessionHref(id, district) {
+  const query = new URLSearchParams({ id });
+  if (district) query.set('d', district);
+  return `session/?${query}`;
+}
+
+function showCards(sessions, district) {
   const shown = district ? sessions.filter((session) => session.district === district) : sessions;
-  status.textContent = shown.length ? '' : '還沒有問卷回覆。參加者填了問卷，這裡就會出現。';
-  status.hidden = shown.length > 0;
-  list.replaceChildren(...shown.map((session) => el('li', {}, [
-    el('a', { href: `session/?id=${encodeURIComponent(session.id)}`, textContent: `${shortDate(session.date)} ${session.activity}・${session.district}` }),
-    el('small', { textContent: `${session.responses} 份問卷` }),
-  ])));
+  const showDistrict = !district && record.scope.districts.length > 1;
+  lead.textContent = summaryLine(shown);
+  cards.replaceChildren(...shown.map((session) => reviewCard(session, { index, rel: REL, showDistrict, href: sessionHref(session.id, district) })));
+}
+
+function showEmpty() {
+  lead.textContent = EMPTY_LEAD;
+  empty.replaceChildren(el('p', { textContent: EMPTY_TEXT }), reviewCard(SAMPLE_SESSION, { index, rel: REL, sample: true }));
+  empty.hidden = false;
 }

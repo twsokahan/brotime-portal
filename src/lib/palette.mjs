@@ -4,6 +4,7 @@ export const PALETTE = Object.freeze({
   ink: '#3a2e24',
   muted: '#7a6a58',
   line: '#e2d5bf',
+  dotMid: '#a8bfd5',
   book: Object.freeze({
     skyTop: '#cbeaf9',
     skyMiddle: '#e9f6fc',
@@ -42,13 +43,14 @@ export function contrastRatio(hexA, hexB) {
 }
 
 export function paletteCss() {
-  const { paper, box, ink, muted, line, book, steps } = PALETTE;
+  const { paper, box, ink, muted, line, dotMid, book, steps } = PALETTE;
   const declarations = [
     `--paper:${paper}`,
     `--box:${box}`,
     `--ink:${ink}`,
     `--muted:${muted}`,
     `--line:${line}`,
+    `--dot-mid:${dotMid}`,
     `--book-sky-top:${book.skyTop}`,
     `--book-sky-middle:${book.skyMiddle}`,
     `--book-sky-bottom:${book.skyBottom}`,
