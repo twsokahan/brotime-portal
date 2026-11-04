@@ -25,15 +25,20 @@ const ROSTER = [
   ['', '板橋區', '區負責人', '庚', '', 'banqiao@yahoo.com.tw'],
 ];
 const CIRCLES = { 花東圈: ['花蓮區', '台東區'], 板城圈: ['板橋區'] };
-const CADRE_HEADERS = { circle: '圈', district: '區', emails: ['E-mail(1)', 'E-mail(2)'] };
+const CADRE_HEADERS = { title: '職務', emails: ['E-mail(1)', 'E-mail(2)'] };
 const CADRES = [
-  ['男子部幹部名單'],
-  ['姓名', '職務', '圈', '區', 'E-mail(1)', 'E-mail(2)', '備註'],
-  ['甲', '區長', '花東', '花蓮', 'one@gmail.com', '', ''],
-  ['乙', '圈長', '花東', '', 'TWO@gmail.com', 'two.alt@gmail.com', ''],
-  ['丙', '部長', '總部', '', 'hq@gmail.com', '', ''],
-  ['丁', '區長', '北一', '北東', 'four@gmail.com', '', ''],
-  ['戊', '區長', '火星圈', '火星', 'five@gmail.com', '', ''],
+  ['ㄑ', '職務', '', '姓名', '聯絡電話', '電子信箱', '', 'Remark'],
+  ['', '', '', '', '', 'E-mail(1)', 'E-mail(2)', ''],
+  ['總合', '男子部長', '', '甲', '', 'hq@gmail.com', '', ''],
+  ['', '副男子部長', '', '乙', '', 'hq.deputy@gmail.com', '', ''],
+  ['花東圈', '圈男', '', '丙', '', 'TWO@gmail.com', 'two.alt@gmail.com', ''],
+  ['', '花蓮', '區總合', '丁', '', 'one@gmail.com', '', ''],
+  ['', '', '區男', '戊', '', 'one.deputy@gmail.com', '', ''],
+  ['北一圈', '圈總合長     ', '', '己', '', 'north@gmail.com', '', ''],
+  ['', '北東', '區男', '庚', '', 'four@gmail.com', '', ''],
+  ['', '', '副區\t', '辛', '', 'four.deputy@gmail.com', '', ''],
+  ['火星圈', '圈男', '', '壬', '', 'five@gmail.com', '', ''],
+  ['', '火星', '區男', '癸', '', 'six@gmail.com', '', ''],
 ];
 const levelOf = (entries, email) => entries.find((entry) => entry.email === email)?.scope;
 
@@ -60,16 +65,21 @@ test('roster rows get the planning team, circle and district scopes', () => {
   assert.equal(entries.length, 6);
 });
 
-test('cadres resolve short circle names, abbreviations and headquarters, and count both email columns', () => {
+test('cadres carry the circle and district down, read the district from the title column, and count both email columns', () => {
   const circles = { ...CIRCLES, 北一圈: ['汐止區', '內湖區', '台北東區'] };
   const entries = parseCadres(CADRES, circles, CADRE_HEADERS);
-  assert.equal(levelOf(entries, 'one@gmail.com').label, '花蓮區');
+  assert.equal(levelOf(entries, 'hq@gmail.com').level, 'all');
+  assert.equal(levelOf(entries, 'hq.deputy@gmail.com').level, 'all');
   assert.equal(levelOf(entries, 'two@gmail.com').label, '花東圈');
   assert.equal(levelOf(entries, 'two.alt@gmail.com').label, '花東圈');
-  assert.equal(levelOf(entries, 'hq@gmail.com').level, 'all');
+  assert.equal(levelOf(entries, 'one@gmail.com').label, '花蓮區');
+  assert.equal(levelOf(entries, 'one.deputy@gmail.com').label, '花蓮區');
+  assert.equal(levelOf(entries, 'north@gmail.com').label, '北一圈');
   assert.equal(levelOf(entries, 'four@gmail.com').label, '台北東區');
+  assert.equal(levelOf(entries, 'four.deputy@gmail.com').label, '台北東區');
   assert.equal(levelOf(entries, 'five@gmail.com').level, 'none');
-  assert.deepEqual(unresolvedPlaces(CADRES, circles, CADRE_HEADERS), ['火星圈｜火星']);
+  assert.equal(entries.length, 11);
+  assert.deepEqual(unresolvedPlaces(CADRES, circles, CADRE_HEADERS), ['火星圈｜', '火星圈｜火星']);
 });
 
 test('the supplement skips rows without an email or a known district', () => {

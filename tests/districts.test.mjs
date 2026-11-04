@@ -7,6 +7,10 @@ test('a district resolves from its full name, without 區, from an abbreviation 
   assert.equal(resolveDistrict(' 花蓮 '), '花蓮區');
   assert.equal(resolveDistrict('北東'), '台北東區');
   assert.equal(resolveDistrict('高北'), '高雄北區');
+  assert.equal(resolveDistrict('高中'), '高雄中區');
+  assert.equal(resolveDistrict('高西'), '高雄西區');
+  assert.equal(resolveDistrict('高南'), '高雄南區');
+  assert.equal(resolveDistrict('高東'), '高雄東區');
   assert.equal(resolveDistrict('金門'), '金門（總合本部）');
   assert.equal(resolveDistrict('馬祖（基宜圈）'), '馬祖（基宜圈）');
 });

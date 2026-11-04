@@ -14,6 +14,10 @@ export const DISTRICTS = [
 export const DISTRICT_ABBREVIATIONS = {
   北東: '台北東區',
   高北: '高雄北區',
+  高中: '高雄中區',
+  高西: '高雄西區',
+  高南: '高雄南區',
+  高東: '高雄東區',
 };
 
 export const hasKey = (object, key) => Object.prototype.hasOwnProperty.call(object, key);

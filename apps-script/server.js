@@ -1,9 +1,9 @@
 // Apps Script shell around handleRequest. Spreadsheet ids live in Script Properties, never in this repo.
 // Functions ending in _ are private to Apps Script; doPost, checkSetup and createSupplementSheet are the entry points.
 
-// Header text of the cadre list's circle, district and email columns.
-const CADRE_HEADERS = { circle: '圈', district: '區', emails: ['E-mail(1)', 'E-mail(2)'] };
-const REQUIRED_PROPERTIES = ['CLIENT_ID', 'SESSION_SECRET', 'ROSTER_ID', 'ROSTER_SHEET', 'CADRE_ID', 'SUPPLEMENT_ID', 'RESPONSES_ID'];
+// Header text of the cadre list's title and email columns.
+const CADRE_HEADERS = { title: '職務', emails: ['E-mail(1)', 'E-mail(2)'] };
+const REQUIRED_PROPERTIES = ['CLIENT_ID', 'SESSION_SECRET', 'ROSTER_ID', 'ROSTER_SHEET', 'CADRE_ID', 'CADRE_SHEET', 'SUPPLEMENT_ID', 'RESPONSES_ID'];
 const CACHE_SECONDS = 600;
 const ALLOWLIST_CACHE_KEY = 'allowlist';
 
@@ -60,12 +60,15 @@ function openFirstSheet_(idProperty) {
   return SpreadsheetApp.openById(scriptProperty_(idProperty)).getSheets()[0];
 }
 
-function rosterSheet_() {
-  const name = scriptProperty_('ROSTER_SHEET');
-  const sheet = SpreadsheetApp.openById(scriptProperty_('ROSTER_ID')).getSheetByName(name);
-  if (!sheet) throw new Error(`通訊錄找不到分頁「${name}」`);
+function namedSheet_(idProperty, sheetProperty, listName) {
+  const name = scriptProperty_(sheetProperty);
+  const sheet = SpreadsheetApp.openById(scriptProperty_(idProperty)).getSheetByName(name);
+  if (!sheet) throw new Error(`${listName}找不到分頁「${name}」`);
   return sheet;
 }
+
+const rosterSheet_ = () => namedSheet_('ROSTER_ID', 'ROSTER_SHEET', '通訊錄');
+const cadreSheet_ = () => namedSheet_('CADRE_ID', 'CADRE_SHEET', '幹部名單');
 
 const supplementSheet_ = () => openFirstSheet_('SUPPLEMENT_ID');
 const displayValues_ = (sheet) => sheet.getDataRange().getDisplayValues();
@@ -79,7 +82,7 @@ function participantSheet_() {
 
 function readLists_() {
   const roster = parseRoster(displayValues_(rosterSheet_()));
-  const cadreValues = displayValues_(openFirstSheet_('CADRE_ID'));
+  const cadreValues = displayValues_(cadreSheet_());
   return {
     rosterEntries: roster.entries,
     circles: roster.circles,

@@ -147,8 +147,8 @@ node tools/import-city-walk.mjs
 | `CLIENT_ID` | 網站登入用的 OAuth 用戶端 ID，跟 `content/site.json` 的 `signIn.clientId` 一樣 |
 | `SESSION_SECRET` | 一串隨機字（`openssl rand -base64 48`），換掉的話每個人都要重新登入 |
 | `ROSTER_ID`、`ROSTER_SHEET` | 創價班通訊錄的試算表 ID、分頁名稱（通訊錄改版換分頁時要改） |
-| `CADRE_ID` | 男子部幹部名單的試算表 ID（讀第一個分頁） |
-| `SUPPLEMENT_ID` | 補充名單的試算表 ID，`createSupplementSheet()` 會自己建好並填上 |
+| `CADRE_ID`、`CADRE_SHEET` | 男子部幹部名單的試算表 ID、分頁名稱（第一個分頁是隱藏的學生部，所以要指定） |
+| `SUPPLEMENT_ID` | 補充名單的試算表 ID（讀第一個分頁，部署帳號要有編輯權）。沒有現成的表時，`createSupplementSheet()` 會在部署帳號的 Drive 建一份並自己填上 |
 | `RESPONSES_ID` | 問卷回覆試算表的 ID（自己找參加者問卷那個分頁） |
 
 更新程式：`npm run build:apps-script`，再 `cd apps-script && clasp push`，然後 `clasp deploy -i <部署 ID>`，網站用的 `/exec` 網址才會換成新版、而且網址不變（只跑 `clasp deploy` 會多一個新網址）。`apps-script/.clasp.json` 記著專案 ID，不進 repo。

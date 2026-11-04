@@ -55,18 +55,32 @@ export function parseRoster(rows) {
   return { entries, circles };
 }
 
+const HEADQUARTERS = '總合';
+
+// The cadre list has a two-row header and writes each circle once, in the column left of 職務. 職務 spans two
+// columns: circle cadres put their title in the first; district cadres put their title in the second, and the
+// first row of each district names the district in the first.
 function cadreRows(rows, headers) {
-  const headerIndex = findHeaderRow(rows, [headers.emails[0]]);
-  if (headerIndex < 0) return [];
-  const header = rows[headerIndex];
-  const circleColumn = columnOf(header, headers.circle);
-  const districtColumn = columnOf(header, headers.district);
-  const emailColumns = headers.emails.map((name) => columnOf(header, name)).filter((column) => column >= 0);
-  return rows.slice(headerIndex + 1).map((row) => ({
-    circleText: normalizePlace(row[circleColumn]),
-    districtText: normalizePlace(row[districtColumn]),
-    emails: emailColumns.flatMap((column) => extractEmails(row[column])),
-  }));
+  const emailHeaderIndex = findHeaderRow(rows, [headers.emails[0]]);
+  if (emailHeaderIndex < 0) return [];
+  const headerRows = rows.slice(0, emailHeaderIndex + 1);
+  const columnIn = (name) => headerRows.map((row) => columnOf(row, name)).find((column) => column >= 0) ?? -1;
+  const titleColumn = columnIn(headers.title);
+  if (titleColumn < 1) return [];
+  const emailColumns = headers.emails.map(columnIn).filter((column) => column >= 0);
+  let circleText = '';
+  let districtText = '';
+  return rows.slice(emailHeaderIndex + 1).map((row) => {
+    const circleCell = normalizePlace(row[titleColumn - 1]);
+    if (circleCell) {
+      circleText = circleCell;
+      districtText = '';
+    }
+    const isDistrictCadre = Boolean(normalizePlace(row[titleColumn + 1]));
+    if (!isDistrictCadre) districtText = '';
+    else districtText = normalizePlace(row[titleColumn]) || districtText;
+    return { circleText, districtText, emails: emailColumns.flatMap((column) => extractEmails(row[column])) };
+  });
 }
 
 function cadreScope({ circleText, districtText }, circles) {
@@ -74,7 +88,7 @@ function cadreScope({ circleText, districtText }, circles) {
   if (district) return districtScope(district);
   const circle = resolveCircle(circleText, circles);
   if (circle) return circleScope(circle, circles);
-  if (`${circleText}${districtText}`.includes('總部')) return ALL_SCOPE;
+  if (circleText === HEADQUARTERS) return ALL_SCOPE;
   return NONE_SCOPE;
 }
 
