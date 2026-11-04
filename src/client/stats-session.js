@@ -1,26 +1,22 @@
 import { el } from './dom.js';
-import { activityHref, ANSWER_ROWS, choiceCounts, NOT_ENOUGH_TEXT, shortDate } from './lib/stats-view.mjs';
+import { activityHref, ANSWER_ROWS, choiceCounts, shortDate } from './lib/stats-view.mjs';
 import { whenSignedIn } from './signin.js';
-import { activityIds, loadStats, NO_STATS_TEXT, OFFLINE_TEXT } from './stats-data.js';
+import { activityIndex, loadStats, OFFLINE_TEXT } from './stats-data.js';
 
 const ACTIVITY_REL = '../../';
 const status = document.querySelector('.stats-status');
 const article = document.querySelector('.session');
 const record = await whenSignedIn();
 
-if (record.scope?.level === 'none') {
-  status.textContent = NO_STATS_TEXT;
-} else {
-  const stats = await loadStats(record.email);
-  const id = new URLSearchParams(location.search).get('id');
-  const session = stats?.sessions.find((candidate) => candidate.id === id);
-  if (!stats) status.textContent = OFFLINE_TEXT;
-  else if (!session) status.textContent = '找不到這一場，可能不在你看得到的區。';
-  else {
-    status.hidden = true;
-    article.replaceChildren(...renderSession(session));
-    article.hidden = false;
-  }
+const stats = await loadStats(record.email);
+const id = new URLSearchParams(location.search).get('id');
+const session = stats?.sessions.find((candidate) => candidate.id === id);
+if (!stats) status.textContent = OFFLINE_TEXT;
+else if (!session) status.textContent = '找不到這一場，可能不在你看得到的區。';
+else {
+  status.hidden = true;
+  article.replaceChildren(...renderSession(session));
+  article.hidden = false;
 }
 
 function barRow(label, count, total) {
@@ -34,10 +30,9 @@ function barRow(label, count, total) {
 }
 
 function renderSession(session) {
-  const href = activityHref(session.activity, activityIds(), ACTIVITY_REL);
+  const href = activityHref(session.activity, activityIndex(), ACTIVITY_REL);
   const heading = el('h1', {}, [href ? el('a', { href, textContent: session.activity }) : session.activity]);
   const meta = el('p', { className: 'lead', textContent: `${shortDate(session.date)}・${session.district}・${session.responses} 份問卷` });
-  if (!session.enough) return [heading, meta, el('p', { textContent: NOT_ENOUGH_TEXT })];
   const answers = ANSWER_ROWS.map(({ key, label, choices }) => el('section', { className: 'answer' }, [
     el('h2', { textContent: label }),
     el('ul', { className: 'bars' }, choiceCounts(session.answers[key] ?? {}, choices).map(({ choice, count }) => barRow(choice, count, session.responses))),

@@ -42,10 +42,14 @@ function coverCardId(activity) {
   return set?.thumbs?.[0] ?? set?.cards[0]?.id;
 }
 
-function renderCover(activity, rel) {
+export function coverThumbPath(activity) {
   const cardId = coverCardId(activity);
-  if (!cardId) return '';
-  return `<img src="${rel}cards/${escapeHtml(activity.id)}/${escapeHtml(cardId)}-thumb.webp" alt="" loading="lazy">`;
+  return cardId ? `cards/${activity.id}/${cardId}-thumb.webp` : null;
+}
+
+function renderCover(activity, rel) {
+  const cover = coverThumbPath(activity);
+  return cover ? `<img src="${rel}${escapeHtml(cover)}" alt="" loading="lazy">` : '';
 }
 
 function renderOnlyDuring(availability) {
@@ -109,29 +113,20 @@ ${cards}
 </section>`;
 }
 
-const DISTRICT_WANTS_BLOCK = '<section class="district-wants" hidden></section>';
-const ACCOUNT_FOOT = '<footer class="account-foot" hidden></footer>';
-
-// The wants block goes right above the season, so a district leader can weigh it against the season's picks.
-function renderFeatured(sections, byId, rel, today, districtWants) {
+function renderFeatured(sections, byId, rel, today) {
   if (!sections.length) return '';
   const rendered = sections.map((section) => renderFeaturedSection(section, byId, rel, today));
-  if (districtWants) {
-    const firstSeason = sections.findIndex((section) => section.kind === 'season');
-    rendered.splice(firstSeason < 0 ? rendered.length : firstSeason, 0, DISTRICT_WANTS_BLOCK);
-  }
   return `<div class="featured">
 ${rendered.join('\n')}
 </div>`;
 }
 
-export function renderHomeMain({ activities, rel, featured, today, districtWants = false }) {
+export function renderHomeMain({ activities, rel, featured, today }) {
   const byId = new Map(activities.map((activity) => [activity.id, activity]));
   return [
     `<header class="entry-head">\n${TITLE}\n</header>`,
-    renderFeatured(featuredSections(featured), byId, rel, today, districtWants),
+    renderFeatured(featuredSections(featured), byId, rel, today),
     `<p class="all-link"><a href="${rel}${ALL_PATH}">都不合適？看全部 ${activities.length} 種<small>可以用「幫我挑」或篩選</small></a></p>`,
-    districtWants ? ACCOUNT_FOOT : '',
   ]
     .filter(Boolean)
     .join('\n');

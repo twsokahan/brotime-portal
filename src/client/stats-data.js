@@ -17,13 +17,12 @@ export async function loadStats(email) {
   return stats;
 }
 
-export function activityIds() {
+export function activityIndex() {
   try {
-    return JSON.parse(document.getElementById('activity-ids').textContent);
+    return JSON.parse(document.getElementById('activity-index').textContent);
   } catch {
     return {};
   }
 }
 
-export const NO_STATS_TEXT = '每一場的回顧是給區負責人和幹部看的。';
 export const OFFLINE_TEXT = '連不上，等一下再試一次。';

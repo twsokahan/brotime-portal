@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { page } from '../src/render/layout.mjs';
-import { renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
+import { coverThumbPath, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { readyActivity, preparingActivity } from './fixtures/activities.mjs';
 
 const READY_COUNT = 3;
@@ -207,22 +207,7 @@ test('the all page starts with a way back to the picks', () => {
   assert.ok(html.includes('<a class="act" data-id="brunch-1" href="../a/brunch-1/">'));
 });
 
-test('the district wants block sits between the pushes and the season', () => {
-  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15', districtWants: true });
-  const block = html.indexOf('<section class="district-wants" hidden></section>');
-  assert.ok(block > html.indexOf('class="push"'), 'after the push');
-  assert.ok(block < html.indexOf('class="season"'), 'before the season');
-});
-
-test('without sign-in the home page has no district wants block', () => {
-  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
-  assert.ok(!html.includes('district-wants'));
-});
-
-test('with sign-in the account footer closes the home page, after the all link', () => {
-  const html = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15', districtWants: true });
-  assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
-  assert.ok(html.indexOf('account-foot') > html.indexOf('class="all-link"'));
-  const signedOut = renderHomeMain({ activities: sixteenActivities(), rel: '', featured: featuredFixture(), today: '2027-01-15' });
-  assert.ok(!signedOut.includes('account-foot'));
+test('the cover thumbnail is the first story card, and an activity without cards has none', () => {
+  assert.equal(coverThumbPath(readyActivity()), 'cards/brunch/s1-thumb.webp');
+  assert.equal(coverThumbPath({ id: 'empty', cardSets: {} }), null);
 });

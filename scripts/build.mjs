@@ -8,14 +8,14 @@ import { taipeiIsoDate } from '../src/lib/featured.mjs';
 import { paletteCss } from '../src/lib/palette.mjs';
 import { validateAll } from '../src/lib/schema.mjs';
 import { cardPageUrl } from '../src/lib/share.mjs';
-import { HOSTS_PATH, SESSION_PATH, STATS_PATH } from '../src/lib/stats-view.mjs';
+import { SAMPLE_SESSION, SESSION_PATH, STATS_PATH } from '../src/lib/stats-view.mjs';
 import { renderActivityMain, renderPreparingMain } from '../src/render/activity.mjs';
 import { renderCardMain } from '../src/render/card.mjs';
-import { ALL_PATH, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
+import { ALL_PATH, coverThumbPath, renderEntryMain, renderHomeMain } from '../src/render/entry.mjs';
 import { renderGuideMain } from '../src/render/guide.mjs';
 import { jsonForScript } from '../src/render/html.mjs';
 import { renderIchibanMain } from '../src/render/ichiban.mjs';
-import { activityIdsScript, renderHostsMain, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
+import { activityIndexScript, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
 import { page } from '../src/render/layout.mjs';
 import { PRIVACY_PATH, renderPrivacyMain } from '../src/render/privacy.mjs';
 
@@ -143,7 +143,6 @@ function readyActivityPage({ activity, site, routes, ogUrl }) {
     scripts: ['js/activity.js'],
     ogUrl,
     leaveLine: true,
-    signIn: site.signIn,
   });
 }
 
@@ -156,7 +155,6 @@ function preparingActivityPage({ activity, site, ogUrl }) {
     scripts: [],
     ogUrl,
     leaveLine: true,
-    signIn: site.signIn,
   });
 }
 
@@ -181,7 +179,6 @@ function ichibanPage({ activity, site, ogUrl }) {
     scripts: ['js/ichiban.js'],
     ogUrl,
     leaveLine: true,
-    signIn: site.signIn,
   });
 }
 
@@ -196,14 +193,30 @@ function guidePage({ activity, site, ogUrl }) {
   });
 }
 
+function sampleCardActivity(activities) {
+  const activity = activities.find((candidate) => candidate.name === SAMPLE_SESSION.activity);
+  if (!activity || !coverThumbPath(activity)) {
+    throw new Error(`每一場的回顧的範例卡要用「${SAMPLE_SESSION.activity}」（kitchen）的封面，但找不到這個活動或它的封面`);
+  }
+}
+
 function statsPages({ site, activities }) {
-  const ids = activityIdsScript(activities);
+  sampleCardActivity(activities);
+  const index = activityIndexScript(activities);
   const statsPage = ({ title, rel, main, script }) =>
-    page({ title: `${title}｜${site.title}`, description: title, rel, main: `${main}\n${ids}`, scripts: [script], leaveLine: true, signIn: site.signIn });
+    page({
+      title: `${title}｜${site.title}`,
+      description: title,
+      rel,
+      main: `${main}\n${index}`,
+      scripts: [script, 'js/account.js'],
+      leaveLine: true,
+      signIn: site.signIn,
+      noindex: true,
+    });
   return [
     [`${STATS_PATH}index.html`, statsPage({ title: '每一場的回顧', rel: STATS_REL, main: renderStatsMain({ rel: STATS_REL }), script: 'js/stats.js' })],
     [`${SESSION_PATH}index.html`, statsPage({ title: '這一場的回顧', rel: SESSION_REL, main: renderSessionMain({ rel: SESSION_REL }), script: 'js/stats-session.js' })],
-    [`${HOSTS_PATH}index.html`, statsPage({ title: '加一位主持人', rel: STATS_REL, main: renderHostsMain({ rel: STATS_REL }), script: 'js/hosts.js' })],
   ];
 }
 
@@ -214,7 +227,7 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
   }));
   const canPick = activities.some((activity) => activity.status === 'ready');
   const signedIn = Boolean(site.signIn);
-  const homeMain = renderHomeMain({ activities, rel: ENTRY_REL, featured: site.featured, today, districtWants: signedIn });
+  const homeMain = renderHomeMain({ activities, rel: ENTRY_REL, featured: site.featured, today });
   const pages = [
     [
       'index.html',
@@ -222,11 +235,10 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         title: site.title,
         description: entryDescription(activities.length),
         rel: ENTRY_REL,
-        main: signedIn ? `${homeMain}\n${activityIdsScript(activities)}` : homeMain,
-        scripts: signedIn ? ['js/home.js', 'js/district-wants.js', 'js/account.js'] : ['js/home.js'],
+        main: homeMain,
+        scripts: ['js/home.js'],
         ogUrl: site.baseUrl,
         leaveLine: true,
-        signIn: site.signIn,
       }),
     ],
     [
@@ -239,7 +251,6 @@ export function renderPages({ site, routes, activityFiles }, preview, today = ta
         scripts: canPick ? ['js/entry.js'] : [],
         ogUrl: `${site.baseUrl}${ALL_PATH}`,
         leaveLine: true,
-        signIn: site.signIn,
       }),
     ],
     [

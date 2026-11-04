@@ -1,30 +1,28 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { activityIdsScript, renderHostsMain, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
+import { activityIndexScript, renderSessionMain, renderStatsMain } from '../src/render/stats.mjs';
+import { readyActivity } from './fixtures/activities.mjs';
 
-test('the stats page links to adding a host and back home', () => {
+test('the stats page has no host link and ends with the account footer', () => {
   const html = renderStatsMain({ rel: '../' });
   assert.ok(html.includes('<h1>每一場的回顧</h1>'));
-  assert.ok(html.includes('href="../hosts/"'));
-  assert.ok(html.includes('href="../"'));
+  assert.ok(!html.includes('hosts'));
+  assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
 });
 
-test('the session page links back to the stats list', () => {
-  assert.ok(renderSessionMain({ rel: '../../' }).includes('href="../../stats/"'));
+test('the session page links back to the stats list and ends with the account footer', () => {
+  const html = renderSessionMain({ rel: '../../' });
+  assert.ok(html.includes('href="../../stats/"'));
+  assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
 });
 
-test('activity ids are embedded as name to id and cannot close the script tag', () => {
-  const html = activityIdsScript([{ id: 'city-walk', name: '城市散步' }, { id: 'odd', name: '</script>' }]);
-  assert.ok(html.startsWith('<script type="application/json" id="activity-ids">'));
+test('the activity index carries each id and cover and cannot close the script tag', () => {
+  const html = activityIndexScript([{ ...readyActivity(), id: 'city-walk', name: '城市散步' }, { id: 'odd', name: '</script>', cardSets: {} }]);
+  assert.ok(html.startsWith('<script type="application/json" id="activity-index">'));
   assert.equal(html.match(/<\/script>/g).length, 1);
   const json = html.replace(/^<script[^>]*>/, '').replace(/<\/script>$/, '');
-  assert.deepEqual(JSON.parse(json), { 城市散步: 'city-walk', '</script>': 'odd' });
-});
-
-test('the hosts page has an email field, an optional name and a way back to the stats list', () => {
-  const html = renderHostsMain({ rel: '../' });
-  assert.ok(html.includes('<h1>加一位主持人</h1>'));
-  assert.ok(html.includes('type="email" name="email"'));
-  assert.ok(html.includes('name="name"'));
-  assert.ok(html.includes('href="../stats/"'));
+  assert.deepEqual(JSON.parse(json), {
+    城市散步: { id: 'city-walk', cover: 'cards/city-walk/s1-thumb.webp' },
+    '</script>': { id: 'odd', cover: null },
+  });
 });

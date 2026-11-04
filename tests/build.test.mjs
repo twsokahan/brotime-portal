@@ -299,36 +299,53 @@ function pagesWithEverything(site) {
   const activityFiles = [
     { fileName: 'brunch.json', activity },
     { fileName: 'night-run.json', activity: { ...readyActivity(), id: 'night-run', name: '河濱夜跑・單車', status: 'preparing' } },
+    { fileName: 'kitchen.json', activity: { ...readyActivity(), id: 'kitchen', name: '男人的廚房' } },
   ];
   return new Map(renderPages({ site, routes: undefined, activityFiles }, false));
 }
 
-test('with signIn, entry, all, activity, preparing and ichiban pages carry the sign-in panel; card and guide pages do not', () => {
+const REVIEW_PAGES = ['stats/index.html', 'stats/session/index.html'];
+
+test('with signIn only the two review pages carry the sign-in panel', () => {
   const pages = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN });
-  for (const file of ['index.html', 'all/index.html', 'a/brunch/index.html', 'a/night-run/index.html', ICHIBAN_PAGE]) {
+  for (const file of REVIEW_PAGES) {
     const html = pages.get(file);
     assert.ok(html, `expected ${file}`);
     for (const piece of SIGN_IN_PIECES) assert.ok(html.includes(piece), `${file} lacks ${piece}`);
   }
-  const open = [...pages.keys()].filter((file) => file.includes('/cards/') || file === GUIDE_PAGE);
-  assert.ok(open.includes(GUIDE_PAGE) && open.length > 1, JSON.stringify(open));
-  for (const file of open) assert.ok(!pages.get(file).includes('signin'), file);
+  const open = [...pages.keys()].filter((file) => !REVIEW_PAGES.includes(file));
+  for (const file of ['index.html', 'all/index.html', 'a/brunch/index.html', 'a/night-run/index.html', ICHIBAN_PAGE, GUIDE_PAGE]) {
+    assert.ok(open.includes(file), file);
+  }
+  for (const file of open) {
+    assert.ok(!pages.get(file).includes('signin'), file);
+    assert.ok(!pages.get(file).includes('noindex'), file);
+  }
+});
+
+test('the sign-in panel asks cadres for a Gmail address to read survey results and leads non-cadres back home', () => {
+  const html = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN }).get('stats/index.html');
+  assert.ok(html.includes('這頁是給區負責人和幹部看參加者問卷結果的。請用 Gmail 登入。'));
+  assert.ok(html.includes('<h1>這個帳號看不到問卷結果</h1>'));
+  assert.ok(html.includes('你是區負責人或幹部的話，請把上面這個信箱傳給你的圈負責人。'));
+  assert.ok(html.includes('<p class="home-link"><a href="../">← 回到首頁</a></p>'));
+  assert.ok(!html.includes('只是想看故事卡') && !html.includes('通訊錄'));
 });
 
 test('without signIn no page mentions sign-in', () => {
   for (const [file, html] of pagesWithEverything(fixtureSite())) assert.ok(!html.includes('signin'), file);
 });
 
-test('with signIn the stats pages are built behind sign-in and the home page loads the wants script', () => {
+test('the review pages are behind sign-in, load the account footer and are kept out of search', () => {
   const pages = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN });
   for (const [file, script] of [['stats/index.html', 'js/stats.js'], ['stats/session/index.html', 'js/stats-session.js']]) {
     const html = pages.get(file);
-    assert.ok(html, `expected ${file}`);
-    for (const piece of [...SIGN_IN_PIECES, script, 'id="activity-ids"']) assert.ok(html.includes(piece), `${file} lacks ${piece}`);
+    for (const piece of [script, 'js/account.js', 'id="activity-index"', '<meta name="robots" content="noindex">', '<footer class="account-foot" hidden></footer>']) {
+      assert.ok(html.includes(piece), `${file} lacks ${piece}`);
+    }
   }
   const home = pages.get('index.html');
-  assert.ok(home.includes('js/district-wants.js') && home.includes('id="activity-ids"'));
-  assert.ok(home.includes('js/account.js'));
+  for (const piece of ['district-wants', 'account.js', 'account-foot', 'activity-index']) assert.ok(!home.includes(piece), piece);
 });
 
 test('without signIn there are no stats pages', () => {
@@ -337,11 +354,13 @@ test('without signIn there are no stats pages', () => {
   assert.ok(!pages.get('index.html').includes('district-wants'));
 });
 
-test('with signIn the hosts page is built behind sign-in; without it there is none', () => {
-  const html = pagesWithEverything({ ...fixtureSite(), signIn: SIGN_IN }).get('hosts/index.html');
-  assert.ok(html, 'expected hosts/index.html');
-  for (const piece of [...SIGN_IN_PIECES, 'js/hosts.js']) assert.ok(html.includes(piece), `hosts page lacks ${piece}`);
-  assert.ok(!pagesWithEverything(fixtureSite()).has('hosts/index.html'));
+test('no hosts page is built', () => {
+  for (const site of [fixtureSite(), { ...fixtureSite(), signIn: SIGN_IN }]) assert.ok(!pagesWithEverything(site).has('hosts/index.html'));
+});
+
+test('the build fails without a cover for the sample review card', () => {
+  const activityFiles = [{ fileName: 'brunch.json', activity: readyActivity() }];
+  assert.throws(() => renderPages({ site: { ...fixtureSite(), signIn: SIGN_IN }, routes: undefined, activityFiles }, false), /kitchen/);
 });
 
 test('the privacy page is built with or without signIn, needs no sign-in, and links back home', () => {
@@ -351,5 +370,8 @@ test('the privacy page is built with or without signIn, needs no sign-in, and li
     assert.ok(html.includes('<h1>隱私權說明</h1>'));
     assert.ok(html.includes('href="../"'));
     assert.ok(!html.includes('signin'));
+    assert.ok(!html.includes('主持人'));
+    assert.ok(html.includes('創價班通訊錄和男子部幹部名單'));
+    assert.ok(html.includes('只有「每一場的回顧」要用 Google 帳號登入'));
   }
 });

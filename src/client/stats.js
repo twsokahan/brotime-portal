@@ -1,7 +1,7 @@
 import { el } from './dom.js';
 import { shortDate } from './lib/stats-view.mjs';
 import { whenSignedIn } from './signin.js';
-import { loadStats, NO_STATS_TEXT, OFFLINE_TEXT } from './stats-data.js';
+import { loadStats, OFFLINE_TEXT } from './stats-data.js';
 
 const ALL = '';
 const status = document.querySelector('.stats-status');
@@ -10,14 +10,9 @@ const picker = document.querySelector('.stats-district');
 const select = picker.querySelector('select');
 const record = await whenSignedIn();
 
-if (record.scope?.level === 'none') {
-  status.textContent = NO_STATS_TEXT;
-  document.querySelector('.hosts-link').hidden = true;
-} else {
-  const stats = await loadStats(record.email);
-  if (stats) show(stats.sessions, record.scope.districts);
-  else status.textContent = OFFLINE_TEXT;
-}
+const stats = await loadStats(record.email);
+if (stats) show(stats.sessions, record.scope.districts);
+else status.textContent = OFFLINE_TEXT;
 
 function chosenDistrict() {
   return new URLSearchParams(location.search).get('d') ?? ALL;

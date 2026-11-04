@@ -11,25 +11,23 @@ function askToSignInWithoutRecord(key, parse) {
 
 export const SIGNIN_HEAD_SCRIPT = `(${askToSignInWithoutRecord})(${JSON.stringify(SIGNIN_STORAGE_KEY)}, ${parseSigninRecord});`;
 
-const SIGNIN_PANEL = `<section class="signin" aria-live="polite">
+export const renderSigninPanel = ({ rel }) => `<section class="signin" aria-live="polite">
 <div data-view="start">
-<h1>下個月，約兄弟做什麼？</h1>
-<p>這裡是給各區帶兄弟時光的人用的。請用 Gmail 登入。</p>
+<h1>每一場的回顧</h1>
+<p>這頁是給區負責人和幹部看參加者問卷結果的。請用 Gmail 登入。</p>
 <div class="signin-button"></div>
 <p class="signin-line" hidden>在 LINE 裡沒辦法用 Google 登入。請點右上角「⋯」，選「用預設瀏覽器開啟」。</p>
 <p class="signin-error" hidden></p>
 </div>
 <div data-view="not-listed" hidden>
-<h1>這個帳號還不在名單上</h1>
+<h1>這個帳號看不到問卷結果</h1>
 <p>你登入的信箱是</p>
 <p class="signin-email"></p>
-<p>名單照創價班通訊錄。你也會帶兄弟時光的話，請把上面這個信箱傳給你們區的區負責人，請他在網站上把你加進名單。</p>
+<p>你是區負責人或幹部的話，請把上面這個信箱傳給你的圈負責人。</p>
 <div class="signin-actions"><button type="button" data-action="copy">複製這個信箱</button><button type="button" data-action="switch">換一個 Google 帳號</button></div>
-<p class="signin-note">只是想看故事卡？主持人分享給你的故事卡連結，不用登入就能看。</p>
+<p class="home-link"><a href="${rel}">← 回到首頁</a></p>
 </div>
 </section>`;
-
-export const renderSigninPanel = () => SIGNIN_PANEL;
 
 export const signinConfigScript = ({ clientId, endpoint }) =>
   `<script type="application/json" id="signin-config">${jsonForScript({ clientId, endpoint })}</script>`;

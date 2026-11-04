@@ -11,9 +11,8 @@ const SECTIONS = [
   {
     heading: '拿來做什麼',
     items: [
-      '比對你的信箱在不在可以使用的名單上：創價班通訊錄、男子部幹部名單，和各區負責人加進來的主持人。',
+      '比對你的信箱在不在名單上：創價班通訊錄和男子部幹部名單。',
       '依你負責的區或圈，顯示大家填問卷的統計。',
-      '區負責人加主持人時，會記下主持人的信箱、名字、區，以及是誰、哪一天加的。',
     ],
   },
   {
@@ -34,7 +33,7 @@ export function renderPrivacyMain({ siteTitle, rel }) {
   return `<article class="guide">
 <p class="guide-kicker">${escapeHtml(siteTitle)}</p>
 <h1>隱私權說明</h1>
-<p class="guide-intro">這個網站用 Google 帳號登入，只為了確認你是辦兄弟時光的人。下面說明登入後網站拿到什麼、怎麼用。</p>
+<p class="guide-intro">這個網站只有「每一場的回顧」要用 Google 帳號登入，讓區負責人和幹部看參加者問卷的結果。下面說明登入後網站拿到什麼、怎麼用。</p>
 ${SECTIONS.map(renderSection).join('\n')}
 </article>
 <div class="back"><a href="${rel}">← 回到首頁</a></div>`;
