@@ -145,7 +145,7 @@ node tools/import-city-walk.mjs
 | 名稱 | 放什麼 |
 |---|---|
 | `CLIENT_ID` | 網站登入用的 OAuth 用戶端 ID，跟 `content/site.json` 的 `signIn.clientId` 一樣 |
-| `SESSION_SECRET` | 一串隨機字（`openssl rand -base64 48`），換掉的話每個人都要重新登入 |
+| `SESSION_SECRET` | 簽登入憑證用的隨機字。在編輯器執行 `createSessionSecret()` 產生，密鑰不經過任何人手上；已經有就不動，因為換掉的話每個人都要重新登入 |
 | `ROSTER_ID`、`ROSTER_SHEET` | 創價班通訊錄的試算表 ID、分頁名稱（通訊錄改版換分頁時要改） |
 | `CADRE_ID`、`CADRE_SHEET` | 男子部幹部名單的試算表 ID、分頁名稱（第一個分頁是隱藏的學生部，所以要指定） |
 | `SUPPLEMENT_ID` | 補充名單的試算表 ID（讀第一個分頁，部署帳號要有編輯權）。沒有現成的表時，`createSupplementSheet()` 會在部署帳號的 Drive 建一份並自己填上 |

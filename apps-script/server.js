@@ -1,5 +1,6 @@
 // Apps Script shell around handleRequest. Spreadsheet ids live in Script Properties, never in this repo.
-// Functions ending in _ are private to Apps Script; doPost, checkSetup and createSupplementSheet are the entry points.
+// Functions ending in _ are private to Apps Script; doPost, checkSetup, createSessionSecret and createSupplementSheet
+// are the entry points.
 
 // Header text of the cadre list's title and email columns.
 const CADRE_HEADERS = { title: '職務', emails: ['E-mail(1)', 'E-mail(2)'] };
@@ -180,6 +181,16 @@ function checkSetup() {
     participant ? `參加者問卷：分頁「${participant.getName()}」，${participant.getLastRow() - 1} 份回覆` : '參加者問卷：找不到分頁',
   ].join('\n'));
   CacheService.getScriptCache().remove(ALLOWLIST_CACHE_KEY);
+}
+
+function createSessionSecret() {
+  const properties = PropertiesService.getScriptProperties();
+  if (properties.getProperty('SESSION_SECRET')) {
+    Logger.log('SESSION_SECRET 已經有了，沒有更動（換掉的話每個人都要重新登入）');
+    return;
+  }
+  properties.setProperty('SESSION_SECRET', [Utilities.getUuid(), Utilities.getUuid(), Utilities.getUuid()].join(''));
+  Logger.log('SESSION_SECRET 設好了');
 }
 
 function createSupplementSheet() {
