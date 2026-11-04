@@ -42,6 +42,11 @@ export function contrastRatio(hexA, hexB) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+const chevronDownSvg = (stroke) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+
+const svgUrl = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+
 export function paletteCss() {
   const { paper, box, ink, muted, line, dotMid, book, steps } = PALETTE;
   const declarations = [
@@ -59,6 +64,7 @@ export function paletteCss() {
     `--book-ink:${book.ink}`,
     `--book-muted:${book.muted}`,
     ...steps.flatMap(({ dot, text }, i) => [`--step${i + 1}:${dot}`, `--step${i + 1}-text:${text}`]),
+    `--select-arrow:${svgUrl(chevronDownSvg(ink))}`,
   ];
   return `:root{${declarations.join(';')}}`;
 }

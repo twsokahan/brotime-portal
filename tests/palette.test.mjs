@@ -48,6 +48,15 @@ test('the book colours are readable on every shade of the sky-blue background', 
   }
 });
 
+test('the select arrow is an SVG chevron stroked in the palette ink', () => {
+  const css = paletteCss();
+  const arrow = /--select-arrow:url\("data:image\/svg\+xml,([^"]+)"\)/.exec(css);
+  assert.ok(arrow, css);
+  const svg = decodeURIComponent(arrow[1]);
+  assert.ok(svg.includes(`stroke="${PALETTE.ink}"`), svg);
+  assert.ok(svg.includes('stroke-linecap="round"'), svg);
+});
+
 test('paletteCss exposes the palette as CSS custom properties', () => {
   const css = paletteCss();
   assert.ok(css.includes('--paper:'), css);
