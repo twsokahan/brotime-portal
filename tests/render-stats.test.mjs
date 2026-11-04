@@ -10,9 +10,9 @@ test('the stats page has no host link and ends with the account footer', () => {
   assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
 });
 
-test('the session page links back to the stats list and ends with the account footer', () => {
+test('the session page starts with a way back to the review list and ends with the account footer', () => {
   const html = renderSessionMain({ rel: '../../' });
-  assert.ok(html.includes('href="../../stats/"'));
+  assert.ok(html.startsWith('<p class="home-link"><a class="review-back" href="../../stats/">← 每一場的回顧</a></p>'));
   assert.ok(html.trimEnd().endsWith('<footer class="account-foot" hidden></footer>'));
 });
 

@@ -35,11 +35,6 @@ function dateNumbers(isoDate) {
   return { month, day, weekday: WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()] };
 }
 
-export function shortDate(isoDate) {
-  const { month, day, weekday } = dateNumbers(isoDate);
-  return `${month}/${day}（${weekday}）`;
-}
-
 export function dayParts(isoDate) {
   const { month, day, weekday } = dateNumbers(isoDate);
   return { day: `${month}/${day}`, weekday: `週${weekday}` };

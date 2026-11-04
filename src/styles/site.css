@@ -2650,8 +2650,7 @@ html[data-zoom="out"]::view-transition-new(root) {
   padding-left: 1.4em;
 }
 
-.review-wants .count,
-.bar-count {
+.review-wants .count {
   color: var(--muted);
 }
 
@@ -2832,37 +2831,113 @@ html[data-zoom="out"]::view-transition-new(root) {
   margin: 24px 0;
 }
 
-.bars {
-  margin: 8px 0;
+.session-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: end;
+  gap: 0 14px;
+  margin: 8px 0 0;
+}
+
+.session-hero.has-cover {
+  grid-template-columns: 92px 1fr;
+}
+
+.session-cover {
+  grid-row: span 3;
+  align-self: end;
+  width: 92px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px -8px var(--ink);
+}
+
+.session-day {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.session-day small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.session-hero h1 {
+  margin: 8px 0 0;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.session-hero h1 a {
+  color: inherit;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+}
+
+.session-hero .lead {
+  margin: 2px 0 0;
+}
+
+.session .answer h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.session .answer .dot {
+  width: 16px;
+  height: 16px;
+}
+
+.answer-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.answer-counts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.session .answer .answer-counts .dot {
+  width: 10px;
+  height: 10px;
+}
+
+.next-list {
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.bars li {
+.next-list li {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2px 12px;
-  margin: 8px 0;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
 }
 
-.bar-track {
-  grid-column: 1 / -1;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--line);
-  overflow: hidden;
+.next-list img,
+.next-no-cover {
+  width: 40px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 5px;
 }
 
-.bar {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--ink);
+.session .answer .next-list .dot {
+  width: 11px;
+  height: 11px;
 }
-
-
-
-
-
-
-

@@ -12,18 +12,12 @@ import {
   personDots,
   reviewTitle,
   SAMPLE_SESSION,
-  shortDate,
   summaryLine,
   wantsCaption,
   wantsHeading,
 } from '../src/lib/stats-view.mjs';
 
 const INDEX = { 城市散步: { id: 'city-walk', cover: 'cards/city-walk/A-thumb.webp' }, 桌遊之夜: { id: 'board-games', cover: null } };
-
-test('dates read as month/day with the weekday', () => {
-  assert.equal(shortDate('2027-01-15'), '1/15（五）');
-  assert.equal(shortDate('2026-11-03'), '11/3（二）');
-});
 
 test('wants are captioned with how many sessions and replies they come from', () => {
   assert.equal(wantsCaption({ sessions: 3, responses: 12 }), '根據最近 3 場、共 12 份問卷');

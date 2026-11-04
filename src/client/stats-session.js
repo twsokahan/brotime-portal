@@ -1,16 +1,22 @@
 import { el } from './dom.js';
-import { activityHref, ANSWER_ROWS, choiceCounts, shortDate } from './lib/stats-view.mjs';
+import { activityCover, activityHref, ANSWER_ROWS, choiceCounts, dayParts, reviewTitle } from './lib/stats-view.mjs';
+import { dotRow } from './review-card.js';
 import { whenSignedIn } from './signin.js';
 import { activityIndex, loadStats, OFFLINE_TEXT } from './stats-data.js';
 
-const ACTIVITY_REL = '../../';
+const REL = '../../';
 const status = document.querySelector('.stats-status');
 const article = document.querySelector('.session');
+const back = document.querySelector('.review-back');
+const params = new URLSearchParams(location.search);
 const record = await whenSignedIn();
+const index = activityIndex();
+
+back.textContent = `← ${reviewTitle(record.scope)}`;
+if (params.get('d')) back.href = `${back.getAttribute('href')}?${new URLSearchParams({ d: params.get('d') })}`;
 
 const stats = await loadStats(record.email);
-const id = new URLSearchParams(location.search).get('id');
-const session = stats?.sessions.find((candidate) => candidate.id === id);
+const session = stats?.sessions.find((candidate) => candidate.id === params.get('id'));
 if (!stats) status.textContent = OFFLINE_TEXT;
 else if (!session) status.textContent = '找不到這一場，可能不在你看得到的區。';
 else {
@@ -19,29 +25,50 @@ else {
   article.hidden = false;
 }
 
-function barRow(label, count, total) {
-  const bar = el('span', { className: 'bar' });
-  bar.style.width = `${total ? Math.round((count / total) * 100) : 0}%`;
+function activityName(name) {
+  const href = activityHref(name, index, REL);
+  return href ? el('a', { href, textContent: name }) : el('span', { textContent: name });
+}
+
+function hero(session) {
+  const cover = activityCover(session.activity, index, REL);
+  const { day, weekday } = dayParts(session.date);
+  return el('header', { className: cover ? 'session-hero has-cover' : 'session-hero' }, [
+    cover && el('img', { className: 'session-cover', src: cover, alt: '' }),
+    el('p', { className: 'session-day' }, [day, el('small', { textContent: weekday })]),
+    el('h1', {}, [activityName(session.activity)]),
+    el('p', { className: 'lead', textContent: `${session.district}・${session.responses} 份參加者問卷` }),
+  ]);
+}
+
+function answerSection({ label, choices }, counts) {
+  return el('section', { className: 'answer' }, [
+    el('h2', { textContent: label }),
+    dotRow(counts, choices),
+    el(
+      'p',
+      { className: 'answer-counts' },
+      choiceCounts(counts, choices).map(({ choice, count }, choiceIndex) =>
+        el('span', {}, [el('i', { className: `dot dot-${choiceIndex}` }), `${choice} ${count}`]),
+      ),
+    ),
+  ]);
+}
+
+function nextRow({ name, count }) {
+  const cover = activityCover(name, index, REL);
   return el('li', {}, [
-    el('span', { className: 'bar-label', textContent: label }),
-    el('span', { className: 'bar-count', textContent: `${count} 人` }),
-    el('span', { className: 'bar-track' }, [bar]),
+    cover ? el('img', { src: cover, alt: '', loading: 'lazy' }) : el('span', { className: 'next-no-cover' }),
+    activityName(name),
+    dotRow({ [name]: count }, [name]),
   ]);
 }
 
 function renderSession(session) {
-  const href = activityHref(session.activity, activityIndex(), ACTIVITY_REL);
-  const heading = el('h1', {}, [href ? el('a', { href, textContent: session.activity }) : session.activity]);
-  const meta = el('p', { className: 'lead', textContent: `${shortDate(session.date)}・${session.district}・${session.responses} 份問卷` });
-  const answers = ANSWER_ROWS.map(({ key, label, choices }) => el('section', { className: 'answer' }, [
-    el('h2', { textContent: label }),
-    el('ul', { className: 'bars' }, choiceCounts(session.answers[key] ?? {}, choices).map(({ choice, count }) => barRow(choice, count, session.responses))),
-  ]));
+  if (!session.answers) return [hero(session)];
   const next = el('section', { className: 'answer' }, [
     el('h2', { textContent: '下一次想參加哪一種' }),
-    session.next.length
-      ? el('ul', { className: 'bars' }, session.next.map(({ name, count }) => barRow(name, count, session.responses)))
-      : el('p', { textContent: '沒有人勾。' }),
+    session.next.length ? el('ul', { className: 'next-list' }, session.next.map(nextRow)) : el('p', { textContent: '沒有人勾。' }),
   ]);
-  return [heading, meta, ...answers, next];
+  return [hero(session), ...ANSWER_ROWS.map((row) => answerSection(row, session.answers[row.key] ?? {})), next];
 }

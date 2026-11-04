@@ -16,9 +16,9 @@ ${ACCOUNT_FOOT}`;
 }
 
 export function renderSessionMain({ rel }) {
-  return `<p class="stats-status">讀取中…</p>
+  return `<p class="home-link"><a class="review-back" href="${rel}${STATS_PATH}">← 每一場的回顧</a></p>
+<p class="stats-status">讀取中…</p>
 <article class="session" hidden></article>
-<p class="home-link"><a href="${rel}${STATS_PATH}">← 回到每一場的回顧</a></p>
 ${ACCOUNT_FOOT}`;
 }
 
