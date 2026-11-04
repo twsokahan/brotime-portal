@@ -2669,17 +2669,21 @@ html[data-zoom="out"]::view-transition-new(root) {
 }
 
 .account-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
   margin: 12px 0 0;
   color: var(--muted);
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
-.account-line span {
-  overflow-wrap: anywhere;
+.text-button {
+  min-height: 0;
+  margin: -12px -6px;
+  padding: 12px 6px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--step4-text);
+  text-decoration: underline;
 }
 
 .stats-district {
