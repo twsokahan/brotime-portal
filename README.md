@@ -130,11 +130,11 @@ node tools/import-city-walk.mjs
 
 設定在 `content/site.json` 的 `signIn`：`clientId` 是 Google OAuth 用戶端 ID，`endpoint` 是下面那支 Apps Script 的 `/exec` 網址。這兩個本來就會出現在網頁上，可以放進 repo。拿掉 `signIn` 整個登入就關掉，網站回到誰都能看。
 
-名單：創價班通訊錄＋男子部幹部名單＋補充名單（區負責人在「加一位主持人」頁自己加）。區負責人看自己區的問卷統計、圈負責人看圈內各區、創價班企劃組和總部幹部看全部，補充名單上的人看不到統計。
+名單：創價班通訊錄＋男子部幹部名單。區負責人看自己區的問卷統計、圈負責人看圈內各區、創價班企劃組和總部幹部看全部；對不到任何一區的人不算在名單上。
 
 ## 登入用的 Apps Script
 
-比對名單、算問卷統計、加主持人都在一支 Google Apps Script 網頁應用程式裡做，名單不會離開 Google。程式在 `apps-script/`：
+比對名單、算問卷統計都在一支 Google Apps Script 網頁應用程式裡做，名單不會離開 Google。程式在 `apps-script/`：
 
 - `districts.mjs`、`allowlist.mjs`、`responses.mjs`、`session-token.mjs`、`api.mjs`：純邏輯，`npm test` 會測。
 - `server.js`：Apps Script 的外殼（讀試算表、快取、`doPost`），只在 Apps Script 上跑。
@@ -148,7 +148,6 @@ node tools/import-city-walk.mjs
 | `SESSION_SECRET` | 簽登入憑證用的隨機字。在編輯器執行 `createSessionSecret()` 產生，密鑰不經過任何人手上；已經有就不動，因為換掉的話每個人都要重新登入 |
 | `ROSTER_ID`、`ROSTER_SHEET` | 創價班通訊錄的試算表 ID、分頁名稱（通訊錄改版換分頁時要改） |
 | `CADRE_ID`、`CADRE_SHEET` | 男子部幹部名單的試算表 ID、分頁名稱（第一個分頁是隱藏的學生部，所以要指定） |
-| `SUPPLEMENT_ID` | 補充名單的試算表 ID（讀第一個分頁，部署帳號要有編輯權）。沒有現成的表時，`createSupplementSheet()` 會在部署帳號的 Drive 建一份並自己填上 |
 | `RESPONSES_ID` | 問卷回覆試算表的 ID（自己找參加者問卷那個分頁） |
 
 更新程式：`npm run build:apps-script`，再 `cd apps-script && clasp push`，然後 `clasp deploy -i <部署 ID>`，網站用的 `/exec` 網址才會換成新版、而且網址不變（只跑 `clasp deploy` 會多一個新網址）。`apps-script/.clasp.json` 記著專案 ID，不進 repo。

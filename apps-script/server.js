@@ -1,10 +1,9 @@
 // Apps Script shell around handleRequest. Spreadsheet ids live in Script Properties, never in this repo.
-// Functions ending in _ are private to Apps Script; doPost, checkSetup, createSessionSecret and createSupplementSheet
-// are the entry points.
+// Functions ending in _ are private to Apps Script; doPost, checkSetup and createSessionSecret are the entry points.
 
 // Header text of the cadre list's title and email columns.
 const CADRE_HEADERS = { title: '職務', emails: ['E-mail(1)', 'E-mail(2)'] };
-const REQUIRED_PROPERTIES = ['CLIENT_ID', 'SESSION_SECRET', 'ROSTER_ID', 'ROSTER_SHEET', 'CADRE_ID', 'CADRE_SHEET', 'SUPPLEMENT_ID', 'RESPONSES_ID'];
+const REQUIRED_PROPERTIES = ['CLIENT_ID', 'SESSION_SECRET', 'ROSTER_ID', 'ROSTER_SHEET', 'CADRE_ID', 'CADRE_SHEET', 'RESPONSES_ID'];
 const CACHE_SECONDS = 600;
 const ALLOWLIST_CACHE_KEY = 'allowlist';
 
@@ -43,11 +42,6 @@ function serverDeps_() {
     tokenInfo: fetchTokenInfo_,
     allowlist: () => allowlist || (allowlist = cachedAllowlist_()),
     stats: cachedStats_,
-    supplement: {
-      list: () => parseSupplement(supplementSheet_().getDataRange().getDisplayValues()),
-      add: addSupplementRow_,
-      remove: removeSupplementRow_,
-    },
   };
 }
 
@@ -55,10 +49,6 @@ function fetchTokenInfo_(idToken) {
   const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`;
   const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
   return response.getResponseCode() === 200 ? JSON.parse(response.getContentText()) : null;
-}
-
-function openFirstSheet_(idProperty) {
-  return SpreadsheetApp.openById(scriptProperty_(idProperty)).getSheets()[0];
 }
 
 function namedSheet_(idProperty, sheetProperty, listName) {
@@ -71,7 +61,6 @@ function namedSheet_(idProperty, sheetProperty, listName) {
 const rosterSheet_ = () => namedSheet_('ROSTER_ID', 'ROSTER_SHEET', '通訊錄');
 const cadreSheet_ = () => namedSheet_('CADRE_ID', 'CADRE_SHEET', '幹部名單');
 
-const supplementSheet_ = () => openFirstSheet_('SUPPLEMENT_ID');
 const displayValues_ = (sheet) => sheet.getDataRange().getDisplayValues();
 
 function participantSheet_() {
@@ -89,11 +78,10 @@ function readLists_() {
     circles: roster.circles,
     cadreValues,
     cadreEntries: parseCadres(cadreValues, roster.circles, CADRE_HEADERS),
-    supplementEntries: parseSupplement(displayValues_(supplementSheet_())).map(({ email }) => ({ email, scope: NONE_SCOPE })),
   };
 }
 
-const mergeLists_ = (lists) => mergeAllowlist([lists.rosterEntries, lists.cadreEntries, lists.supplementEntries]);
+const mergeLists_ = (lists) => mergeAllowlist([lists.rosterEntries, lists.cadreEntries]);
 
 function putInCache_(key, value) {
   try {
@@ -123,40 +111,6 @@ function cachedStats_(scope) {
   return stats;
 }
 
-function withSupplementLock_(work) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    return work();
-  } finally {
-    lock.releaseLock();
-    CacheService.getScriptCache().remove(ALLOWLIST_CACHE_KEY);
-  }
-}
-
-// The leading apostrophe keeps every cell as typed text: no formulas, and dates stay YYYY-MM-DD.
-function addSupplementRow_(row) {
-  const cells = [row.email, row.name, row.district, row.addedBy, row.addedOn].map((value) => `'${value}`);
-  withSupplementLock_(() => supplementSheet_().appendRow(cells));
-}
-
-function removeSupplementRow_(email, district) {
-  return withSupplementLock_(() => {
-    const sheet = supplementSheet_();
-    const values = displayValues_(sheet);
-    const emailColumn = values[0].indexOf(SUPPLEMENT_HEADERS[0]);
-    const districtColumn = values[0].indexOf(SUPPLEMENT_HEADERS[2]);
-    for (let index = values.length - 1; index >= 1; index -= 1) {
-      const [rowEmail] = extractEmails(values[index][emailColumn]);
-      if (rowEmail && canonicalEmail(rowEmail) === canonicalEmail(email) && values[index][districtColumn].trim() === district) {
-        sheet.deleteRow(index + 1);
-        return true;
-      }
-    }
-    return false;
-  });
-}
-
 function checkSetup() {
   const properties = PropertiesService.getScriptProperties();
   const missing = REQUIRED_PROPERTIES.filter((name) => !properties.getProperty(name));
@@ -166,7 +120,7 @@ function checkSetup() {
   }
   const lists = readLists_();
   const allowlist = mergeLists_(lists);
-  const levels = { all: 0, circle: 0, district: 0, none: 0 };
+  const levels = { all: 0, circle: 0, district: 0 };
   Object.keys(allowlist).forEach((email) => {
     levels[allowlist[email].level] += 1;
   });
@@ -175,8 +129,7 @@ function checkSetup() {
   Logger.log([
     `通訊錄：${lists.rosterEntries.length} 個信箱，${Object.keys(lists.circles).length} 個圈`,
     `幹部名單：${lists.cadreEntries.length} 個信箱`,
-    `補充名單：${lists.supplementEntries.length} 個信箱`,
-    `合併後：${Object.keys(allowlist).length} 人（看全部 ${levels.all}、看一個圈 ${levels.circle}、看一區 ${levels.district}、看不到統計 ${levels.none}）`,
+    `合併後：${Object.keys(allowlist).length} 人（看全部 ${levels.all}、看一個圈 ${levels.circle}、看一區 ${levels.district}）`,
     `幹部名單對不到圈或區的寫法：${unresolved.length ? unresolved.join('、') : '沒有'}`,
     participant ? `參加者問卷：分頁「${participant.getName()}」，${participant.getLastRow() - 1} 份回覆` : '參加者問卷：找不到分頁',
   ].join('\n'));
@@ -191,13 +144,4 @@ function createSessionSecret() {
   }
   properties.setProperty('SESSION_SECRET', [Utilities.getUuid(), Utilities.getUuid(), Utilities.getUuid()].join(''));
   Logger.log('SESSION_SECRET 設好了');
-}
-
-function createSupplementSheet() {
-  const book = SpreadsheetApp.create('兄弟時光｜補充名單');
-  const sheet = book.getSheets()[0];
-  sheet.getRange(1, 1, 1, SUPPLEMENT_HEADERS.length).setValues([SUPPLEMENT_HEADERS]);
-  sheet.setFrozenRows(1);
-  PropertiesService.getScriptProperties().setProperty('SUPPLEMENT_ID', book.getId());
-  Logger.log(`補充名單建好了：${book.getUrl()}`);
 }

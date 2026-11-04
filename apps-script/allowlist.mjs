@@ -6,8 +6,6 @@ const LEVEL_RANK = { none: 0, district: 1, circle: 2, all: 3 };
 const districtScope = (district) => ({ level: 'district', label: district, districts: [district] });
 const circleScope = (circle, circles) => ({ level: 'circle', label: circle, districts: circles[circle] });
 
-export const SUPPLEMENT_HEADERS = ['信箱', '名字', '區', '加的人', '加的日期'];
-
 const EMAIL_PATTERN = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g;
 
 export function extractEmails(cell) {
@@ -106,17 +104,6 @@ export function unresolvedPlaces(rows, circles, headers) {
   return [...new Set(places)].sort();
 }
 
-export function parseSupplement(rows) {
-  const [header = [], ...body] = rows;
-  const [emailColumn, nameColumn, districtColumn, addedByColumn, addedOnColumn] = SUPPLEMENT_HEADERS.map((name) => columnOf(header, name));
-  return body.flatMap((row) => {
-    const [email] = extractEmails(row[emailColumn]);
-    const district = cellText(row, districtColumn);
-    if (!email || !DISTRICTS.includes(district)) return [];
-    return [{ email, name: cellText(row, nameColumn), district, addedBy: cellText(row, addedByColumn), addedOn: cellText(row, addedOnColumn) }];
-  });
-}
-
 function widerScope(a, b) {
   if (LEVEL_RANK[a.level] !== LEVEL_RANK[b.level]) return LEVEL_RANK[a.level] > LEVEL_RANK[b.level] ? a : b;
   if (a.level === 'none' || a.level === 'all') return a;
@@ -133,5 +120,5 @@ export function mergeAllowlist(lists) {
     const key = canonicalEmail(email);
     merged[key] = hasKey(merged, key) ? widerScope(merged[key], scope) : scope;
   }
-  return merged;
+  return Object.fromEntries(Object.entries(merged).filter(([, scope]) => scope.level !== 'none'));
 }

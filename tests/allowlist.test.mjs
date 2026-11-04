@@ -7,8 +7,6 @@ import {
   NONE_SCOPE,
   parseCadres,
   parseRoster,
-  parseSupplement,
-  SUPPLEMENT_HEADERS,
   unresolvedPlaces,
 } from '../apps-script/allowlist.mjs';
 
@@ -82,18 +80,6 @@ test('cadres carry the circle and district down, read the district from the titl
   assert.deepEqual(unresolvedPlaces(CADRES, circles, CADRE_HEADERS), ['火星圈｜', '火星圈｜火星']);
 });
 
-test('the supplement skips rows without an email or a known district', () => {
-  const rows = [
-    SUPPLEMENT_HEADERS,
-    ['new@gmail.com', '小明', '花蓮區', 'hualien@gmail.com', '2027-01-15'],
-    ['', '', '花蓮區', '', ''],
-    ['x@gmail.com', '', '火星區', '', ''],
-  ];
-  assert.deepEqual(parseSupplement(rows), [
-    { email: 'new@gmail.com', name: '小明', district: '花蓮區', addedBy: 'hualien@gmail.com', addedOn: '2027-01-15' },
-  ]);
-});
-
 test('merging keeps the widest scope and joins districts at the same level', () => {
   const district = (name) => ({ level: 'district', label: name, districts: [name] });
   const merged = mergeAllowlist([
@@ -102,6 +88,16 @@ test('merging keeps the widest scope and joins districts at the same level', () 
   ]);
   assert.deepEqual(merged['a@gmail.com'], district('花蓮區'));
   assert.deepEqual(merged['b@gmail.com'], { level: 'district', label: '花蓮區、台東區', districts: ['花蓮區', '台東區'] });
+});
+
+test('people who can see no district are left off the merged list', () => {
+  const district = (name) => ({ level: 'district', label: name, districts: [name] });
+  const merged = mergeAllowlist([
+    [{ email: 'nobody@gmail.com', scope: NONE_SCOPE }, { email: 'both@gmail.com', scope: NONE_SCOPE }],
+    [{ email: 'hualien@gmail.com', scope: district('花蓮區') }, { email: 'both@gmail.com', scope: district('台東區') }],
+  ]);
+  assert.deepEqual(Object.keys(merged).sort(), ['both@gmail.com', 'hualien@gmail.com']);
+  assert.deepEqual(merged['both@gmail.com'], district('台東區'));
 });
 
 test('Gmail addresses match whatever dots or +tag the list used, other domains stay as written', () => {

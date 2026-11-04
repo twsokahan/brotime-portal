@@ -15,9 +15,10 @@ test('the bundle has no import or export lines and defines the Apps Script entry
     assert.doesNotMatch(code, /Object\.hasOwn\(|\?\?=/, 'Apps Script V8 may not have these; local tests cannot tell');
     const context = {};
     vm.runInNewContext(code, context);
-    for (const name of ['doPost', 'checkSetup', 'createSupplementSheet', 'handleRequest']) {
+    for (const name of ['doPost', 'checkSetup', 'createSessionSecret', 'handleRequest']) {
       assert.equal(typeof context[name], 'function', name);
     }
+    assert.doesNotMatch(code, /SUPPLEMENT|Supplement/);
     assert.ok((await readdir(outDir)).includes('appsscript.json'));
   } finally {
     await rm(outDir, { recursive: true, force: true });
