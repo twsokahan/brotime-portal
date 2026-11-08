@@ -419,3 +419,127 @@ test('the live-mode data leaves out the extras title too', () => {
   activity.extraTitle = '加碼推薦（選配）';
   assert.ok(!('extraTitle' in activityData(render({ activity }))));
 });
+
+const withoutLiveMode = (extra = {}) => ({ ...readyActivity(), noLiveMode: true, ...extra });
+
+test('an activity without a live mode has no start button and none of the data the live view needs', () => {
+  const html = render({ activity: withoutLiveMode() });
+  for (const text of ['start-live', '開始 ▶', 'activity-data']) {
+    assert.ok(!html.includes(text), `did not expect ${text}`);
+  }
+});
+
+test('an activity without a live mode offers no survey QR, staff survey or report form, even when the forms exist', () => {
+  const surveys = { participant: PARTICIPANT_SURVEY, staff: STAFF_SURVEY, report: REPORT_FORM };
+  const html = render({ activity: withoutLiveMode(), site: siteWithSurveys(surveys) });
+  for (const text of [
+    'qr-participant',
+    'staff-survey',
+    'activity-report',
+    'qr-card-',
+    PARTICIPANT_SURVEY.url,
+    STAFF_SURVEY.url,
+    REPORT_FORM.url,
+  ]) {
+    assert.ok(!html.includes(text), `did not expect ${text}`);
+  }
+  assert.ok(!todoBox(html).includes('回報'));
+});
+
+test('an activity with a live mode still gets its start button, live data and survey templates', () => {
+  const html = render();
+  for (const text of ['id="start-live"', 'id="activity-data"', 'id="qr-participant"', 'id="staff-survey"', 'id="qr-card-s1"']) {
+    assert.ok(html.includes(text), `expected ${text}`);
+  }
+});
+
+test('without a live mode each step spells out what to do, its points and its closing words', () => {
+  const activity = withoutLiveMode();
+  activity.steps[1] = {
+    ...activity.steps[1],
+    points: ['先問近況。', '再聊 <工作>。'],
+    readAloud: { label: '收尾的話', text: '測試用的收尾。', source: '測試用的出處' },
+  };
+  const step = render({ activity })
+    .split('<li class="step">')
+    .find((part) => part.includes('<h3>邊吃邊聊</h3>'));
+  assert.ok(step.includes('<p class="step-do">主持人用手機抽話題卡，一次一題，大家輪流回答。</p>'), step);
+  assert.ok(step.includes('<ul class="step-points"><li>先問近況。</li><li>再聊 &lt;工作&gt;。</li></ul>'), step);
+  assert.ok(step.includes('<section class="read-aloud"><h3>收尾的話</h3><p>測試用的收尾。</p><p class="source">出處：測試用的出處</p></section>'), step);
+});
+
+test('without a live mode a step may leave out the line to say', () => {
+  const activity = withoutLiveMode();
+  delete activity.steps[0].say;
+  const step = stepItem(render({ activity }), '進場、點餐');
+  assert.ok(!step.includes('class="say"'), step);
+});
+
+test('with a live mode the page keeps what to do for the live view and only shows the line to say', () => {
+  const html = render();
+  assert.ok(!html.includes('step-do'));
+  assert.ok(!html.includes('step-points'));
+  assert.ok(stepItem(html, '進場、點餐').includes('<p class="say">說：今天不用急，先點想吃的，我們邊吃邊聊。</p>'));
+});
+
+test('the first-time list keeps its default title unless the activity names its own', () => {
+  assert.ok(render().includes('<summary>第一次主持記得 3 件事</summary>'));
+  const html = render({ activity: { ...readyActivity(), firstTimeTitle: '第一次前往探望記得' } });
+  assert.ok(html.includes('<summary>第一次前往探望記得 3 件事</summary>'));
+  assert.ok(!html.includes('第一次主持'));
+});
+
+test('extra collapsible sections come before the plan link, with an optional intro', () => {
+  const activity = readyActivity();
+  activity.moreSections = [
+    { title: '想邀請的時候', intro: '有三點可以參考：', items: ['留意時機', '接上對方提到的事'] },
+    { title: '常見狀況', items: ['對方臨時取消'] },
+  ];
+  const html = render({ activity });
+  assert.ok(html.includes('<details><summary>想邀請的時候</summary><p>有三點可以參考：</p><ol><li>留意時機</li><li>接上對方提到的事</li></ol></details>'), html);
+  assert.ok(html.includes('<details><summary>常見狀況</summary><ol><li>對方臨時取消</li></ol></details>'), html);
+  assert.ok(html.indexOf('常見狀況') < html.indexOf('完整企劃案'));
+});
+
+test('the live-mode data leaves out the extra sections and the first-time title', () => {
+  const activity = readyActivity();
+  activity.firstTimeTitle = '第一次前往探望記得';
+  activity.moreSections = [{ title: '常見狀況', items: ['對方臨時取消'] }];
+  const data = activityData(render({ activity }));
+  assert.ok(!('firstTimeTitle' in data));
+  assert.ok(!('moreSections' in data));
+});
+
+test('the print files say 想印實體卡 unless the activity words it its own way', () => {
+  const printFiles = [{ label: '故事卡', file: 'files/brunch-cards-story.pdf' }];
+  assert.ok(render({ activity: { ...readyActivity(), printFiles } }).includes('<p>想印實體卡的話：</p>'));
+  const html = render({ activity: { ...readyActivity(), printFiles, printFilesLead: '想印出來的話：' } });
+  assert.ok(html.includes('<p>想印出來的話：</p>'));
+  assert.ok(!html.includes('想印實體卡'));
+});
+
+test('a story read alone before going out says so in the books section', () => {
+  const activity = readyActivity();
+  activity.storyReading = {
+    guideHeading: '出門前翻書讀',
+    questionsHeading: '出門前想一想',
+    booksHead: '出門前讀一本',
+    booksNote: '探望當天不需攜帶。',
+  };
+  const html = render({ activity });
+  assert.ok(html.includes('<p class="books-head">出門前讀一本</p>'));
+  assert.ok(html.includes('<p class="books-note">探望當天不需攜帶。</p>'));
+  assert.ok(!html.includes('當天帶這一本就好'));
+});
+
+test('a featured file sits under the head, above the flow', () => {
+  const featuredFile = { label: '出門前小抄', file: 'files/brunch-handout.pdf', note: '出門前看一遍。' };
+  const html = render({ activity: { ...readyActivity(), featuredFile } });
+  assert.ok(html.includes('files/brunch-handout.pdf">出門前小抄（PDF）</a>'));
+  assert.ok(html.includes('出門前看一遍。'));
+  assert.ok(html.indexOf('featured-file') < html.indexOf('<section class="flow">'));
+});
+
+test('no featured file renders nothing', () => {
+  assert.ok(!render({ activity: readyActivity() }).includes('featured-file'));
+});

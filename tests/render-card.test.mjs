@@ -109,3 +109,24 @@ test('the note is escaped', () => {
   assert.ok(html.includes('<h2>&lt;b&gt;想&lt;/b&gt;</h2>'));
   assert.ok(html.includes('<p>「你」 &amp; &lt;i&gt;我&lt;/i&gt;</p>'));
 });
+
+test('a story read alone before going out uses its own headings on the card page', () => {
+  const activity = readyActivity();
+  activity.storyReading = {
+    guideHeading: '出門前翻書讀',
+    questionsHeading: '出門前想一想',
+    booksHead: '出門前讀一本',
+    booksNote: '探望當天不需攜帶。',
+  };
+  const html = render(activity);
+  assert.ok(html.includes('<h2>出門前翻書讀</h2>'));
+  assert.ok(html.includes('<h2>出門前想一想</h2>'));
+  assert.ok(!html.includes('翻書念故事'));
+  assert.ok(!html.includes('<h2>分享提問</h2>'));
+});
+
+test('other story cards keep the read-aloud headings', () => {
+  const html = render();
+  assert.ok(html.includes('<h2>翻書念故事</h2>'));
+  assert.ok(html.includes('<h2>分享提問</h2>'));
+});

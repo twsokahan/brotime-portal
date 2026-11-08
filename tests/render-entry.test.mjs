@@ -211,3 +211,7 @@ test('the cover thumbnail is the first story card, and an activity without cards
   assert.equal(coverThumbPath(readyActivity()), 'cards/brunch/s1-thumb.webp');
   assert.equal(coverThumbPath({ id: 'empty', cardSets: {} }), null);
 });
+
+test('an activity can name its own cover card', () => {
+  assert.equal(coverThumbPath({ ...readyActivity(), coverCard: 't02' }), 'cards/brunch/t02-thumb.webp');
+});

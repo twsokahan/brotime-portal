@@ -38,6 +38,7 @@ ${filterGroup('共同興趣', list(Object.entries(INTERESTS), ([value, label]) =
 }
 
 function coverCardId(activity) {
+  if (activity.coverCard) return activity.coverCard;
   const sets = Object.values(activity.cardSets ?? {});
   const set = sets.find((cardSet) => cardSet.kind === 'story') ?? sets[0];
   return set?.thumbs?.[0] ?? set?.cards[0]?.id;

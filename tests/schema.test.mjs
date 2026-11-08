@@ -666,9 +666,9 @@ test('validateAll reports an extra30 route that is not a city-walk route', () =>
   assert.deepEqual(errors, ['trip: extra30[1].cityWalkRoute 火星區 不在城市散步路線裡']);
 });
 
-test('order can go up to 20', () => {
-  assert.deepEqual(validateActivity({ ...readyActivity(), order: 20 }, allFilesExist), []);
-  assertReports(validateActivity({ ...readyActivity(), order: 21 }, allFilesExist), 'order');
+test('order can go up to 21', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), order: 21 }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), order: 22 }, allFilesExist), 'order');
 });
 
 const venueSpot = (overrides = {}) => ({
@@ -851,4 +851,85 @@ test('a malformed sign-in client id or endpoint is named in the error', () => {
   assertReports(validateSite({ ...fixtureSite(), signIn: { ...SIGN_IN, clientId: 'abc' } }), 'signIn.clientId');
   assertReports(validateSite({ ...fixtureSite(), signIn: { ...SIGN_IN, endpoint: 'https://example.com/exec' } }), 'signIn.endpoint');
   assertReports(validateSite({ ...fixtureSite(), signIn: 'yes' }), 'signIn');
+});
+
+const noLive = (extra = {}) => ({ ...readyActivity(), noLiveMode: true, ...extra });
+
+test('noLiveMode can only be true', () => {
+  assert.deepEqual(validateActivity(noLive(), allFilesExist), []);
+  assertReports(validateActivity(noLive({ noLiveMode: false }), allFilesExist), 'noLiveMode');
+  assertReports(validateActivity(noLive({ noLiveMode: 'yes' }), allFilesExist), 'noLiveMode');
+});
+
+test('an activity without a live mode needs no preflight, but a preflight it does have is still checked', () => {
+  const activity = noLive();
+  delete activity.preflight;
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  assertReports(validateActivity(noLive({ preflight: [''] }), allFilesExist), 'preflight[0]');
+});
+
+test('only an activity without a live mode may leave out the line to say', () => {
+  const quiet = noLive();
+  delete quiet.steps[0].say;
+  assert.deepEqual(validateActivity(quiet, allFilesExist), []);
+  const live = readyActivity();
+  delete live.steps[0].say;
+  assertReports(validateActivity(live, allFilesExist), 'steps[0].say');
+});
+
+test('a say line, when there is one, stays within the limit without a live mode too', () => {
+  const activity = noLive();
+  activity.steps[0].say = '一'.repeat(46);
+  assertReports(validateActivity(activity, allFilesExist), 'steps[0].say');
+});
+
+test('step points are a list of text', () => {
+  const activity = readyActivity();
+  activity.steps[0].points = ['先問近況。'];
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.steps[0].points = [];
+  assertReports(validateActivity(activity, allFilesExist), 'steps[0].points');
+  activity.steps[0].points = [''];
+  assertReports(validateActivity(activity, allFilesExist), 'steps[0].points[0]');
+});
+
+test('the first-time title and the print files lead are optional text', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), firstTimeTitle: '第一次前往探望記得', printFilesLead: '想印出來的話：' }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), firstTimeTitle: '' }, allFilesExist), 'firstTimeTitle');
+  assertReports(validateActivity({ ...readyActivity(), printFilesLead: 3 }, allFilesExist), 'printFilesLead');
+});
+
+test('more sections need a title and items, the intro is optional', () => {
+  const valid = [{ title: '常見狀況', items: ['對方臨時取消'] }, { title: '想邀請的時候', intro: '有三點：', items: ['留意時機'] }];
+  assert.deepEqual(validateActivity({ ...readyActivity(), moreSections: valid }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), moreSections: [{ items: ['a'] }] }, allFilesExist), 'moreSections[0].title');
+  assertReports(validateActivity({ ...readyActivity(), moreSections: [{ title: 'a', items: [] }] }, allFilesExist), 'moreSections[0].items');
+  assertReports(validateActivity({ ...readyActivity(), moreSections: [{ title: 'a', intro: '', items: ['b'] }] }, allFilesExist), 'moreSections[0].intro');
+});
+
+test('the story reading wording needs all four lines', () => {
+  const storyReading = { guideHeading: '出門前翻書讀', questionsHeading: '出門前想一想', booksHead: '出門前讀一本', booksNote: '當天不需攜帶。' };
+  assert.deepEqual(validateActivity({ ...readyActivity(), storyReading }, allFilesExist), []);
+  const { booksNote, ...missing } = storyReading;
+  assertReports(validateActivity({ ...readyActivity(), storyReading: missing }, allFilesExist), 'storyReading.booksNote');
+});
+
+test('the cover card has to be one of the activity cards', () => {
+  assert.deepEqual(validateActivity({ ...readyActivity(), coverCard: 't02' }, allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), coverCard: 'nope' }, allFilesExist), 'coverCard');
+});
+
+test('a featured file has to exist', () => {
+  const featuredFile = { label: '出門前小抄', file: 'files/brunch-handout.pdf', note: '出門前看一遍。' };
+  const errors = validateActivity(
+    { ...readyActivity(), featuredFile },
+    { fileExists: (relPath) => relPath !== 'files/brunch-handout.pdf' },
+  );
+  assert.deepEqual(errors, ['brunch: featuredFile 找不到檔案 files/brunch-handout.pdf']);
+});
+
+test('a featured file needs a label, a file and a note', () => {
+  const errors = validateActivity({ ...readyActivity(), featuredFile: { label: '出門前小抄' } }, allFilesExist);
+  assert.ok(errors.some((error) => error.includes('featuredFile.file')));
+  assert.ok(errors.some((error) => error.includes('featuredFile.note')));
 });

@@ -22,7 +22,7 @@ const CARD_ID = /^[A-Za-z0-9-]+$/;
 const HTTPS_URL = /^https:\/\/[^\s/]+\S*$/;
 const FORM_ENTRY = /^entry\.\d+$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const MAX_ORDER = 20;
+const MAX_ORDER = 21;
 const MAX_SAY_CHARS = 45;
 const MAX_TODO_TASK_CHARS = 20;
 const MAX_THUMBS = 3;
@@ -367,7 +367,7 @@ function checkVenueStop(check, venueStop, path, hasVenues) {
   if (!hasVenues) check.fail(path, '要先有 venues');
 }
 
-function checkStep(check, step, path, { cardSets, toolSettings, hasVenues, earlierSteps }) {
+function checkStep(check, step, path, { cardSets, toolSettings, hasVenues, noLiveMode, earlierSteps }) {
   if (!check.object(step, path)) return;
   check.text(step.time, `${path}.time`);
   if (step.minutes !== null && !(Number.isInteger(step.minutes) && step.minutes > 0)) {
@@ -375,7 +375,8 @@ function checkStep(check, step, path, { cardSets, toolSettings, hasVenues, earli
   }
   check.text(step.title, `${path}.title`);
   check.text(step.do, `${path}.do`);
-  checkShortText(check, step.say, `${path}.say`, MAX_SAY_CHARS);
+  if (!noLiveMode || step.say !== undefined) checkShortText(check, step.say, `${path}.say`, MAX_SAY_CHARS);
+  if (step.points !== undefined) checkTextList(check, step.points, `${path}.points`, 1);
   checkStepCards(check, step, path, cardSets);
   if (step.readAloud !== undefined) checkReadAloud(check, step.readAloud, `${path}.readAloud`);
   if (step.routeStop !== undefined) check.oneOf(step.routeStop, ROUTE_STOPS, `${path}.routeStop`);
@@ -385,9 +386,9 @@ function checkStep(check, step, path, { cardSets, toolSettings, hasVenues, earli
   checkVenueStop(check, step.venueStop, `${path}.venueStop`, hasVenues);
 }
 
-function checkSteps(check, steps, { cardSets, toolSettings, hasVenues }) {
+function checkSteps(check, steps, { cardSets, toolSettings, hasVenues, noLiveMode }) {
   if (!check.list(steps, 'steps', 1)) return;
-  const context = { cardSets: isObject(cardSets) ? cardSets : {}, toolSettings, hasVenues };
+  const context = { cardSets: isObject(cardSets) ? cardSets : {}, toolSettings, hasVenues, noLiveMode };
   steps.forEach((step, i) => checkStep(check, step, `steps[${i}]`, { ...context, earlierSteps: steps.slice(0, i) }));
 }
 
@@ -415,6 +416,24 @@ function checkGuide(check, guide) {
     check.text(section.heading, `${path}.heading`);
     checkTextList(check, section.items, `${path}.items`, 1);
   });
+}
+
+function checkMoreSections(check, sections) {
+  if (!check.list(sections, 'moreSections', 1)) return;
+  sections.forEach((section, i) => {
+    const path = `moreSections[${i}]`;
+    if (!check.object(section, path)) return;
+    check.text(section.title, `${path}.title`);
+    if (section.intro !== undefined) check.text(section.intro, `${path}.intro`);
+    checkTextList(check, section.items, `${path}.items`, 1);
+  });
+}
+
+function checkCoverCard(check, activity) {
+  const cardIds = Object.values(isObject(activity.cardSets) ? activity.cardSets : {}).flatMap((set) => [...cardIdsOf(set)]);
+  if (check.text(activity.coverCard, 'coverCard') && !cardIds.includes(activity.coverCard)) {
+    check.fail('coverCard', `${activity.coverCard} 不在 cardSets 裡`);
+  }
 }
 
 function checkPlanFile(check, planFile, id) {
@@ -448,6 +467,7 @@ function checkPdfFiles(check, activity, fileExists) {
     if (isText(file) && !fileExists(file)) check.fail(path, `找不到檔案 ${file}`);
   };
   checkExists(activity.planFile, 'planFile');
+  checkExists(activity.featuredFile?.file, 'featuredFile');
   if (!Array.isArray(activity.printFiles)) return;
   activity.printFiles.forEach((row, i) => checkExists(row?.file, `printFiles[${i}].file`));
 }
@@ -458,7 +478,10 @@ export function validateActivity(activity, { fileExists } = {}) {
   checkIdentity(check, activity);
 
   const published = isPublished(activity);
+  const noLiveMode = activity.noLiveMode === true;
   const shouldCheck = (key) => published || activity[key] !== undefined;
+
+  if (activity.noLiveMode !== undefined && !noLiveMode) check.fail('noLiveMode', '只能是 true');
 
   if (shouldCheck('tags')) checkTags(check, activity.tags);
   checkRainNote(check, activity);
@@ -470,6 +493,7 @@ export function validateActivity(activity, { fileExists } = {}) {
       cardSets: activity.cardSets,
       toolSettings: { ichiban: activity.ichiban !== undefined, guide: activity.guide !== undefined },
       hasVenues: activity.venues !== undefined,
+      noLiveMode,
     });
   }
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
@@ -477,10 +501,18 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (activity.extraTitle !== undefined) check.text(activity.extraTitle, 'extraTitle');
   if (activity.availability !== undefined) checkAvailability(check, activity.availability);
   if (shouldCheck('planFile')) checkPlanFile(check, activity.planFile, activity.id);
-  if (shouldCheck('preflight')) checkTextList(check, activity.preflight, 'preflight', 1);
+  if ((published && !noLiveMode) || activity.preflight !== undefined) checkTextList(check, activity.preflight, 'preflight', 1);
   if (activity.printFiles !== undefined) checkRows(check, activity.printFiles, 'printFiles', ['label', 'file']);
   if (activity.flowTitle !== undefined) check.text(activity.flowTitle, 'flowTitle');
   if (activity.flowNote !== undefined) check.text(activity.flowNote, 'flowNote');
+  if (activity.firstTimeTitle !== undefined) check.text(activity.firstTimeTitle, 'firstTimeTitle');
+  if (activity.printFilesLead !== undefined) check.text(activity.printFilesLead, 'printFilesLead');
+  if (activity.featuredFile !== undefined) checkTextFields(check, activity.featuredFile, 'featuredFile', ['label', 'file', 'note']);
+  if (activity.moreSections !== undefined) checkMoreSections(check, activity.moreSections);
+  if (activity.storyReading !== undefined) {
+    checkTextFields(check, activity.storyReading, 'storyReading', ['guideHeading', 'questionsHeading', 'booksHead', 'booksNote']);
+  }
+  if (activity.coverCard !== undefined) checkCoverCard(check, activity);
   if (activity.venues !== undefined) checkVenues(check, activity.venues);
   if (activity.surveys !== undefined) checkSurveys(check, activity.surveys);
   if (activity.ichiban !== undefined) checkIchiban(check, activity.ichiban);

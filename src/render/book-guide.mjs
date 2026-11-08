@@ -4,9 +4,9 @@ import { escapeHtml } from './html.mjs';
 const renderRow = ({ label, text, note }) =>
   `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(text)}${note ? ` <small>（${escapeHtml(note)}）</small>` : ''}</dd></div>`;
 
-export function renderBookGuide(guide) {
+export function renderBookGuide(guide, heading = GUIDE_HEADING) {
   return `<section class="book-guide">
-<h2>${GUIDE_HEADING}</h2>
+<h2>${escapeHtml(heading)}</h2>
 <p class="book-guide-series">${SERIES}</p>
 <p class="book-guide-book">${escapeHtml(bookTitle(guide))}</p>
 <p class="book-guide-page"><small>約第 </small>${escapeHtml(String(guide.page))}<small> 頁</small></p>
@@ -23,9 +23,13 @@ const renderBookRow = ({ cards, link, volume, chapters, role }) =>
 
 const paragraph = (className, text) => (text ? `\n<p class="${className}">${escapeHtml(text)}</p>` : '');
 
+const withStoryReadingWords = (plan, storyReading) =>
+  storyReading ? { ...plan, heads: [storyReading.booksHead], note: storyReading.booksNote } : plan;
+
 export function renderBooks(activity) {
-  const plan = booksPlan(readingSlots(activity.steps, activity.cardSets));
-  if (!plan) return '';
+  const slotPlan = booksPlan(readingSlots(activity.steps, activity.cardSets));
+  if (!slotPlan) return '';
+  const plan = withStoryReadingWords(slotPlan, activity.storyReading);
   const rows = plan.rows.length ? `\n<ul class="books-rows">${plan.rows.map(renderBookRow).join('')}</ul>` : '';
   return `<section class="books" id="books" aria-labelledby="books-title">
 <h2 id="books-title">${BOOKS_HEADING}</h2>${paragraph('books-lead', plan.lead)}

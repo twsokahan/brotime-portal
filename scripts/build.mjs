@@ -140,7 +140,7 @@ function readyActivityPage({ activity, site, routes, ogUrl }) {
     description: activity.tagline,
     rel: ACTIVITY_REL,
     main: activity.id === CITY_WALK_ID ? `${main}\n${routesScript(routes)}` : main,
-    scripts: ['js/activity.js'],
+    scripts: activity.noLiveMode ? [] : ['js/activity.js'],
     ogUrl,
     leaveLine: true,
   });

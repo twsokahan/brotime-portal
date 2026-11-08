@@ -39,7 +39,7 @@
 
 ## 新增或修改一個活動
 
-一個活動一個檔：`content/activities/<id>.json`。20 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 20，要加第 21 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
+一個活動一個檔：`content/activities/<id>.json`。20 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 21，要加第 22 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
 
 - `id` 跟檔名一樣，網址就是 `a/<id>/`。**定了就不要改**，不然已經分享出去的連結會壞掉。
 - `name` 要跟三份問卷「活動」那一題的選項一字不差（網站會自動把活動名稱帶進問卷），測試會擋。要改名字，問卷選項也要一起改。
@@ -54,10 +54,12 @@
 - 「你要做的」裡借書那項（task 含「借好」）的 `detail` 和「帶齊了嗎」的帶書項目，照 `~/code/sokahan-propalsal-2026/plan-builder/book_guide_v1/books_needed_v1.json` 的 `plan_sentence`、`item_row`（跟企劃案、一分鐘看懂同一套句子；帶書項目改成跟其他項目一樣以「帶了」收尾，例如「《新・人間革命》帶了（A、B 在第18卷，C 在第19卷）」）；`npm test` 會檢查借書那項有寫到每一卷，也會擋「看背面寫的是」。
 - 改完內容要確認沒有原文：`python3 ~/code/sokahan-propalsal-2026/plan-builder/check_no_passages.py content/activities/*.json`，每個檔都要印出 clean。
 - 企劃案 PDF（`planFile`）和想印實體卡的人下載的 PDF（`printFiles`）放在 `public/files/`。正式公開前，卡片 PDF（檔名不是 `-plan.pdf` 結尾的）要加浮水印再放進來：`python3 ~/code/sokahan-propalsal-2026/plan-builder/watermark.py 來源.pdf public/files/<檔名>`，沒加的話 `npm test` 會擋。
+- 沒有當天模式的活動（哈囉你好嗎），加 `noLiveMode: true`：頁面沒有「開始」、問卷 QR、工作人員問卷和回報表連結，也不載入 `activity.js`；不用寫 `preflight`，`say` 可以不寫，每一步的 `do`、`points`（條列）、`readAloud` 直接顯示在流程裡。這種活動不必放進問卷的活動名單。
 - 卡片可以帶 `reveal: { lead, guide }`（桌遊之夜的情境卡）：當天模式點開那張卡時，下面有「投完票再揭曉」，點了才顯示引言和翻書指引（`guide` 跟故事卡同格式，不放原文，放了 `text` 資料驗證會擋）。有 `reveal` 的卡全部都要念，所以「要準備的《新・人間革命》」寫「要帶五本」，逐題列出卷章（卡名「：」前面那段當題號）。
 - 只在某段期間才能約的（名畫小旅行只限 2027 年 10 月展期），加 `availability: { from, to, label, note }`：`from`、`to` 是 `YYYY-MM-DD`，`label` 像 `"2027 年 10 月"`，`note` 可以不寫。活動頁標題下會寫「只限 2027 年 10 月：（note）」，首頁卡片和「幫我挑」的結果標「限 2027 年 10 月」；「幫我挑」從 `from` 的前兩個月到 `to` 當天推薦它（提前幾個月是 `src/lib/recommend.mjs` 的 `DATED_LEAD_MONTHS`）。
 - `extra30`（「想多留 30 分鐘」）每一項通常是一句話；要連到城市散步某一條路線時寫成 `{ "text": ..., "cityWalkRoute": "高雄北區" }`，後面會多一個「看路線」，打開城市散步頁並選好那條路線。`cityWalkRoute` 是路線 id（見下面「城市散步的路線」），寫錯 `npm test` 會擋。標題想換掉「想多留 30 分鐘（選配）」，加 `extraTitle`。
 - 要讓主持人挑地點的（去創美走走的 12 個分館），加 `venues: { title, prompt, intro, link, places }`。活動頁在流程上面多一個選單，選了就展開那一館的地址、交通、吃飯喝咖啡（`food`）、順路走走（`walks`）、城市散步（`cityWalks`，每項 `{ text, cityWalkRoute }`）和出發前留意（`notes`，可以不寫）。`food`、`walks` 每項是 `{ name, what, hours, distance, why, mapsUrl }`（`why` 可以不寫）。每一館要有座標 `lat`、`lon`（國土測繪中心查門牌），選單下面的「用我的位置找最近的分館」用手機定位挑直線最近的一館（只在手機上算，位置不會傳出去；瀏覽器不支援定位就不出現）。選了哪一館記在網址 `?v=` 和手機裡。步驟加 `venueStop: "meet"` 時，當天模式那步會帶出那一館的地址和地圖按鈕；`venueStop: "sit"` 會列出附近吃飯喝咖啡的店。
+- 故事是給人出門前自己讀的（哈囉你好嗎），加 `storyReading: { guideHeading, questionsHeading, booksHead, booksNote }`，故事卡頁的兩個標題和「要準備的《新・人間革命》」就換成這些字。`firstTimeTitle` 換掉「第一次主持記得」，`printFilesLead` 換掉「想印實體卡的話：」，`moreSections: [{ title, intro, items }]` 多加收起來的段落（`intro` 可以不寫），`coverCard` 指定首頁封面用哪一張卡（要在 `cardSets` 裡，例如另一組 `kind: "other"` 的封面）。
 - 話題卡加 `forKids: true`，當天模式抽卡會多一個「小朋友也能答」分類，只抽這些卡。
 - 話題卡要跟著故事卡用的（看球就一起的深題，每張故事卡配三張），每張加 `storyCard: "<故事卡 id>"`，念故事之前聊的那張再加 `beforeStory: true`。同一步同時用到故事卡和這組卡時，當天模式不抽卡：選了哪張故事卡，就在故事卡上面放 `beforeStory` 的卡（「念故事之前先聊」），下面放其他的卡（「念完再聊」），換一張故事卡就跟著換。整組都沒有 `beforeStory` 時（露營星空夜、田園烤肉會、清晨登山的「故事念完、沒人接話時」），標題只寫組名 `label`。活動頁流程不放這種卡組的縮圖（要用哪幾張看當天選哪張故事卡，放前三張會誤導）。同一步同時有故事卡和另一疊卡時（清晨登山山頂那步），活動頁分排顯示，每排上面一行小標（`label`，話題卡組名稱裡沒有「話題卡」就加上「話題卡：」）；只有一疊、或沒有故事卡的（桌遊之夜）照舊排一排。這組卡放在沒有故事卡的步驟時（清晨登山第 5 步），跟著前面最近一步選的那張故事卡，標題是「組名：〈故事卡標題〉」。
 - 一步裡有不只一組卡時（田園烤肉會第 3 步兩疊話題卡、清晨登山第 3 步話題卡加故事卡），當天模式每一疊抽卡上面會顯示那組的 `label`，主持人才分得出是哪一疊。

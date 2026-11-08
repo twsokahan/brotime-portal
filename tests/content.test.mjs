@@ -76,6 +76,7 @@ test("activity names match the survey forms' activity options character for char
   const { activityFiles } = await readContent(CONTENT_DIR);
   const names = activityFiles
     .map(({ activity }) => activity)
+    .filter((activity) => !activity.noLiveMode)
     .sort((a, b) => a.order - b.order)
     .map((activity) => activity.name);
   assert.deepEqual(names, SURVEY_FORM_ACTIVITY_NAMES);

@@ -389,3 +389,15 @@ test('the privacy page is built with or without signIn, needs no sign-in, and li
     assert.ok(html.includes('只有「每一場的回顧」要用 Google 帳號登入'));
   }
 });
+
+test('an activity page without a live mode loads no script but keeps the LINE notice and its story card pages', () => {
+  const pages = pagesFor({ ...readyActivity(), noLiveMode: true }, false);
+  const html = pages.get('a/brunch/index.html');
+  assert.ok(!html.includes('js/activity.js'));
+  assert.ok(html.includes('openExternalBrowser'));
+  assert.ok(pages.has('a/brunch/cards/s1/index.html'));
+});
+
+test('a ready activity with a live mode still loads its script', () => {
+  assert.ok(pagesFor(readyActivity(), false).get('a/brunch/index.html').includes('js/activity.js'));
+});

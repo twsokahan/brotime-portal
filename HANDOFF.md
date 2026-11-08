@@ -1,5 +1,9 @@
 # 交接：兄弟時光活動入口網站
 
+## 哈囉你好嗎活動頁（2026-11-09，本機改好、還沒 commit，等使用者看預覽）
+
+`content/activities/visit.json`（第 21 個，`status: review`，網址 `a/visit/`）。沒有當天模式，新欄位 `noLiveMode`、`storyReading`、`firstTimeTitle`、`moreSections`、`printFilesLead`、`coverCard` 寫在 README，內容決定在 `docs/content-notes/visit.md`。問卷、影片、首頁主打、到家裡坐坐 tagline、改 `ready` 都還沒做，跟拿掉露營釣魚一起換。
+
 ## 網站全面開放、回顧頁改版（2026-11-04）
 
 使用者 2026-11-04 決定：**網站開放給所有人用**，不再限通訊錄上的人。登入只留給「每一場的回顧」，讓區負責人和幹部看參加者問卷的結果。網站上不放任何入口，回顧頁網址 `https://kyodai-tokimitsu.twsokahan.org/stats/` 只傳到幹部群組。設計 `docs/superpowers/specs/2026-11-04-open-site-and-review-pages-design.md`，計畫 `docs/superpowers/plans/2026-11-04-open-site-and-review-pages.md`。
