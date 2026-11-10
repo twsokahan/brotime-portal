@@ -1,6 +1,6 @@
 # 哈囉你好嗎：內容筆記
 
-活動資料在 `content/activities/visit.json`，第 21 個（`order: 21`，`MAX_ORDER` 跟著加大）。`status` 是 `review`：正式站顯示準備中，預覽版才看得到內容；等最後跟拿掉露營、釣魚一起改成 `ready`，這次不動。
+活動資料在 `content/activities/visit.json`，第 21 個（`order: 21`，`MAX_ORDER` 跟著加大）。2026-11-10 跟拿掉露營、釣魚一起改成 `ready`。首頁主打放四到六月和十到十二月，補露營的兩個位置，是我定的，使用者要改就改 `content/site.json`。
 
 這一份由兩位實動班員前往探望一位兄弟，主客跟「到家裡坐坐」對調，所以文字都重寫。全案規則和設計決定在 `~/code/sokahan-propalsal-2026/哈囉你好嗎/`（`設計_2026-11-08.md`、`製作計畫_2026-11-08.md`、`製作進度.md`）。
 

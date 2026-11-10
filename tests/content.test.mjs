@@ -65,14 +65,13 @@ const SURVEY_FORM_ACTIVITY_NAMES = [
   '新春唱題會',
   '農事體驗日',
   '清晨登山',
-  '釣魚聊天會',
   '師傅手藝教室',
-  '露營星空夜',
   '到家裡坐坐',
   '名畫小旅行',
   '去創美走走',
   '來去打球啦',
   '看球就一起',
+  '勇躍前進唱題會',
 ];
 
 test("published activity names match the survey forms' activity options character for character", async () => {

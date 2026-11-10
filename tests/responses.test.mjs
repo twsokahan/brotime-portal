@@ -103,7 +103,7 @@ test('a session counts each choice and splits the next question on ", "', () => 
 
 test('wants add up the latest 3 sessions of the district and leave the oldest out', () => {
   const rows = [HEADER];
-  for (const [day, next] of [['01', '露營星空夜'], ['08', '桌遊之夜'], ['15', '桌遊之夜'], ['22', '城市散步']]) {
+  for (const [day, next] of [['01', '農事體驗日'], ['08', '桌遊之夜'], ['15', '桌遊之夜'], ['22', '城市散步']]) {
     for (const minute of ['00', '01']) rows.push(reply(`2027-01-${day}T02:${minute}:00Z`, '城市散步', '花蓮區', next));
   }
   assert.deepEqual(districtWants(groupSessions(parseResponses(rows)), ['花蓮區']), {

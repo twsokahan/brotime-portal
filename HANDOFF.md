@@ -1,8 +1,12 @@
 # 交接：兄弟時光活動入口網站
 
-## 勇躍前進唱題會活動頁（2026-11-10 推上 main，正式站顯示準備中）
+## 2026-11 企劃會調整上線（2026-11-10）
 
-`content/activities/forward-daimoku.json`（第 22 個，`status: review`，網址 `a/forward-daimoku/`），由 `plan-builder/build_forward_daimoku_portal_json_v1.py` 產生，要改內容就改腳本重跑。內容決定在 `docs/content-notes/forward-daimoku.md`。問卷加選項、影片、首頁主打、改 `ready` 都還沒做，跟拿掉露營釣魚一起換；改 `ready` 前 `SURVEY_FORM_ACTIVITY_NAMES` 要加這個名字（問卷名稱測試從這次起只檢查 `ready` 的活動）。
+露營星空夜、釣魚聊天會下架（舊網址 `a/camping/`、`a/fishing/` 轉址到 `all/`，內容還在 git 歷史和 `docs/content-notes/`）；哈囉你好嗎、勇躍前進唱題會改 `ready`；首頁主打補位：四到六月、十到十二月補哈囉你好嗎，七到九月補勇躍前進唱題會（我定的，使用者要改就改 `content/site.json`）；到家裡坐坐的 tagline 改成指向哈囉你好嗎。活動數仍是 20。問卷由使用者在 script.google.com 跑 `兄弟時光/問卷/建立問卷表單.gs`；總企劃案、年度簡報、Drive 上的舊資料夾這次沒動（清單在 `兄弟時光/HANDOFF_2026-11企劃會調整.md`）。
+
+## 勇躍前進唱題會活動頁（2026-11-10 推上 main）
+
+`content/activities/forward-daimoku.json`（第 22 個，`status: review`，網址 `a/forward-daimoku/`），由 `plan-builder/build_forward_daimoku_portal_json_v1.py` 產生，要改內容就改腳本重跑。內容決定在 `docs/content-notes/forward-daimoku.md`。問卷名稱測試從這次起只檢查 `ready` 的活動，新活動可以先用 `review` 放上去。
 
 ## 哈囉你好嗎活動頁（2026-11-09，本機改好、還沒 commit，等使用者看預覽）
 

@@ -61,7 +61,7 @@
         "to": "2027-06-30",
         "ids": [
           "ball-watching",
-          "camping",
+          "visit",
           "morning-hike",
           "dad-day",
           "board-games"
@@ -75,7 +75,7 @@
           "night-run",
           "art-walk",
           "ball-games",
-          "fishing",
+          "forward-daimoku",
           "bbq"
         ]
       },
@@ -85,7 +85,7 @@
         "to": "2027-12-31",
         "ids": [
           "farm",
-          "camping",
+          "visit",
           "city-walk",
           "craft",
           "kitchen"

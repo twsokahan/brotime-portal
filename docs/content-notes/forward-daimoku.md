@@ -1,6 +1,6 @@
 # 勇躍前進唱題會：內容筆記
 
-活動資料在 `content/activities/forward-daimoku.json`（第 22 個，`status: review`），由 `~/code/sokahan-propalsal-2026/plan-builder/build_forward_daimoku_portal_json_v1.py` 產生，要改就改腳本重跑，不要手改 JSON。製作進度和使用者的決定在 `~/code/sokahan-propalsal-2026/勇躍前進唱題會/製作進度.md`。
+活動資料在 `content/activities/forward-daimoku.json`（第 22 個，2026-11-10 起 `status: ready`），由 `~/code/sokahan-propalsal-2026/plan-builder/build_forward_daimoku_portal_json_v1.py` 產生，要改就改腳本重跑，不要手改 JSON。製作進度和使用者的決定在 `~/code/sokahan-propalsal-2026/勇躍前進唱題會/製作進度.md`。
 
 ## 來源
 
@@ -26,6 +26,6 @@
 - **第一次主持記得 13 件事**：七、注意事項的前三條（第 4 條學會歌寫在收尾那步）加附件六的五項基本原則和五個常見狀況。
 - **寄實體卡**：這份沒有話題卡，故事卡各區自行列印，所以「你要做的」沒有確認寄到那一項。
 
-## 還沒做（跟拿掉露營釣魚一起換）
+## 上線（2026-11-10，跟拿掉露營、釣魚一起換）
 
-問卷加選項、`SURVEY_FORM_ACTIVITY_NAMES` 加名字、介紹影片、首頁主打、改 `ready`。
+`status` 改 `ready`，`SURVEY_FORM_ACTIVITY_NAMES` 加名字。首頁主打放七到九月，補釣魚的位置（暑期活動之前，正好是「為一場活動」這個起因），是我定的，使用者要改就改 `content/site.json`。
