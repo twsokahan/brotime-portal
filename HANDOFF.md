@@ -1,5 +1,9 @@
 # 交接：兄弟時光活動入口網站
 
+## 勇躍前進唱題會活動頁（2026-11-10 推上 main，正式站顯示準備中）
+
+`content/activities/forward-daimoku.json`（第 22 個，`status: review`，網址 `a/forward-daimoku/`），由 `plan-builder/build_forward_daimoku_portal_json_v1.py` 產生，要改內容就改腳本重跑。內容決定在 `docs/content-notes/forward-daimoku.md`。問卷加選項、影片、首頁主打、改 `ready` 都還沒做，跟拿掉露營釣魚一起換；改 `ready` 前 `SURVEY_FORM_ACTIVITY_NAMES` 要加這個名字（問卷名稱測試從這次起只檢查 `ready` 的活動）。
+
 ## 哈囉你好嗎活動頁（2026-11-09，本機改好、還沒 commit，等使用者看預覽）
 
 `content/activities/visit.json`（第 21 個，`status: review`，網址 `a/visit/`）。沒有當天模式，新欄位 `noLiveMode`、`storyReading`、`firstTimeTitle`、`moreSections`、`printFilesLead`、`coverCard` 寫在 README，內容決定在 `docs/content-notes/visit.md`。問卷、影片、首頁主打、到家裡坐坐 tagline、改 `ready` 都還沒做，跟拿掉露營釣魚一起換。

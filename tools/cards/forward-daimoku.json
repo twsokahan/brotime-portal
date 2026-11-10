@@ -1,0 +1,23 @@
+{
+  "activity": "forward-daimoku",
+  "sets": {
+    "story": {
+      "pdf": "~/code/sokahan-propalsal-2026/勇躍前進唱題會/2027年創價班「勇躍前進唱題會」故事卡_v1_油蠟筆.pdf",
+      "dpi": 200,
+      "og": true,
+      "cards": [
+        { "id": "A", "page": 1, "box": [0.5202, 0.0286, 0.9798, 0.9714] },
+        { "id": "B", "page": 2, "box": [0.5202, 0.0286, 0.9798, 0.9714] },
+        { "id": "C", "page": 3, "box": [0.5202, 0.0286, 0.9798, 0.9714] }
+      ]
+    },
+    "cover": {
+      "pdf": "~/code/sokahan-propalsal-2026/勇躍前進唱題會/網站封面卡_v1.pdf",
+      "dpi": 150,
+      "og": false,
+      "cards": [
+        { "id": "cover", "page": 1, "box": [0, 0, 1, 1] }
+      ]
+    }
+  }
+}

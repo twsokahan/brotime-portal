@@ -20,6 +20,8 @@ const OLD_EVENT_WORDING = [
   '活動回報表',
   '主辦',
 ];
+// Printed on 勇躍前進唱題會 story card A; 這場活動 is the event everyone is chanting for, not the gathering itself.
+const PRINTED_CARD_QUESTION = '這場活動結束的時候，你最想看到誰臉上的笑容？';
 
 test('the real content and public files pass validation', async () => {
   assert.deepEqual(contentErrors(await readContent(CONTENT_DIR), PUBLIC_DIR), []);
@@ -38,7 +40,8 @@ async function browserScripts() {
 test('no page of the preview build or its browser scripts uses the old 活動／舉辦 wording', async () => {
   const pages = renderPages(await readContent(CONTENT_DIR), true);
   for (const [file, text] of [...pages, ...(await browserScripts())]) {
-    for (const phrase of OLD_EVENT_WORDING) assert.ok(!text.includes(phrase), `${file} still says ${phrase}`);
+    const checked = text.replaceAll(PRINTED_CARD_QUESTION, '');
+    for (const phrase of OLD_EVENT_WORDING) assert.ok(!checked.includes(phrase), `${file} still says ${phrase}`);
   }
 });
 
@@ -72,11 +75,11 @@ const SURVEY_FORM_ACTIVITY_NAMES = [
   '看球就一起',
 ];
 
-test("activity names match the survey forms' activity options character for character", async () => {
+test("published activity names match the survey forms' activity options character for character", async () => {
   const { activityFiles } = await readContent(CONTENT_DIR);
   const names = activityFiles
     .map(({ activity }) => activity)
-    .filter((activity) => !activity.noLiveMode)
+    .filter((activity) => activity.status === 'ready' && !activity.noLiveMode)
     .sort((a, b) => a.order - b.order)
     .map((activity) => activity.name);
   assert.deepEqual(names, SURVEY_FORM_ACTIVITY_NAMES);

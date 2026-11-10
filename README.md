@@ -35,11 +35,11 @@
 2. 打開 `content/activities/<id>.json`，把 `"status": "review"` 改成 `"status": "ready"`。
 3. `npm test` 通過後 commit，推到 `main`，幾分鐘後就上線了。
 
-`ready` 和 `review` 的檢查一模一樣，`review` 過得了，改成 `ready` 也會過。
+`ready` 和 `review` 的檢查只差一項：`ready` 的活動名稱要在三份問卷的選項裡（`tests/content.test.mjs` 的 `SURVEY_FORM_ACTIVITY_NAMES`），所以問卷還沒加選項的活動可以先用 `review` 放上去，改 `ready` 時測試會提醒要先加問卷。
 
 ## 新增或修改一個活動
 
-一個活動一個檔：`content/activities/<id>.json`。20 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 21，要加第 22 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
+一個活動一個檔：`content/activities/<id>.json`。20 個活動的檔案都已經在了，準備中的活動只有基本資料，照已上線的活動（例如 `brunch.json`）把內容補齊，再把 `status` 改成 `review`。`order` 最大是 22，要加第 23 個時把 `src/lib/schema.mjs` 的 `MAX_ORDER` 加大。
 
 - `id` 跟檔名一樣，網址就是 `a/<id>/`。**定了就不要改**，不然已經分享出去的連結會壞掉。
 - `name` 要跟三份問卷「活動」那一題的選項一字不差（網站會自動把活動名稱帶進問卷），測試會擋。要改名字，問卷選項也要一起改。
