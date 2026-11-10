@@ -51,8 +51,22 @@ function renderTodo(activity, site) {
   const groups = [...Map.groupBy(activity.todo, (row) => row.when)].map(([when, rows]) =>
     renderTodoGroup(when, list(rows, renderTodoRow)),
   );
+  if (activity.followUp) return groups.join('') + renderFollowUpTodo(activity, site);
   const reportUrl = activity.noLiveMode ? null : surveyLink(activity, site, 'report');
   return groups.join('') + renderReportTodo(reportUrl);
+}
+
+function renderFollowUpTodo(activity, site) {
+  const { when, staff, report } = activity.followUp;
+  const links = [
+    [staff, surveyLink(activity, site, 'staff')],
+    [report, surveyLink(activity, site, 'report')],
+  ].filter(([, url]) => url);
+  if (!links.length) return '';
+  return renderTodoGroup(
+    when,
+    links.map(([text, url]) => `<li><span><a href="${escapeHtml(url)}">${escapeHtml(text)}</a></span></li>`).join(''),
+  );
 }
 
 function renderPrepare(activity, site) {

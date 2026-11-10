@@ -446,6 +446,19 @@ test('an activity without a live mode offers no survey QR, staff survey or repor
   assert.ok(!todoBox(html).includes('回報'));
 });
 
+test('an activity without a live mode can list the staff survey and report form as follow-up todos', () => {
+  const surveys = { participant: PARTICIPANT_SURVEY, staff: STAFF_SURVEY, report: REPORT_FORM };
+  const followUp = { when: '探望後一週內', staff: '去的兩位班員填工作人員問卷', report: '區負責人填線上回報表' };
+  const html = render({ activity: withoutLiveMode({ followUp }), site: siteWithSurveys(surveys) });
+  const todo = todoBox(html);
+  assert.ok(todo.includes('<h4>探望後一週內</h4>'), todo);
+  assert.ok(todo.includes(`<a href="https://example.com/staff?usp=pp_url&amp;entry.2=${BRUNCH_NAME}">去的兩位班員填工作人員問卷</a>`), todo);
+  assert.ok(todo.includes(`<a href="https://example.com/report?usp=pp_url&amp;entry.3=${BRUNCH_NAME}">區負責人填線上回報表</a>`), todo);
+  for (const text of ['qr-participant', 'staff-survey', 'activity-report', PARTICIPANT_SURVEY.url]) {
+    assert.ok(!html.includes(text), `did not expect ${text}`);
+  }
+});
+
 test('an activity with a live mode still gets its start button, live data and survey templates', () => {
   const html = render();
   for (const text of ['id="start-live"', 'id="activity-data"', 'id="qr-participant"', 'id="staff-survey"', 'id="qr-card-s1"']) {

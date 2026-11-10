@@ -855,6 +855,13 @@ test('a malformed sign-in client id or endpoint is named in the error', () => {
 
 const noLive = (extra = {}) => ({ ...readyActivity(), noLiveMode: true, ...extra });
 
+test('followUp is only for activities without a live mode and needs all three texts', () => {
+  const followUp = { when: '探望後一週內', staff: '填工作人員問卷', report: '填回報表' };
+  assert.deepEqual(validateActivity(noLive({ followUp }), allFilesExist), []);
+  assertReports(validateActivity({ ...readyActivity(), followUp }, allFilesExist), 'followUp');
+  assertReports(validateActivity(noLive({ followUp: { when: '探望後一週內', staff: '填工作人員問卷' } }), allFilesExist), 'followUp.report');
+});
+
 test('noLiveMode can only be true', () => {
   assert.deepEqual(validateActivity(noLive(), allFilesExist), []);
   assertReports(validateActivity(noLive({ noLiveMode: false }), allFilesExist), 'noLiveMode');

@@ -9,6 +9,11 @@
   ],
   "order": 21,
   "noLiveMode": true,
+  "followUp": {
+    "when": "探望後一週內",
+    "staff": "去的兩位班員填工作人員問卷",
+    "report": "區負責人填線上回報表"
+  },
   "coverCard": "cover",
   "tags": {
     "kids": "no",

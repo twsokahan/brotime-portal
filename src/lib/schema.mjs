@@ -482,6 +482,10 @@ export function validateActivity(activity, { fileExists } = {}) {
   const shouldCheck = (key) => published || activity[key] !== undefined;
 
   if (activity.noLiveMode !== undefined && !noLiveMode) check.fail('noLiveMode', '只能是 true');
+  if (activity.followUp !== undefined) {
+    if (noLiveMode) checkTextFields(check, activity.followUp, 'followUp', ['when', 'staff', 'report']);
+    else check.fail('followUp', '只給沒有當天模式的活動用；有當天模式的，問卷和回報表在當天模式最後');
+  }
 
   if (shouldCheck('tags')) checkTags(check, activity.tags);
   checkRainNote(check, activity);
