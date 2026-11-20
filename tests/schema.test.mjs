@@ -640,6 +640,17 @@ test('availability needs real YYYY-MM-DD dates in order and a label', () => {
   assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, label: '' }), allFilesExist), 'availability.label');
 });
 
+test('an availability label can be a list of texts, one badge each', () => {
+  const twoVenues = { ...OCTOBER_2027, label: ['台北 7/3–10/11', '高雄 10/21–1/16'] };
+  assert.deepEqual(validateActivity(datedActivity(twoVenues), allFilesExist), []);
+  assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, label: [] }), allFilesExist), 'availability.label 至少要有 1 項');
+  assertReports(
+    validateActivity(datedActivity({ ...OCTOBER_2027, label: ['台北 7/3–10/11', ''] }), allFilesExist),
+    'availability.label[1]',
+  );
+  assertReports(validateActivity(datedActivity({ ...OCTOBER_2027, label: ['台北', 7] }), allFilesExist), 'availability.label[1]');
+});
+
 test('an extra30 item can link a city-walk route, and a custom extras title must be text', () => {
   const activity = readyActivity();
   activity.extra30 = ['一起吃頓飯。', { text: '多走一段城市散步。', cityWalkRoute: '台北西區' }];
@@ -724,6 +735,29 @@ test('venues need a title, prompt, intro, an https link and at least one place',
   assertReports(errors, 'venues.intro');
   assertReports(errors, 'venues.link.url 要是 https:// 開頭的網址');
   assertReports(errors, 'venues.places 至少要有 1 項');
+});
+
+test('venues can link more than one official site, each with text and an https address', () => {
+  const activity = venueActivity();
+  activity.venues.link = [
+    { text: '國立歷史博物館官網', url: 'https://www.nmh.gov.tw/cp.aspx?n=7145' },
+    { text: '創價美術館官網', url: 'https://www.sokaculture.org.tw/art-centers' },
+  ];
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.venues.link[1] = { text: '', url: 'http://example.com/' };
+  const errors = validateActivity(activity, allFilesExist);
+  assertReports(errors, 'venues.link[1].text');
+  assertReports(errors, 'venues.link[1].url 要是 https:// 開頭的網址');
+  activity.venues.link = [];
+  assertReports(validateActivity(activity, allFilesExist), 'venues.link 至少要有 1 項');
+});
+
+test('venues can rename the find-the-nearest button, but not to an empty label', () => {
+  const activity = venueActivity();
+  activity.venues.locateLabel = '用我的位置找最近的展場';
+  assert.deepEqual(validateActivity(activity, allFilesExist), []);
+  activity.venues.locateLabel = '';
+  assertReports(validateActivity(activity, allFilesExist), 'venues.locateLabel');
 });
 
 test('each venue needs its address, transit and complete places to eat', () => {

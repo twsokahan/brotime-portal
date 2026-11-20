@@ -50,11 +50,11 @@ ${renderSpots('吃飯喝咖啡', place.food)}${renderSpots('順路走走', place
 export function renderVenues(venues, rel) {
   if (!venues) return '';
   const intro = list(venues.intro, (text) => `<p>${escapeHtml(text)}</p>`);
-  const { text, url } = venues.link;
+  const links = list([venues.link].flat(), ({ text, url }) => `<p><a href="${escapeHtml(url)}">${escapeHtml(text)}</a></p>`);
   return `<section class="venues">
 <h2>${escapeHtml(venues.title)}</h2>
 <select id="venue" aria-label="${escapeHtml(venues.title)}"><option value="" disabled selected>${escapeHtml(venues.prompt)}</option>${renderOptions(venues.places)}</select>
 ${list(venues.places, (place) => renderPlace(place, rel))}
-<div class="venues-intro">${intro}<p><a href="${escapeHtml(url)}">${escapeHtml(text)}</a></p></div>
+<div class="venues-intro">${intro}${links}</div>
 </section>`;
 }

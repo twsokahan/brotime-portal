@@ -166,6 +166,16 @@ test('a dated card says when it is on, and the quiz data carries its dates', () 
   assert.deepEqual(dated.availability, activities[0].availability);
 });
 
+test('a card dated at two venues gets one badge per label', () => {
+  const activities = sixteenActivities();
+  activities[0].availability = { from: '2027-07-03', to: '2028-01-16', label: ['台北 7/3–10/11', '高雄 10/21–1/16'] };
+  const html = renderEntryMain({ activities, rel: '' });
+  assert.ok(
+    html.includes('<p class="only-during"><span class="badge">限 台北 7/3–10/11</span><span class="badge">限 高雄 10/21–1/16</span></p>'),
+  );
+  assert.equal(occurrences(html, 'class="badge"'), 2);
+});
+
 function featuredFixture() {
   return {
     pushes: [{ title: '春節強力建議', lead: '過年期間，推薦約這兩個', from: '2027-02-06', to: '2027-02-20', ids: ['brunch-2', 'brunch-3'] }],

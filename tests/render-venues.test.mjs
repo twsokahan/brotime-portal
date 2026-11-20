@@ -77,6 +77,20 @@ test('the venue picker sits between the head and the flow, menu first and the fi
   );
 });
 
+test('venues with two official sites link each one under the intro', () => {
+  const activity = withVenues();
+  activity.venues.link = [
+    { text: '國立歷史博物館官網', url: 'https://www.nmh.gov.tw/cp.aspx?n=7145' },
+    { text: '創價美術館官網', url: 'https://www.sokaculture.org.tw/art-centers' },
+  ];
+  assert.ok(
+    render(activity).includes(
+      '<p>距離是直線距離。</p><p><a href="https://www.nmh.gov.tw/cp.aspx?n=7145">國立歷史博物館官網</a></p>' +
+        '<p><a href="https://www.sokaculture.org.tw/art-centers">創價美術館官網</a></p></div>',
+    ),
+  );
+});
+
 test('the menu groups venues by region and names them with their area', () => {
   assert.ok(
     render(withVenues()).includes(

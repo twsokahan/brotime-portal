@@ -138,7 +138,12 @@ function pickItem({ id, name, reasons, onlyDuring }) {
   const link = el('a', { href: new URL(`../a/${id}/`, import.meta.url).href }, [
     el('h3', { textContent: name }),
     reasons.length > 0 && el('p', { className: 'why', textContent: reasons.join('・') }),
-    onlyDuring && el('p', { className: 'only-during' }, [el('span', { className: 'badge', textContent: `限 ${onlyDuring}` })]),
+    onlyDuring &&
+      el(
+        'p',
+        { className: 'only-during' },
+        onlyDuring.map((label) => el('span', { className: 'badge', textContent: `限 ${label}` })),
+      ),
   ]);
   return el('li', { className: 'pick' }, [link]);
 }

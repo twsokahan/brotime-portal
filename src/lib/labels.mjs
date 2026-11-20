@@ -23,6 +23,8 @@ export const SLOTS = Object.freeze({
   flexible: '時間不固定',
 });
 
+export const availabilityLabels = ({ label }) => [label].flat();
+
 export const INTERESTS = Object.freeze({
   eat: '吃',
   move: '動',

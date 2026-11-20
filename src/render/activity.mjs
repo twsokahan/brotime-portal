@@ -1,5 +1,6 @@
 import { followsStory, readAloudParts } from '../lib/live.mjs';
-import { cardPageUrl, surveyActivityName, surveyUrl } from '../lib/share.mjs';
+import { availabilityLabels } from '../lib/labels.mjs';
+import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
 import { renderBooks } from './book-guide.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
@@ -19,8 +20,9 @@ const list = (items, renderItem) => items.map(renderItem).join('');
 
 function renderAvailability(availability) {
   if (!availability) return '';
-  const { label, note } = availability;
-  return `\n<p class="availability">只限 ${escapeHtml(label)}${note ? `：${escapeHtml(note)}` : ''}</p>`;
+  const labels = availabilityLabels(availability).join('、');
+  const { note } = availability;
+  return `\n<p class="availability">只限 ${escapeHtml(labels)}${note ? `：${escapeHtml(note)}` : ''}</p>`;
 }
 
 function renderHead(activity) {
@@ -201,7 +203,7 @@ function renderLiveData(activity, site) {
 
 function surveyLink(activity, site, kind) {
   const survey = activity.surveys?.[kind] ?? site.surveys[kind];
-  return survey ? surveyUrl(survey, surveyActivityName(activity)) : null;
+  return survey ? surveyUrl(survey, activity.name) : null;
 }
 
 function renderSurveyTemplates(activity, site) {

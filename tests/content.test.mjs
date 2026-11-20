@@ -4,7 +4,6 @@ import { readdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { contentErrors, readContent, renderPages } from '../scripts/build.mjs';
 import { readingSlots } from '../src/lib/book-guide.mjs';
-import { surveyActivityName } from '../src/lib/share.mjs';
 
 const CONTENT_DIR = fileURLToPath(new URL('../content/', import.meta.url));
 const PUBLIC_DIR = fileURLToPath(new URL('../public/', import.meta.url));
@@ -75,13 +74,13 @@ const SURVEY_FORM_ACTIVITY_NAMES = [
   '勇躍前進唱題會',
 ];
 
-test("published activities' survey names match the survey forms' activity options character for character", async () => {
+test("published activity names match the survey forms' activity options character for character, each once", async () => {
   const { activityFiles } = await readContent(CONTENT_DIR);
   const names = activityFiles
     .map(({ activity }) => activity)
     .filter((activity) => activity.status === 'ready' && !activity.noLiveMode)
-    .map(surveyActivityName);
-  assert.deepEqual([...new Set(names)].sort(), [...SURVEY_FORM_ACTIVITY_NAMES].sort());
+    .map((activity) => activity.name);
+  assert.deepEqual(names.sort(), [...SURVEY_FORM_ACTIVITY_NAMES].sort());
 });
 
 test('the book todo names every volume the story cards need, so nobody has to look at a card back', async () => {

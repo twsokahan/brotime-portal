@@ -1,4 +1,4 @@
-import { KIDS, PLACE, SLOTS, INTERESTS } from './labels.mjs';
+import { KIDS, PLACE, SLOTS, INTERESTS, availabilityLabels } from './labels.mjs';
 
 const MAX_PICKS = 3;
 const FLEXIBLE = 'flexible';
@@ -69,7 +69,7 @@ export function recommend(activities, answers, today = new Date()) {
       id: activity.id,
       name: activity.name,
       reasons,
-      ...(activity.availability && { onlyDuring: activity.availability.label }),
+      ...(activity.availability && { onlyDuring: availabilityLabels(activity.availability) }),
     }));
   return { picks, note: noteFor(picks.length) };
 }

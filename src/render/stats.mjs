@@ -1,4 +1,3 @@
-import { surveyActivityName } from '../lib/share.mjs';
 import { STATS_PATH } from '../lib/stats-view.mjs';
 import { coverThumbPath } from './entry.mjs';
 import { jsonForScript } from './html.mjs';
@@ -25,5 +24,5 @@ ${ACCOUNT_FOOT}`;
 
 export const activityIndexScript = (activities) =>
   `<script type="application/json" id="activity-index">${jsonForScript(
-    Object.fromEntries(activities.map((activity) => [surveyActivityName(activity), { id: activity.id, cover: coverThumbPath(activity) }])),
+    Object.fromEntries(activities.map((activity) => [activity.name, { id: activity.id, cover: coverThumbPath(activity) }])),
   )}</script>`;

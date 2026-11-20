@@ -1,6 +1,6 @@
 import { SEASON_TITLE, isShowing, pushWindow, seasonWindow } from '../lib/featured.mjs';
 import { countMatches, emptyFilters, wallOrder } from '../lib/filter.mjs';
-import { INTERESTS, SLOTS } from '../lib/labels.mjs';
+import { INTERESTS, SLOTS, availabilityLabels } from '../lib/labels.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { PRIVACY_PATH } from './privacy.mjs';
 
@@ -56,7 +56,8 @@ function renderCover(activity, rel) {
 
 function renderOnlyDuring(availability) {
   if (!availability) return '';
-  return `\n<p class="only-during"><span class="badge">限 ${escapeHtml(availability.label)}</span></p>`;
+  const badges = list(availabilityLabels(availability), (label) => `<span class="badge">限 ${escapeHtml(label)}</span>`);
+  return `\n<p class="only-during">${badges}</p>`;
 }
 
 function renderCard(activity, rel, heading = 'h2') {

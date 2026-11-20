@@ -156,8 +156,16 @@ test('a dated pick says when it is on, and undated picks carry nothing extra', (
     picks.map(({ id, onlyDuring }) => ({ id, onlyDuring })),
     [
       { id: 'brunch', onlyDuring: undefined },
-      { id: 'exhibition-trip', onlyDuring: '2027 年 10 月' },
+      { id: 'exhibition-trip', onlyDuring: ['2027 年 10 月'] },
     ],
   );
   assert.ok(!('onlyDuring' in picks[0]));
+});
+
+test('a pick dated at two venues carries both labels', () => {
+  const trip = exhibitionTrip();
+  trip.availability = { from: '2027-07-03', to: '2028-01-16', label: ['台北 7/3–10/11', '高雄 10/21–1/16'] };
+  const answers = { kids: 'no', slot: 'weekend-day', place: 'indoor', interest: 'talk' };
+  const [pick] = recommend([trip], answers, new Date(2027, 4, 1)).picks;
+  assert.deepEqual(pick.onlyDuring, ['台北 7/3–10/11', '高雄 10/21–1/16']);
 });

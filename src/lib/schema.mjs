@@ -113,7 +113,8 @@ function checkAvailability(check, availability) {
   const fromOk = checkDate(check, availability.from, 'availability.from');
   const toOk = checkDate(check, availability.to, 'availability.to');
   if (fromOk && toOk && availability.to < availability.from) check.fail('availability.to', '不能早於 from');
-  check.text(availability.label, 'availability.label');
+  if (Array.isArray(availability.label)) checkTextList(check, availability.label, 'availability.label', 1);
+  else check.text(availability.label, 'availability.label');
   if (availability.note !== undefined) check.text(availability.note, 'availability.note');
 }
 
@@ -163,14 +164,22 @@ function checkPlace(check, place, path, firstPathOfId) {
   if (place.notes !== undefined) checkTextList(check, place.notes, `${path}.notes`, 1);
 }
 
+function checkVenueLink(check, link, path) {
+  if (!check.object(link, path)) return;
+  check.text(link.text, `${path}.text`);
+  checkHttpsUrl(check, link.url, `${path}.url`);
+}
+
 function checkVenues(check, venues) {
   if (!check.object(venues, 'venues')) return;
   check.text(venues.title, 'venues.title');
   check.text(venues.prompt, 'venues.prompt');
   checkTextList(check, venues.intro, 'venues.intro', 1);
-  if (check.object(venues.link, 'venues.link')) {
-    check.text(venues.link.text, 'venues.link.text');
-    checkHttpsUrl(check, venues.link.url, 'venues.link.url');
+  if (venues.locateLabel !== undefined) check.text(venues.locateLabel, 'venues.locateLabel');
+  if (Array.isArray(venues.link)) {
+    if (check.list(venues.link, 'venues.link', 1)) venues.link.forEach((link, i) => checkVenueLink(check, link, `venues.link[${i}]`));
+  } else {
+    checkVenueLink(check, venues.link, 'venues.link');
   }
   if (!check.list(venues.places, 'venues.places', 1)) return;
   const firstPathOfId = new Map();
@@ -503,7 +512,6 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
   if (shouldCheck('extra30')) checkExtras(check, activity.extra30);
   if (activity.extraTitle !== undefined) check.text(activity.extraTitle, 'extraTitle');
-  if (activity.surveyName !== undefined) check.text(activity.surveyName, 'surveyName');
   if (activity.availability !== undefined) checkAvailability(check, activity.availability);
   if (shouldCheck('planFile')) checkPlanFile(check, activity.planFile, activity.id);
   if ((published && !noLiveMode) || activity.preflight !== undefined) checkTextList(check, activity.preflight, 'preflight', 1);

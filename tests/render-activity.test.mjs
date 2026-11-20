@@ -399,6 +399,12 @@ test('a dated activity says when it is on right under its facts', () => {
   assert.ok(!render().includes('class="availability"'));
 });
 
+test('an activity dated at two venues lists both periods in one line', () => {
+  const activity = readyActivity();
+  activity.availability = { from: '2027-07-03', to: '2028-01-16', label: ['台北 7/3–10/11', '高雄 10/21–1/16'], note: '開放時間以學會公告為準' };
+  assert.ok(render({ activity }).includes('<p class="availability">只限 台北 7/3–10/11、高雄 10/21–1/16：開放時間以學會公告為準</p>'));
+});
+
 test('extras can carry their own title and link a city-walk route', () => {
   const activity = readyActivity();
   activity.extraTitle = '加碼推薦（選配）';

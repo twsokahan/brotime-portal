@@ -255,15 +255,16 @@ const placeFor = (id) => activity.venues?.places.find((candidate) => candidate.i
 function nearestVenueFinder(onFound) {
   const status = el('p', { className: 'venue-located' });
   status.setAttribute('aria-live', 'polite');
+  const locateLabel = activity.venues.locateLabel ?? LOCATE_LABEL;
   const locate = button(
-    LOCATE_LABEL,
+    locateLabel,
     () => {
       locate.disabled = true;
       locate.textContent = '找位置中…';
       status.textContent = '';
       const done = (text) => {
         locate.disabled = false;
-        locate.textContent = LOCATE_LABEL;
+        locate.textContent = locateLabel;
         status.textContent = text;
       };
       navigator.geolocation.getCurrentPosition(
