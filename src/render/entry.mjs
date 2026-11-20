@@ -16,7 +16,7 @@ const ENTRY_ACTIONS = `<div class="entry-actions">
 <button id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters"><span class="filter-summary">篩選</span> <span class="caret" aria-hidden="true">▾</span></button>
 </div>`;
 
-const TITLE = '<h1>下個月，<span>約兄弟做什麼？</span></h1>';
+const TITLE = '<h1>這個月，<span>約兄弟做什麼？</span></h1>';
 
 export const ALL_PATH = 'all/';
 

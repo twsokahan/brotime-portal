@@ -1,5 +1,5 @@
 import { followsStory, readAloudParts } from '../lib/live.mjs';
-import { cardPageUrl, surveyUrl } from '../lib/share.mjs';
+import { cardPageUrl, surveyActivityName, surveyUrl } from '../lib/share.mjs';
 import { renderBooks } from './book-guide.mjs';
 import { escapeHtml, jsonForScript } from './html.mjs';
 import { qrSvg } from './qr.mjs';
@@ -201,7 +201,7 @@ function renderLiveData(activity, site) {
 
 function surveyLink(activity, site, kind) {
   const survey = activity.surveys?.[kind] ?? site.surveys[kind];
-  return survey ? surveyUrl(survey, activity.name) : null;
+  return survey ? surveyUrl(survey, surveyActivityName(activity)) : null;
 }
 
 function renderSurveyTemplates(activity, site) {

@@ -22,7 +22,7 @@ function activitiesData(html) {
 }
 
 function layout(overrides = {}) {
-  return page({ title: '兄弟時光', description: '下個月，約兄弟做什麼？', rel: '', main: '<p>內容</p>', scripts: [], ...overrides });
+  return page({ title: '兄弟時光', description: '這個月，約兄弟做什麼？', rel: '', main: '<p>內容</p>', scripts: [], ...overrides });
 }
 
 const wallIds = (html) => [...html.matchAll(/<a class="act[^"]*" data-id="([^"]+)"/g)].map(([, id]) => id);
@@ -80,7 +80,7 @@ test('with nothing ready the wall is a friendly line instead of an empty grid', 
 test('with nothing ready there is nothing to pick from, so the quiz and filter buttons are left out', () => {
   const activities = sixteenActivities().map((activity) => ({ ...activity, status: 'preparing' }));
   const html = renderEntryMain({ activities, rel: '' });
-  assert.ok(html.includes('<h1>下個月，<span>約兄弟做什麼？</span></h1>'));
+  assert.ok(html.includes('<h1>這個月，<span>約兄弟做什麼？</span></h1>'));
   for (const part of ['class="entry-actions"', 'id="open-quiz"', 'id="toggle-filters"', 'id="filters"']) {
     assert.ok(!html.includes(part), `expected no ${part}`);
   }

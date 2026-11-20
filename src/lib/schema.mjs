@@ -503,6 +503,7 @@ export function validateActivity(activity, { fileExists } = {}) {
   if (shouldCheck('firstTime')) checkTextList(check, activity.firstTime, 'firstTime', 1);
   if (shouldCheck('extra30')) checkExtras(check, activity.extra30);
   if (activity.extraTitle !== undefined) check.text(activity.extraTitle, 'extraTitle');
+  if (activity.surveyName !== undefined) check.text(activity.surveyName, 'surveyName');
   if (activity.availability !== undefined) checkAvailability(check, activity.availability);
   if (shouldCheck('planFile')) checkPlanFile(check, activity.planFile, activity.id);
   if ((published && !noLiveMode) || activity.preflight !== undefined) checkTextList(check, activity.preflight, 'preflight', 1);

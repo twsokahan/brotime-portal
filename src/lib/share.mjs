@@ -11,6 +11,8 @@ export function shareFallbacks(title, url) {
   return { lineUrl: 'https://line.me/R/share?text=' + encodeURIComponent(copyText), copyText };
 }
 
+export const surveyActivityName = (activity) => activity.surveyName ?? activity.name;
+
 export function surveyUrl(survey, activityName) {
   return `${survey.url}?usp=pp_url&${survey.activityEntry}=${encodeURIComponent(activityName)}`;
 }
